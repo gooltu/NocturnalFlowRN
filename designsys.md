@@ -227,22 +227,79 @@ Consistently **Rounded**, to evoke friendliness and safety.
 
 ## Components
 
+The component library is drawn in **`NocturnalFlowDS.pen`** (Pencil canvas), which is the visual source of truth: every colour, font and radius token below exists there as a document variable, and each component is a reusable symbol instanced into the "Nocturnal Flow — Component Library" board. Two assembled reference screens — **Chats** and **Conversation** — are built entirely from those instances. See [Canvas Source](#canvas-source) for the inventory.
+
 ### Atoms
-- **Buttons:** Primary buttons use `primary` fill with `on-primary` text. Ghost buttons use a 1px `primary` border with `primary` text. Apply `states.pressed-opacity` on press, `states.disabled-opacity` when disabled.
-- **Inputs:** Search and chat inputs use `surface-container` background, `outline-variant` 1px border on focus, 16px internal padding.
+- **Buttons:** Primary buttons use `primary` fill with `on-primary` text, 44px tall, `rounded` corners, and a 0.5px white inner stroke at ~5% opacity for the tactile lift. Ghost buttons use a 1px `primary` border with `primary` text. Apply `states.pressed-opacity` on press, `states.disabled-opacity` when disabled.
+- **Icon Button:** 44×44 circular. Filled variant = `primary` fill with `on-primary` glyph (send). Quiet variant = `surface-container-high` fill with `on-surface-variant` glyph (attach).
+- **Inputs:** Search and chat inputs use `surface-container` background, `outline-variant` 1px border on focus, 16px internal padding, 48px tall (44px inside the Chat Input Bar).
 - **Icons:** `lucide-react-native`, 2px stroke weight, sized per `icons.size-sm/md/lg`.
+- **Avatar:** circular, `surface-container-high` fill with monogram initials in Plus Jakarta Sans. Sizes 48 (chat list), 40 (header), 32 (compact/inline). The presence dot is omitted at 32.
+- **Unread Badge:** `rounded-full` `primary` pill, 20px tall, count in Inter 11/600 `on-primary`. Widens for `99+`.
+- **Delivery Status:** timestamp in `label-sm` followed by a 14px check glyph — see the delivery-status rule in States & Feedback.
+- **Progress Bar:** determinate linear progress for uploads, downloads and any measured task.
+  - **Track:** 6px tall, `rounded-full`, `surface-container-high`, `overflow: hidden`.
+  - **Indicator:** `rounded-full`, `primary` fill, full track height, width driven by percent.
+  - **Meta row** (optional, `space-between` above the track, 8px gap): label in `label-lg` `on-surface`, value in `label-sm` `on-surface-variant`. Omit it for a bare track inside dense UI.
+  - **States:** in-progress = `primary`; complete = `success` at 100% with the value label also in `success`; failed = `error` fill with an `error` label and a "Retry" affordance in place of the percentage. Indeterminate = a short (~30% of track) segment that translates across the track instead of growing.
+  - **Motion:** animate the determinate width with `duration-standard` + `easing-standard`; loop the indeterminate segment's `translateX` at `duration-slow` + `easing-standard`. Drive both from a Reanimated shared value — animate `translateX` rather than `width` for the indeterminate case to keep it off the JS thread.
+  - **Accessibility:** expose `accessibilityRole="progressbar"` with `accessibilityValue={{min, max, now}}`; never communicate the failed state by colour alone — the label carries it too.
 
 ### Molecules
 - **Message Bubbles (Incoming):** `surface-container` background, `on-surface` text.
 - **Message Bubbles (Outgoing):** `primary-container` background, `on-primary-container` text.
 - **Media Message Bubble:** image/video fills the bubble shape with `rounded` corners matching the parent bubble; caption text (if any) sits below in `body-md` on a `surface-container` footer strip. Voice-note variant shows a waveform + play button + `label-sm` duration.
 - **Reply / Quote Preview:** a compact left-bordered (2px `outline`) block above the composed message or inside a bubble, showing sender name (`label-lg`) and a single-line truncated snippet (`body-md`, `on-surface-variant`) of the quoted message.
-- **Reaction Pills:** small `rounded-full` chips using `surface-container-high` background, emoji + count in `label-sm`, anchored to the bottom edge of a bubble.
-- **Chat List Item:** horizontal layout — 48px circular avatar (with presence dot), vertical stack of Title (`headline-md`) and Snippet (`body-md`), trailing timestamp (`label-sm`).
+- **Reaction Pills:** small `rounded-full` chips (26px tall) using `surface-container-high` background with a 1px `outline-variant` border, emoji + count in `label-sm`, anchored to the bottom edge of a bubble with a 6px gap. The "reacted by me" state swaps to an `inverse-primary` fill with a `primary` border and count.
+- **Chat List Item:** horizontal layout — 48px circular avatar (with presence dot), vertical stack of Title (`headline-md`) and Snippet (`body-md`), trailing timestamp (`label-sm`) above an optional Unread Badge. Unread rows sit on a `surface-container-low` fill with the snippet promoted to `on-surface`; muted rows drop to 60% opacity.
+- **Typing Indicator:** an incoming-shaped bubble containing three 7px `on-surface-variant` dots at 100/60/35% opacity, cycling on a `duration-slow` loop.
+- **Day Divider:** centred `rounded-full` chip on `surface-container`, date in `label-sm` `on-surface-variant`, separating message groups by day.
 
 ### Organisms
-- **Chat Input Bar:** fixed bottom container, `background`-colored, containing a text-input molecule, a "plus" attachment icon, and a circular send button; wrapped in keyboard-avoidance per the Layout section.
-- **Header:** sticky top bar with `blur(10px)` backdrop over `background`, containing navigation and the contact's presence indicator.
-- **Navigation Bar:** bottom-fixed, 40% transparency over content, `primary` highlights for the active tab.
-- **Empty State:** centered illustration/icon + `headline-md` title + `body-md` supporting text, used for empty chat list, empty conversation, or no-search-results states.
-- **Loading Skeleton:** shimmer blocks using `surface-container` → `surface-container-high` gradient pulse (`duration-slow`, looped) for chat-list rows and message bubbles while content loads.
+- **Chat Input Bar:** fixed bottom container, `background`-colored with a 1px `outline-variant` top hairline, containing a 44px `surface-container` composer field (placeholder + trailing mic icon), a "plus" attachment button, and a circular send button; wrapped in keyboard-avoidance per the Layout section. The send button sits at `states.disabled-opacity` until the field has content; the field gains its `outline-variant` border while focused.
+- **Header:** sticky top bar, 60px tall, `background` at 80% opacity with a `blur(10px)` backdrop and a 1px `outline-variant` bottom hairline. Contains back chevron, 40px avatar, identity stack (name in Plus Jakarta Sans 17/600 + presence line in `label-sm`), and trailing call / overflow icons. The presence line carries `presence-online` when online and `on-surface-variant` for "typing…" or last-seen copy.
+- **Game Header:** the Header with a 24px gamification strip docked beneath it (80px total), separated by a 1px `outline-variant` divider. The strip pairs a level label, a track-only Progress Bar instance for XP, and an XP counter, all in `primary`. *Note: the strip's labels currently render at 8px, below the `label-sm` floor — raise them to `label-sm` (11px) or grow the strip before shipping, since 8px fails legibility at 130% font scale.*
+- **Navigation Bar:** a floating capsule rather than an edge-to-edge bar — inset 16px from the sides and 12px above the bottom, 56px tall, corner radius = half the height, 6px inner padding. `surface-container-high` at 70% opacity with a `blur(12px)` backdrop and a soft outer shadow. Each tab is an icon (22px) above a 10px label; the active tab gets a `primary`-tinted capsule highlight (`primary` at ~12% opacity) with `primary` icon and label, inactive tabs use `on-surface-variant`.
+- **Empty State:** centered 72px `surface-container` icon halo + `headline-md` title + centered `body-md` supporting text + a Ghost Button action, used for empty chat list, empty conversation, or no-search-results states.
+- **Loading Skeleton:** shimmer blocks using `surface-container` → `surface-container-high` gradient pulse (`duration-slow`, looped) for chat-list rows and message bubbles while content loads. The chat-list row is a 48px circle plus two stacked bars (14px and 12px, `rounded-full`); stack rows at descending opacity so the list fades out down the screen.
+- **Toast / Inline Banner:** `surface-container-high` card, `rounded`, with a 3px left border and matching leading icon in `warning` / `error` / `success`, a `body-md` semibold title, a `body-md` (13px) body line in `on-surface-variant`, and a trailing dismiss glyph. Dismissal timing per States & Feedback.
+- **Attachment Bottom Sheet:** `surface-container-high` sheet with `rounded-xl` top corners only, a 36×4 `outline-variant` grabber, and a row of equal-width options (64px `surface-container` tile with a `primary` icon above a `label-sm` caption): Photos, Camera, File, Audio.
+
+## Canvas Source
+
+`NocturnalFlowDS.pen` holds 24 reusable components, laid out above the "Nocturnal Flow — Component Library" board and instanced into it by tier.
+
+| Tier | Component | Node |
+|---|---|---|
+| Atoms | Avatar | `c9jsV1` |
+| Atoms | Button Primary | `PuZ1D` |
+| Atoms | Button Ghost | `WCNF8` |
+| Atoms | Icon Button | `OEC6O` |
+| Atoms | Input Field | `XnCYR` |
+| Atoms | Unread Badge | `U0NsL` |
+| Atoms | Delivery Status | `KPwjD` |
+| Atoms | Progress Bar | `V6k8E` |
+| Molecules | Bubble Incoming | `vimdq` |
+| Molecules | Bubble Outgoing | `Wfl0W` |
+| Molecules | Media Bubble | `Yl6Ol` |
+| Molecules | Voice Note | `k1tKOI` |
+| Molecules | Reply Preview | `limpy` |
+| Molecules | Reaction Pill | `b77JZ4` |
+| Molecules | Typing Indicator | `c5arMN` |
+| Molecules | Chat List Item | `WuUhY` |
+| Organisms | Header | `k5CZ3p` |
+| Organisms | Game Header | `FMtXL` |
+| Organisms | Chat Input Bar | `PKGKz` |
+| Organisms | Navigation Bar | `x1QWPw` |
+| Organisms | Empty State | `mMWID` |
+| Organisms | Skeleton Row | `kfp0x` |
+| Organisms | Toast | `u1Weu` |
+| Organisms | Attachment Sheet | `X1p187` |
+
+Reference screens: **Screen / Chats** (`FwKyl`) and **Screen / Conversation** (`ViaSO`), both 390pt wide and composed only of instances.
+
+**Reading the canvas into code:**
+- Pencil has no percentage sizing, so proportional values are baked as pixels against a fixed base — the Progress Bar indicator is sized against a 240pt track (`width = 2.4 × percent`). In RN, express these as percentage strings or flex, not the literal canvas numbers.
+- Message bubbles are capped at 260pt on the board (250pt inside the reference screens); in RN cap them with `maxWidth: '75%'` instead.
+- Avatars use monogram initials on canvas as a stand-in for photo sources.
+- Blur backdrops (Header, Game Header, Navigation Bar) are canvas approximations of `expo-blur`'s `BlurView`; the fill opacity shown is the tint behind the blur.
