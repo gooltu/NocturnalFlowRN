@@ -11,7 +11,7 @@ export interface ProgressBarProps {
 
 /** Track + indicator, with an optional label/value row above it (e.g. an
  * upload's name and percentage). Also embedded bare (no label/value) inside
- * GameHeader's gamebar. */
+ * the Header's gamebar. */
 export function ProgressBar({ progress, label, value }: ProgressBarProps) {
   const clamped = Math.max(0, Math.min(1, progress));
 

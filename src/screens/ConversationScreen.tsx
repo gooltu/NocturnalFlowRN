@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { MoreVertical, Phone } from 'lucide-react-native';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, spacing, typography } from '../theme';
@@ -12,7 +13,7 @@ import { VoiceNote } from '../components/molecules/VoiceNote';
 import { AttachmentSheet } from '../components/organisms/AttachmentSheet';
 import { ChatInputBar } from '../components/organisms/ChatInputBar';
 import { EmptyState } from '../components/organisms/EmptyState';
-import { GameHeader } from '../components/organisms/GameHeader';
+import { Header } from '../components/organisms/Header';
 import { chats, MessageItem } from '../data/mockData';
 
 export interface ConversationScreenProps {
@@ -47,16 +48,18 @@ export function ConversationScreen({ chatId, onBack }: ConversationScreenProps) 
   };
 
   return (
-    <SafeAreaView style={styles.base} edges={['top']}>
-      <GameHeader
+    <SafeAreaView style={styles.base} edges={[]}>
+      <Header
         title={chat.contact.name}
-        onBack={onBack}
-        avatarInitials={chat.contact.initials}
+        subtitle={chat.isTyping ? 'typing…' : chat.contact.presence === 'online' ? 'Online' : 'Offline'}
         presence={chat.contact.presence}
-        subtitle={chat.contact.presence === 'online' ? 'Online' : 'Offline'}
-        level={chat.contact.level}
-        xpCurrent={chat.contact.xp}
-        xpMax={chat.contact.xpMax}
+        onBack={onBack}
+        avatar={{ initials: chat.contact.initials }}
+        actions={[
+          { key: 'call', label: `Call ${chat.contact.name}`, icon: Phone },
+          { key: 'more', label: 'Conversation options', icon: MoreVertical },
+        ]}
+        gamebar={{ level: chat.contact.level, xpCurrent: chat.contact.xp, xpMax: chat.contact.xpMax }}
       />
 
       {messages.length === 0 ? (

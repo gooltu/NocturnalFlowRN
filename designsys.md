@@ -233,8 +233,13 @@ The component library is drawn in **`NocturnalFlowDS.pen`** (Pencil canvas), whi
 - **Buttons:** Primary buttons use `primary` fill with `on-primary` text, 44px tall, `rounded` corners, and a 0.5px white inner stroke at ~5% opacity for the tactile lift. Ghost buttons use a 1px `primary` border with `primary` text. Apply `states.pressed-opacity` on press, `states.disabled-opacity` when disabled.
 - **Icon Button:** 44×44 circular. Filled variant = `primary` fill with `on-primary` glyph (send). Quiet variant = `surface-container-high` fill with `on-surface-variant` glyph (attach).
 - **Inputs:** Search and chat inputs use `surface-container` background, `outline-variant` 1px border on focus, 16px internal padding, 48px tall (44px inside the Chat Input Bar).
-- **Icons:** `lucide-react-native`, 2px stroke weight, sized per `icons.size-sm/md/lg`.
-- **Avatar:** circular, `surface-container-high` fill with monogram initials in Plus Jakarta Sans. Sizes 48 (chat list), 40 (header), 32 (compact/inline). The presence dot is omitted at 32.
+- **Icons:** `lucide-react-native`, 2px stroke weight, sized per `icons.size-sm/md/lg`. These are the functional UI glyphs and always take a token colour.
+- **Image Icon:** a raster (PNG) counterpart to the lucide set, for full-colour game and reward art — never for functional UI. A square frame with the artwork as an image fill in `fit` mode (aspect preserved, never cropped), so it drops into the same 24/40/64 rhythm as the vector icons. A tiled variant sits the art on a 64px `surface-container` `rounded-lg` tile with 10px padding, matching the Attachment Sheet tiles; disabled uses `states.disabled-opacity`. Artwork lives in `assets/` and is referenced relative to the `.pen` file (`assets/jewelbox.png`, `assets/factory.png`). Raster art cannot be re-tinted the way a stroke icon can — supply a separate asset per colourway.
+- **Avatar:** circular, sizes 48 (chat list), 40 (header), 32 (compact/inline). The presence dot is omitted at 32. Two mutually exclusive content layers:
+  - **Photo** — the default. An image fill in `fill` mode (crops to square, never distorts) with a fully-rounded corner radius that clamps to the frame, so it stays circular at every size without per-size overrides.
+  - **Initials** — the fallback: monogram in Plus Jakarta Sans on a `surface-container-high` fill. Enable it and disable Photo when there's no picture.
+
+  Enabling both puts them side by side — they are alternatives, not layers to stack. In RN this is conditional rendering rather than a toggle: render `<Image>` over the monogram inside a `borderRadius: size / 2`, `overflow: 'hidden'` view, and keep the monogram mounted underneath so it covers both the loading and error cases.
 - **Unread Badge:** `rounded-full` `primary` pill, 20px tall, count in Inter 11/600 `on-primary`. Widens for `99+`.
 - **Delivery Status:** timestamp in `label-sm` followed by a 14px check glyph — see the delivery-status rule in States & Feedback.
 - **Progress Bar:** determinate linear progress for uploads, downloads and any measured task.
@@ -257,8 +262,26 @@ The component library is drawn in **`NocturnalFlowDS.pen`** (Pencil canvas), whi
 
 ### Organisms
 - **Chat Input Bar:** fixed bottom container, `background`-colored with a 1px `outline-variant` top hairline, containing a 44px `surface-container` composer field (placeholder + trailing mic icon), a "plus" attachment button, and a circular send button; wrapped in keyboard-avoidance per the Layout section. The send button sits at `states.disabled-opacity` until the field has content; the field gains its `outline-variant` border while focused.
-- **Header:** sticky top bar, 60px tall, `background` at 80% opacity with a `blur(10px)` backdrop and a 1px `outline-variant` bottom hairline. Contains back chevron, 40px avatar, identity stack (name in Plus Jakarta Sans 17/600 + presence line in `label-sm`), and trailing call / overflow icons. The presence line carries `presence-online` when online and `on-surface-variant` for "typing…" or last-seen copy.
-- **Game Header:** the Header with a 24px gamification strip docked beneath it (80px total), separated by a 1px `outline-variant` divider. The strip pairs a level label, a track-only Progress Bar instance for XP, and an XP counter, all in `primary`. *Note: the strip's labels currently render at 8px, below the `label-sm` floor — raise them to `label-sm` (11px) or grow the strip before shipping, since 8px fails legibility at 130% font scale.*
+- **Header:** one sticky top bar serves every screen — 390×80, `background` at 80% opacity with a `blur(10px)` backdrop and a 1px `outline-variant` bottom hairline. It stacks two rows:
+  - **HeaderMain** (56px): back chevron, 40px Avatar, identity stack (title/name in Plus Jakarta Sans 17/600 over a presence line in `label-sm`), then trailing Image Icon currency slots and call / overflow glyphs. The presence line carries `presence-online` when online and `on-surface-variant` for "typing…" or last-seen copy.
+  - **Gamebar** (24px, 1px `outline-variant` top divider): a level label, a track-only Progress Bar instance for XP, and an XP counter, all in `primary`.
+
+  The conversation-specific parts — back chevron, Avatar, presence line, call icon — ship **disabled** so the component reads as a top-level list header ("Chats" + currencies + overflow) out of the box; enable them per context. This replaces the earlier split between a plain Header and a separate Game Header.
+
+  **Every region is opt-in, driven by props — nothing is implied by context:**
+
+  | Prop | Type | Effect |
+  |---|---|---|
+  | `title` | `string` | Always rendered. Screen name or contact name. |
+  | `subtitle` | `string?` | Presence line under the title ("Online", "typing…", last seen). |
+  | `presence` | `'online' \| 'offline' \| 'none'?` | Tints both the Avatar dot and the subtitle. Omit outside contact contexts. |
+  | `onBack` | `() => void?` | Supplying it shows the back chevron; `showBack` overrides that inference. |
+  | `avatar` | `{ source?, initials? }?` | Renders a 40px Avatar. Omit on top-level screens. |
+  | `actions` | `HeaderAction[]?` | Trailing controls, left to right. Each is `icon` (lucide, functional) **or** `image` (Image Icon, game art) plus a required `label` for screen readers. |
+  | `gamebar` | `{ level, xpCurrent, xpMax }?` | Docks the 24px XP strip. Omit for the 56px bar alone. |
+  | `rightSlot` | `ReactNode?` | Escape hatch that replaces `actions` entirely. |
+
+  So a list screen is `<Header title="Chats" actions={[…currencies, compose, overflow]} gamebar={…} />`, and a conversation is the same component with `onBack`, `avatar`, `presence` and `subtitle` added. Three canvas specimens (`Header / List Context`, `Header / Conversation Context`, `Header / Plain (No Gamebar)`) mirror those prop combinations. There is no separate `GameHeader` component — the gamebar is a prop on this one.
 - **Navigation Bar:** a floating capsule rather than an edge-to-edge bar — inset 16px from the sides and 12px above the bottom, 56px tall, corner radius = half the height, 6px inner padding. `surface-container-high` at 70% opacity with a `blur(12px)` backdrop and a soft outer shadow. Each tab is an icon (22px) above a 10px label; the active tab gets a `primary`-tinted capsule highlight (`primary` at ~12% opacity) with `primary` icon and label, inactive tabs use `on-surface-variant`.
 - **Empty State:** centered 72px `surface-container` icon halo + `headline-md` title + centered `body-md` supporting text + a Ghost Button action, used for empty chat list, empty conversation, or no-search-results states.
 - **Loading Skeleton:** shimmer blocks using `surface-container` → `surface-container-high` gradient pulse (`duration-slow`, looped) for chat-list rows and message bubbles while content loads. The chat-list row is a 48px circle plus two stacked bars (14px and 12px, `rounded-full`); stack rows at descending opacity so the list fades out down the screen.
@@ -272,13 +295,14 @@ The component library is drawn in **`NocturnalFlowDS.pen`** (Pencil canvas), whi
 | Tier | Component | Node |
 |---|---|---|
 | Atoms | Avatar | `c9jsV1` |
+| Atoms | Image Icon | `g8RC2` |
 | Atoms | Button Primary | `PuZ1D` |
 | Atoms | Button Ghost | `WCNF8` |
 | Atoms | Icon Button | `OEC6O` |
 | Atoms | Input Field | `XnCYR` |
 | Atoms | Unread Badge | `U0NsL` |
 | Atoms | Delivery Status | `KPwjD` |
-| Atoms | Progress Bar | `V6k8E` |
+| Atoms | Progress Bar | `n8gpQK` |
 | Molecules | Bubble Incoming | `vimdq` |
 | Molecules | Bubble Outgoing | `Wfl0W` |
 | Molecules | Media Bubble | `Yl6Ol` |
@@ -287,8 +311,7 @@ The component library is drawn in **`NocturnalFlowDS.pen`** (Pencil canvas), whi
 | Molecules | Reaction Pill | `b77JZ4` |
 | Molecules | Typing Indicator | `c5arMN` |
 | Molecules | Chat List Item | `WuUhY` |
-| Organisms | Header | `k5CZ3p` |
-| Organisms | Game Header | `FMtXL` |
+| Organisms | Header | `b76xnk` |
 | Organisms | Chat Input Bar | `PKGKz` |
 | Organisms | Navigation Bar | `x1QWPw` |
 | Organisms | Empty State | `mMWID` |
@@ -296,10 +319,11 @@ The component library is drawn in **`NocturnalFlowDS.pen`** (Pencil canvas), whi
 | Organisms | Toast | `u1Weu` |
 | Organisms | Attachment Sheet | `X1p187` |
 
-Reference screens: **Screen / Chats** (`FwKyl`) and **Screen / Conversation** (`ViaSO`), both 390pt wide and composed only of instances.
+Reference screens: **Screen / Chats** (`FwKyl`) and **Screen / Conversation** (`ViaSO`), both 390pt wide. Chats is composed entirely of instances; Conversation carries a detached copy of the header rather than an instance, so header changes do **not** propagate there — re-link it before treating it as a reference.
 
 **Reading the canvas into code:**
 - Pencil has no percentage sizing, so proportional values are baked as pixels against a fixed base — the Progress Bar indicator is sized against a 240pt track (`width = 2.4 × percent`). In RN, express these as percentage strings or flex, not the literal canvas numbers.
 - Message bubbles are capped at 260pt on the board (250pt inside the reference screens); in RN cap them with `maxWidth: '75%'` instead.
-- Avatars use monogram initials on canvas as a stand-in for photo sources.
-- Blur backdrops (Header, Game Header, Navigation Bar) are canvas approximations of `expo-blur`'s `BlurView`; the fill opacity shown is the tint behind the blur.
+- The Avatar's default photo is a **remote Unsplash URL**, and every instance currently shares it — a canvas placeholder, not an asset. Distinct faces need a per-instance URL override; production sources come from the API.
+- PNG artwork lives in `assets/` and is referenced relative to the `.pen` file (`assets/factory.png`). Moving those files breaks the fills silently — the node just renders empty.
+- Blur backdrops (Header, Navigation Bar) are canvas approximations of `expo-blur`'s `BlurView`; the fill opacity shown is the tint behind the blur.

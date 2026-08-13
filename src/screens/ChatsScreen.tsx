@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { Edit3, Search } from 'lucide-react-native';
+import { Edit3, MoreVertical, Search } from 'lucide-react-native';
 import { FlatList, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, spacing } from '../theme';
 import { ChatListItem } from '../components/molecules/ChatListItem';
 import { EmptyState } from '../components/organisms/EmptyState';
 import { Header } from '../components/organisms/Header';
-import { IconButton } from '../components/atoms/IconButton';
 import { InputField } from '../components/atoms/InputField';
 import { SkeletonRow } from '../components/organisms/SkeletonRow';
-import { chats } from '../data/mockData';
+import { chats, currentUser } from '../data/mockData';
+
+const crateIcon = require('../../assets/jewelbox.png');
+const gemIcon = require('../../assets/factory.png');
 
 export interface ChatsScreenProps {
   onOpenChat: (chatId: string) => void;
@@ -31,14 +33,19 @@ export function ChatsScreen({ onOpenChat }: ChatsScreenProps) {
   );
 
   return (
-    <SafeAreaView style={styles.base} edges={['top']}>
+    <SafeAreaView style={styles.base} edges={[]}>
       <Header
         title="Chats"
-        rightSlot={
-          <View style={styles.headerActions}>
-            <IconButton icon={Edit3} size="md" />
-          </View>
-        }
+        actions={[
+          { key: 'crates', label: `${currentUser.crates} crates`, image: crateIcon },
+          { key: 'gems', label: `${currentUser.gems} gems`, image: gemIcon },          
+          { key: 'more', label: 'Chats options', icon: MoreVertical },
+        ]}
+        gamebar={{
+          level: currentUser.level,
+          xpCurrent: currentUser.xp,
+          xpMax: currentUser.xpMax,
+        }}
       />
       <View style={styles.searchWrap}>
         <InputField
@@ -86,9 +93,6 @@ const styles = StyleSheet.create({
   base: {
     flex: 1,
     backgroundColor: colors.background,
-  },
-  headerActions: {
-    flexDirection: 'row',
   },
   searchWrap: {
     paddingHorizontal: spacing.marginMobile,

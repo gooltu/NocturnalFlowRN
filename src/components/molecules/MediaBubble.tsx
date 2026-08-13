@@ -1,20 +1,25 @@
 import React from 'react';
 import { Image, ImageSourcePropType, StyleSheet, Text, View } from 'react-native';
 import { colors, radius, spacing, typography } from '../../theme';
+import { SVGIconName, SVGImageIcon } from '../atoms/SVGImageIcon';
 
 export interface MediaBubbleProps {
   source: ImageSourcePropType;
   caption?: string;
   timestamp: string;
   variant?: 'incoming' | 'outgoing';
+  icon?: SVGIconName;
 }
 
-/** Image fills the bubble shape; an optional caption sits below on a
- * `surface-container` footer strip, matching the parent bubble's rounding. */
-export function MediaBubble({ source, caption, timestamp, variant = 'incoming' }: MediaBubbleProps) {
+/** Image fills the bubble shape; an optional caption and the timestamp sit
+ * below on a `surface-container` footer strip inside the bubble, matching the
+ * parent bubble's rounding.
+ * When incoming, a vector `SVGImageIcon` sits outside the bubble to its
+ * left, vertically centered, standing in for the sender's avatar. */
+export function MediaBubble({ source, caption, timestamp, variant = 'incoming', icon = 'logo' }: MediaBubbleProps) {
   const isOutgoing = variant === 'outgoing';
 
-  return (
+  const content = (
     <View style={[styles.wrap, isOutgoing && styles.wrapOutgoing]}>
       <View
         style={[
@@ -23,24 +28,38 @@ export function MediaBubble({ source, caption, timestamp, variant = 'incoming' }
         ]}
       >
         <Image source={source} style={styles.image} resizeMode="cover" />
-        {caption && (
-          <View style={styles.footer}>
-            <Text style={[typography.bodyMd, styles.caption]}>{caption}</Text>
-          </View>
-        )}
+        <View style={styles.footer}>
+          {caption && <Text style={[typography.bodyMd, styles.caption]}>{caption}</Text>}
+          <Text style={[typography.labelSm, styles.timestamp]}>{timestamp}</Text>
+        </View>
       </View>
-      <Text style={[typography.labelSm, styles.timestamp]}>{timestamp}</Text>
+    </View>
+  );
+
+  if (isOutgoing) return content;
+
+  return (
+    <View style={styles.row}>
+      <SVGImageIcon icon={icon} size={28} />
+      {content}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  wrap: {
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
     alignSelf: 'flex-start',
+    gap: spacing.sm,
     maxWidth: '78%',
+  },
+  wrap: {
+    flexShrink: 1,
   },
   wrapOutgoing: {
     alignSelf: 'flex-end',
+    maxWidth: '78%',
   },
   bubble: {
     overflow: 'hidden',
@@ -65,13 +84,13 @@ const styles = StyleSheet.create({
   footer: {
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
+    gap: 4,
   },
   caption: {
     color: colors.onSurface,
   },
   timestamp: {
     color: colors.onSurfaceVariant,
-    marginTop: 4,
-    marginLeft: 4,
+    alignSelf: 'flex-end',
   },
 });

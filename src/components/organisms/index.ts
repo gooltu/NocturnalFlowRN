@@ -1,5 +1,4 @@
 export * from './Header';
-export * from './GameHeader';
 export * from './ChatInputBar';
 export * from './NavigationBar';
 export * from './EmptyState';

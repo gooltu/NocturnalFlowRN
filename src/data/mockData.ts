@@ -13,35 +13,35 @@ export interface Contact {
 
 export type MessageItem =
   | {
-      id: string;
-      type: 'divider';
-      label: string;
-    }
+    id: string;
+    type: 'divider';
+    label: string;
+  }
   | {
-      id: string;
-      type: 'text';
-      sender: 'me' | 'them';
-      text: string;
-      timestamp: string;
-      status?: DeliveryState;
-      replyTo?: { senderName: string; snippet: string };
-    }
+    id: string;
+    type: 'text';
+    sender: 'me' | 'them';
+    text: string;
+    timestamp: string;
+    status?: DeliveryState;
+    replyTo?: { senderName: string; snippet: string };
+  }
   | {
-      id: string;
-      type: 'media';
-      sender: 'me' | 'them';
-      imageUri: string;
-      caption?: string;
-      timestamp: string;
-      reactions?: { emoji: string; count: number }[];
-    }
+    id: string;
+    type: 'media';
+    sender: 'me' | 'them';
+    imageUri: string;
+    caption?: string;
+    timestamp: string;
+    reactions?: { emoji: string; count: number }[];
+  }
   | {
-      id: string;
-      type: 'voice';
-      sender: 'me' | 'them';
-      duration: string;
-      timestamp: string;
-    };
+    id: string;
+    type: 'voice';
+    sender: 'me' | 'them';
+    duration: string;
+    timestamp: string;
+  };
 
 export interface ChatSummary {
   id: string;
@@ -91,7 +91,7 @@ export const chats: ChatSummary[] = [
         type: 'media',
         sender: 'them',
         imageUri: 'https://picsum.photos/seed/nocturnal-rooftop/800/600',
-        caption: 'Rooftop, just before the rain',
+        //caption: 'Rooftop, just before the rain',
         timestamp: '21:07',
         reactions: [{ emoji: '❤️', count: 2 }],
       },
@@ -247,3 +247,22 @@ export const chats: ChatSummary[] = [
     ],
   },
 ];
+
+export interface CurrentUser {
+  name: string;
+  level: number;
+  xp: number;
+  xpMax: number;
+  gems: number;
+  crates: number;
+}
+
+/** The signed-in player, used by the Chats header's gamebar and currencies. */
+export const currentUser: CurrentUser = {
+  name: 'You',
+  level: 1,
+  xp: 112,
+  xpMax: 300,
+  gems: 24,
+  crates: 3,
+};
