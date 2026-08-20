@@ -2,18 +2,19 @@ import React, { useState } from 'react';
 import { MoreVertical, Phone } from 'lucide-react-native';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { colors, spacing, typography } from '../theme';
-import { BubbleIncoming } from '../components/molecules/BubbleIncoming';
-import { BubbleOutgoing } from '../components/molecules/BubbleOutgoing';
-import { MediaBubble } from '../components/molecules/MediaBubble';
-import { ReactionPill } from '../components/atoms/ReactionPill';
-import { ReplyPreview } from '../components/molecules/ReplyPreview';
-import { TypingIndicator } from '../components/molecules/TypingIndicator';
-import { VoiceNote } from '../components/molecules/VoiceNote';
-import { AttachmentSheet } from '../components/organisms/AttachmentSheet';
-import { ChatInputBar } from '../components/organisms/ChatInputBar';
-import { EmptyState } from '../components/organisms/EmptyState';
-import { Header } from '../components/organisms/Header';
+import {
+  spacing,
+  typography,
+  useStyles,
+  ThemeColors,
+  MessageBubble,
+  ReactionPill,
+  TypingIndicator,
+  AttachmentSheet,
+  ChatInputBar,
+  EmptyState,
+  Header,
+} from '@nocturnalflow/design-system';
 import { chats, MessageItem } from '../data/mockData';
 
 export interface ConversationScreenProps {
@@ -25,6 +26,7 @@ export interface ConversationScreenProps {
  * message list (bubbles, media, voice notes, replies), typing indicator,
  * and a keyboard-avoiding composer with an attachment sheet. */
 export function ConversationScreen({ chatId, onBack }: ConversationScreenProps) {
+  const styles = useStyles(makeStyles);
   const chat = chats.find((c) => c.id === chatId);
   const [sheetVisible, setSheetVisible] = useState(false);
   const [localMessages, setLocalMessages] = useState<MessageItem[]>([]);
@@ -88,6 +90,7 @@ export function ConversationScreen({ chatId, onBack }: ConversationScreenProps) 
 }
 
 function MessageRow({ item }: { item: MessageItem }) {
+  const styles = useStyles(makeStyles);
   if (item.type === 'divider') {
     return (
       <View style={styles.divider}>
@@ -101,16 +104,20 @@ function MessageRow({ item }: { item: MessageItem }) {
   if (item.type === 'text') {
     return (
       <View style={[styles.messageWrap, { alignItems: align }]}>
-        {item.replyTo && (
-          <View style={styles.replyWrap}>
-            <ReplyPreview senderName={item.replyTo.senderName} snippet={item.replyTo.snippet} />
-          </View>
-        )}
-        {item.sender === 'me' ? (
-          <BubbleOutgoing text={item.text} timestamp={item.timestamp} status={item.status ?? 'sent'} />
-        ) : (
-          <BubbleIncoming text={item.text} timestamp={item.timestamp} />
-        )}
+        <MessageBubble
+          direction={item.sender === 'me' ? 'outgoing' : 'incoming'}
+          content={{ kind: 'text', text: item.text }}
+          timestamp={item.timestamp}
+          status={item.sender === 'me' ? item.status ?? 'sent' : undefined}
+          replyTo={
+            item.replyTo
+              ? {
+                  senderName: item.replyTo.senderName,
+                  content: { kind: 'text', snippet: item.replyTo.snippet },
+                }
+              : undefined
+          }
+        />
       </View>
     );
   }
@@ -118,11 +125,14 @@ function MessageRow({ item }: { item: MessageItem }) {
   if (item.type === 'media') {
     return (
       <View style={[styles.messageWrap, { alignItems: align }]}>
-        <MediaBubble
-          source={{ uri: item.imageUri }}
-          caption={item.caption}
+        <MessageBubble
+          direction={item.sender === 'me' ? 'outgoing' : 'incoming'}
+          content={
+            item.caption
+              ? { kind: 'textImage', source: { uri: item.imageUri }, caption: item.caption }
+              : { kind: 'image', source: { uri: item.imageUri } }
+          }
           timestamp={item.timestamp}
-          variant={item.sender === 'me' ? 'outgoing' : 'incoming'}
         />
         {item.reactions && (
           <View style={styles.reactionsRow}>
@@ -137,12 +147,16 @@ function MessageRow({ item }: { item: MessageItem }) {
 
   return (
     <View style={[styles.messageWrap, { alignItems: align }]}>
-      <VoiceNote duration={item.duration} variant={item.sender === 'me' ? 'outgoing' : 'incoming'} />
+      <MessageBubble
+        direction={item.sender === 'me' ? 'outgoing' : 'incoming'}
+        content={{ kind: 'voice', duration: item.duration }}
+        timestamp={item.timestamp}
+      />
     </View>
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: ThemeColors) => StyleSheet.create({
   base: {
     flex: 1,
     backgroundColor: colors.background,
@@ -154,9 +168,6 @@ const styles = StyleSheet.create({
   },
   messageWrap: {
     marginBottom: spacing.xs,
-  },
-  replyWrap: {
-    marginBottom: 4,
   },
   divider: {
     alignItems: 'center',

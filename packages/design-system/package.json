@@ -1,0 +1,20 @@
+{
+  "name": "@nocturnalflow/design-system",
+  "version": "0.1.0",
+  "private": true,
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "peerDependencies": {
+    "react": "19.2.3",
+    "react-native": "0.86.2",
+    "expo": "~57.0.11",
+    "expo-blur": "~57.0.2",
+    "expo-font": "~57.0.1",
+    "react-native-reanimated": "4.5.1",
+    "react-native-svg": "15.15.4",
+    "react-native-safe-area-context": "~5.7.0",
+    "lucide-react-native": "^1.31.0",
+    "@expo-google-fonts/inter": "^0.4.2",
+    "@expo-google-fonts/plus-jakarta-sans": "^0.4.2"
+  }
+}

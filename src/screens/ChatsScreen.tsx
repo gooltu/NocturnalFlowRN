@@ -2,12 +2,17 @@ import React, { useEffect, useState } from 'react';
 import { Edit3, MoreVertical, Search } from 'lucide-react-native';
 import { FlatList, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { colors, spacing } from '../theme';
-import { ChatListItem } from '../components/molecules/ChatListItem';
-import { EmptyState } from '../components/organisms/EmptyState';
-import { Header } from '../components/organisms/Header';
-import { InputField } from '../components/atoms/InputField';
-import { SkeletonRow } from '../components/organisms/SkeletonRow';
+import {
+  spacing,
+  useStyles,
+  ThemeColors,
+  ChatListItem,
+  EmptyState,
+  FloatingButton,
+  Header,
+  InputField,
+  SkeletonRow,
+} from '@nocturnalflow/design-system';
 import { chats, currentUser } from '../data/mockData';
 
 const crateIcon = require('../../assets/jewelbox.png');
@@ -15,11 +20,15 @@ const gemIcon = require('../../assets/factory.png');
 
 export interface ChatsScreenProps {
   onOpenChat: (chatId: string) => void;
+  onNewMessage: () => void;
 }
 
 /** Chats list: search bar over a list of ChatListItem rows, with a brief
- * skeleton-loading state on mount and an EmptyState for no search results. */
-export function ChatsScreen({ onOpenChat }: ChatsScreenProps) {
+ * skeleton-loading state on mount and an EmptyState for no search results.
+ * A floating "new message" button sits bottom-right, above the app's
+ * floating NavigationBar. */
+export function ChatsScreen({ onOpenChat, onNewMessage }: ChatsScreenProps) {
+  const styles = useStyles(makeStyles);
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState('');
 
@@ -85,11 +94,18 @@ export function ChatsScreen({ onOpenChat }: ChatsScreenProps) {
           )}
         />
       )}
+
+      <FloatingButton
+        icon={Edit3}
+        label="New message"
+        onPress={onNewMessage}
+        style={styles.fab}
+      />
     </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: ThemeColors) => StyleSheet.create({
   base: {
     flex: 1,
     backgroundColor: colors.background,
@@ -100,5 +116,10 @@ const styles = StyleSheet.create({
   },
   listContent: {
     paddingBottom: 96,
+  },
+  fab: {
+    position: 'absolute',
+    right: spacing.md,
+    bottom: 96,
   },
 });

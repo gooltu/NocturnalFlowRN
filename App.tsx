@@ -4,25 +4,74 @@ import { StyleSheet, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 
-import { colors } from './src/theme';
-import { useAppFonts } from './src/theme';
-import { EmptyState } from './src/components/organisms/EmptyState';
-import { NavigationBar, NavTab } from './src/components/organisms/NavigationBar';
-import { ChatsScreen, ConversationScreen } from './src/screens';
+import {
+  useAppFonts,
+  ThemeProvider,
+  useStyles,
+  useTheme,
+  ThemeColors,
+  EmptyState,
+  NavigationBar,
+  NavTab,
+} from '@nocturnalflow/design-system';
+import { ChatsScreen, ConversationScreen, SelectContactsScreen } from './src/screens';
+import { MessageBubbleGalleryScreen } from './src/screens/MessageBubbleGalleryScreen';
+
+const SHOW_GALLERY = false;
 
 export default function App() {
+  return (
+    <ThemeProvider>
+      <AppContent />
+    </ThemeProvider>
+  );
+}
+
+function AppContent() {
+  const styles = useStyles(makeStyles);
+  const { themeName } = useTheme();
+  const barStyle = themeName === 'dark' ? 'light' : 'dark';
   const [fontsLoaded] = useAppFonts();
   const [activeTab, setActiveTab] = useState<NavTab>('chats');
   const [openChatId, setOpenChatId] = useState<string | null>(null);
+  const [showSelectContacts, setShowSelectContacts] = useState(false);
 
   if (!fontsLoaded) return null;
+
+  if (SHOW_GALLERY) {
+    return (
+      <SafeAreaProvider>
+        <View style={styles.root}>
+          <MessageBubbleGalleryScreen />
+          <StatusBar style={barStyle} />
+        </View>
+      </SafeAreaProvider>
+    );
+  }
 
   if (openChatId) {
     return (
       <SafeAreaProvider>
         <View style={styles.root}>
           <ConversationScreen chatId={openChatId} onBack={() => setOpenChatId(null)} />
-          <StatusBar style="light" />
+          <StatusBar style={barStyle} />
+        </View>
+      </SafeAreaProvider>
+    );
+  }
+
+  if (showSelectContacts) {
+    return (
+      <SafeAreaProvider>
+        <View style={styles.root}>
+          <SelectContactsScreen
+            onBack={() => setShowSelectContacts(false)}
+            onSelectContact={(chatId) => {
+              setShowSelectContacts(false);
+              setOpenChatId(chatId);
+            }}
+          />
+          <StatusBar style={barStyle} />
         </View>
       </SafeAreaProvider>
     );
@@ -31,7 +80,9 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <View style={styles.root}>
-        {activeTab === 'chats' && <ChatsScreen onOpenChat={setOpenChatId} />}
+        {activeTab === 'chats' && (
+          <ChatsScreen onOpenChat={setOpenChatId} onNewMessage={() => setShowSelectContacts(true)} />
+        )}
         {activeTab === 'calls' && (
           <PlaceholderTab icon={Phone} title="No calls yet" description="Your call history will show up here." />
         )}
@@ -42,7 +93,7 @@ export default function App() {
           <PlaceholderTab icon={Settings} title="Settings" description="Account, notifications, and privacy controls." />
         )}
         <NavigationBar active={activeTab} onChange={setActiveTab} />
-        <StatusBar style="light" />
+        <StatusBar style={barStyle} />
       </View>
     </SafeAreaProvider>
   );
@@ -57,6 +108,7 @@ function PlaceholderTab({
   title: string;
   description: string;
 }) {
+  const styles = useStyles(makeStyles);
   return (
     <View style={[styles.root, styles.centered]}>
       <EmptyState icon={icon} title={title} description={description} />
@@ -64,7 +116,7 @@ function PlaceholderTab({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: ThemeColors) => StyleSheet.create({
   root: {
     flex: 1,
     backgroundColor: colors.background,

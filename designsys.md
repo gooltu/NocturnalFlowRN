@@ -303,6 +303,8 @@ The component library is drawn in **`NocturnalFlowDS.pen`** (Pencil canvas), whi
 | Atoms | Unread Badge | `U0NsL` |
 | Atoms | Delivery Status | `KPwjD` |
 | Atoms | Progress Bar | `n8gpQK` |
+| Atoms | Sticker Art | `eT7j8` |
+| Atoms | Sticker Art Mini (40px, for quote blocks) | `EF9aa` |
 | Molecules | Bubble Incoming | `vimdq` |
 | Molecules | Bubble Outgoing | `Wfl0W` |
 | Molecules | Media Bubble | `Yl6Ol` |
@@ -320,6 +322,60 @@ The component library is drawn in **`NocturnalFlowDS.pen`** (Pencil canvas), whi
 | Organisms | Attachment Sheet | `X1p187` |
 
 Reference screens: **Screen / Chats** (`FwKyl`) and **Screen / Conversation** (`ViaSO`), both 390pt wide. Chats is composed entirely of instances; Conversation carries a detached copy of the header rather than an instance, so header changes do **not** propagate there — re-link it before treating it as a reference.
+
+### Message Bubble Matrix
+
+**Board / Message Bubbles (45)** (`MtCMZ`, 1400pt wide) holds the full bubble set: 15 content types × 3 layout states, one row per content type and one column per state. Every cell on that board is an **instance** — the board is the readable index, not the source. The source is 45 reusable components named `Component / Bubble / <NN Type> / <State>`, laid out as a 3-column grid at the document root. Editing a component updates its cell on the board.
+
+| # | Content type | Outgoing | Incoming | Group |
+|---|---|---|---|---|
+| 1 | Text | `MISEg` | `FRYqa` | `D5pgZx` |
+| 2 | Image | `ii0uC` | `bVjEJ` | `fVxUU` |
+| 3 | Image Group | `P7raQy` | `yp28g` | `nByL3` |
+| 4 | Text + Image | `ilAwY` | `JHp7q` | `SFykA` |
+| 5 | Sticker | `VNafO` | `F5aQdE` | `kEYb0` |
+| 6 | GIF | `oJ87t` | `kx80w` | `qiuF7` |
+| 7 | Video | `U6Y0qL` | `TTZvu` | `dWhuH` |
+| 8 | Voice Note | `n4jyi` | `ZbDNe` | `YfNUH` |
+| 9 | Reply · Text | `DgYrd` | `GhV26` | `ubuO3` |
+| 10 | Reply · Image | `hZVI3` | `IXNoN` | `n16ueP` |
+| 11 | Reply · Video | `CC1kb` | `dfWcX` | `ndqBI` |
+| 12 | Reply · Sticker | `TKIgR` | `ZhEg8` | `i29WVq` |
+| 13 | Reply · GIF | `B5e0PU` | `xbvnx` | `Svpwo` |
+| 14 | Reply · Image Group | `Y3SJ3` | `tIU6Q` | `wLsQM` |
+| 15 | Reply · Voice Note | `Z9wRNG` | `uRnBe` | `t3dck4` |
+
+One Text component per state covers both single- and multi-line messages: the bubble is 260pt wide with the body set to wrap and the timestamp on its own row, so a short message simply occupies one line. There is deliberately no separate single-line component — trailing the timestamp on the message line would double the component count for a layout the wrapping version already handles.
+
+Pencil has no variant props, so layout state is baked per component rather than switched — in RN this collapses back to one `<MessageBubble>` with `direction` and `context` props, and these 45 are its rendered permutations.
+
+**Relationship to the legacy bubble components:** `Bubble Incoming` (`vimdq`), `Bubble Outgoing` (`Wfl0W`), `Media Bubble` (`Yl6Ol`) and `Voice Note` (`k1tKOI`) predate this set and are still what **Screen / Chats** and **Screen / Conversation** instance. They are the same anatomy at a smaller scope. Treat the `Component / Bubble / *` set as the current source for message rendering, and re-point the reference screens at it before extending them — do not maintain both.
+
+| # | Content type | # | Content type |
+|---|---|---|---|
+| 1 | Pure Text (single + multi-line) | 9 | Reply to Text |
+| 2 | Single Image | 10 | Reply to Image |
+| 3 | Multiple Image Group (2×2 + `+N`) | 11 | Reply to Video |
+| 4 | Text + Image | 12 | Reply to Sticker |
+| 5 | Sticker | 13 | Reply to GIF |
+| 6 | GIF | 14 | Reply to Image Group |
+| 7 | Video Message | 15 | Reply to Voice Note |
+| 8 | Voice Note | | |
+
+The three layout states, applied identically across every content type:
+
+- **Outgoing** — right-aligned, `primary-container` fill, `on-primary-container` text, corners `[16,16,4,16]`, timestamp + delivery ticks.
+- **Incoming Direct** — left-aligned, no avatar, `surface-container` fill, `on-surface` text, corners `[16,16,16,4]`, timestamp only. Identity is carried by the Header, so the thread stays free of per-row avatars and bubbles run flush to the 8px screen margin.
+- **Incoming Group** — as Incoming Direct, with a sender header block (`label-lg`) in a group accent colour as the bubble's first child. On media bubbles the header sits in its own padded strip above the media so the media stays full-bleed.
+
+Two things the matrix needs that the token set above didn't define, resolved **without new hexes**:
+
+- **Group sender accent** — a single accent, `primary`, for every sender; the quoted-reply rule uses it too. Senders are distinguished by name, not hue, so there is no per-participant colour to assign or keep stable. This also keeps `presence-online`, `read-receipt` and `warning` reserved for the status meanings they already carry elsewhere in the system.
+- **Quoted reply box fill** — `surface-container-high` with a 2px accent left rule on incoming (the accent is the *quoted* sender's colour), and `primary` with an `on-primary-container` rule on outgoing, where `surface-container-high` would disappear into the orange bubble. Quote snippet text drops to 80% opacity on outgoing rather than switching colour.
+- **Media scrims and badges** — GIF pill, video duration badge, `+N` overflow scrim and the play-button halo all use `surface-container-lowest`; translucency comes from node opacity (0.72), never from an alpha hex.
+- **Delivery ticks on the orange bubble** — the spec's `on-surface-variant` for "delivered" is too low-contrast on `primary-container`, so sent/delivered both render `on-primary-container` at 70% opacity and differ by glyph (`check` vs `check-check`); "seen" keeps the `read-receipt` tint. State is never carried by colour alone.
+
+Stickers render with **no container fill** — art plus a timestamp only — per the Shapes/Components rule that stickers have no bubble. `Sticker Art` is a generated SVG re-tinted onto `primary` / `primary-container` / `inverse-primary` with `on-primary-container` outlines; `Sticker Art Mini` is the same drawing pre-scaled to 40pt, because a Pencil frame ref clips rather than scales its children. In RN this distinction disappears — one asset with a size prop.
 
 **Reading the canvas into code:**
 - Pencil has no percentage sizing, so proportional values are baked as pixels against a fixed base — the Progress Bar indicator is sized against a 240pt track (`width = 2.4 × percent`). In RN, express these as percentage strings or flex, not the literal canvas numbers.

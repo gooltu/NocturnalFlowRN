@@ -1,5 +1,4 @@
-import { PresenceState } from '../components/atoms/Avatar';
-import { DeliveryState } from '../components/atoms/DeliveryStatus';
+import { PresenceState, DeliveryState } from '@nocturnalflow/design-system';
 
 export interface Contact {
   id: string;

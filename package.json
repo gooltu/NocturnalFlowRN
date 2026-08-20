@@ -2,7 +2,11 @@
   "name": "nocturnalflowrn",
   "version": "1.0.0",
   "main": "index.ts",
+  "workspaces": [
+    "packages/*"
+  ],
   "dependencies": {
+    "@nocturnalflow/design-system": "*",
     "@expo-google-fonts/inter": "^0.4.2",
     "@expo-google-fonts/plus-jakarta-sans": "^0.4.2",
     "expo": "~57.0.11",
