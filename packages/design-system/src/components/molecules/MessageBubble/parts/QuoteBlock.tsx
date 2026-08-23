@@ -38,7 +38,7 @@ export function QuoteBlock({ direction, quote }: QuoteBlockProps) {
   const colors = useThemeColors();
   const skin = bubbleSkin(colors, direction);
   const styles = useStyles(makeStyles);
-  const { label, Glyph } = describe(quote.content);
+  const { label, Glyph } = describeQuotedContent(quote.content);
 
   const body = (
     <View
@@ -91,8 +91,10 @@ export function QuoteBlock({ direction, quote }: QuoteBlockProps) {
 }
 
 /** Snippet copy and leading glyph per quoted kind. Media quotes name their
- * type because there is no text to show. */
-function describe(content: QuotedContent): {
+ * type because there is no text to show. Exported so other reply-preview UI
+ * (e.g. `ChatInputBar`'s reply bar) can describe a `QuotedContent` the same
+ * way this in-bubble quote does. */
+export function describeQuotedContent(content: QuotedContent): {
   label: string;
   Glyph?: typeof ImageGlyph;
 } {

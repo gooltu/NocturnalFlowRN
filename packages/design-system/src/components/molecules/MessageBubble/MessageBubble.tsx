@@ -1,11 +1,12 @@
 import React from 'react';
-import { Image, Pressable, StyleSheet, View } from 'react-native';
+import { Image, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { states, useThemeColors } from '../../../theme';
-import { bubbleSkin, BUBBLE_MAX_WIDTH, MEDIA_BUBBLE_WIDTH } from './bubbleTheme';
+import { bubbleSkin, BUBBLE_MAX_WIDTH, MEDIA_BUBBLE_WIDTH_FRACTION, MIN_TEXT_BUBBLE_WIDTH } from './bubbleTheme';
 import { MessageContent } from './parts/MessageContent';
 import { MessageMeta } from './parts/MessageMeta';
 import { QuoteBlock } from './parts/QuoteBlock';
 import { SenderName } from './parts/SenderName';
+import { SwipeToReply } from './parts/SwipeToReply';
 import { MessageBubbleProps, MessageContent as MessageContentModel } from './types';
 
 /** Content kinds whose media is full-bleed, so the bubble takes a definite
@@ -39,10 +40,12 @@ export function MessageBubble({
   status,
   onPress,
   onLongPress,
+  onSwipeReply,
   style,
 }: MessageBubbleProps) {
   const colors = useThemeColors();
   const skin = bubbleSkin(colors, direction);
+  const { width: windowWidth } = useWindowDimensions();
   const isOutgoing = direction === 'outgoing';
   const showHeader = direction === 'incoming' && context === 'group' && !!senderName;
 
@@ -50,9 +53,18 @@ export function MessageBubble({
 
   const alignSelf: 'flex-end' | 'flex-start' = isOutgoing ? 'flex-end' : 'flex-start';
 
+  const wrap = (element: React.ReactNode) =>
+    onSwipeReply ? (
+      <SwipeToReply direction={direction} onReply={onSwipeReply}>
+        {element}
+      </SwipeToReply>
+    ) : (
+      element
+    );
+
   if (content.kind === 'sticker') {
     const size = content.size ?? 132;
-    return (
+    return wrap(
       <View style={[styles.stickerWrap, { alignSelf }, style]}>
         {showHeader && <SenderName name={senderName!} />}
         <Image
@@ -83,16 +95,17 @@ export function MessageBubble({
     styles.bubble,
     skin.corners,
     { backgroundColor: skin.fill },
-    isMedia ? { width: MEDIA_BUBBLE_WIDTH } : { maxWidth: BUBBLE_MAX_WIDTH },
+    isMedia ? { width: windowWidth * MEDIA_BUBBLE_WIDTH_FRACTION } : { maxWidth: BUBBLE_MAX_WIDTH },
+    content.kind === 'text' && { minWidth: MIN_TEXT_BUBBLE_WIDTH },
     { alignSelf },
     style,
   ];
 
   if (!onPress && !onLongPress) {
-    return <View style={bubbleStyle}>{inner}</View>;
+    return wrap(<View style={bubbleStyle}>{inner}</View>);
   }
 
-  return (
+  return wrap(
     <Pressable
       onPress={onPress}
       onLongPress={onLongPress}

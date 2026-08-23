@@ -19,8 +19,11 @@ const TABS: { key: NavTab; label: string; icon: LucideIcon }[] = [
   { key: 'settings', label: 'Settings', icon: Settings },
 ];
 
-/** Bottom-fixed floating tab bar, ~40% transparent over content, with a
- * pill highlight and `primary` tint on the active tab. */
+/** Floating-capsule tab bar — ~40% transparent, with a pill highlight and
+ * `primary` tint on the active tab. Renders in normal layout flow (not
+ * self-overlaid); a host that wants it fixed to the screen bottom, such as a
+ * `bottom-tabs` custom `tabBar`, positions it. Controlled via `active`/
+ * `onChange` only — no navigation-library dependency. */
 export function NavigationBar({ active, onChange }: NavigationBarProps) {
   const colors = useThemeColors();
   const styles = useStyles(makeStyles);
@@ -64,10 +67,6 @@ export function NavigationBar({ active, onChange }: NavigationBarProps) {
 
 const makeStyles = (colors: ThemeColors) => StyleSheet.create({
   wrap: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0,
     paddingHorizontal: spacing.marginMobile,
   },
   bar: {

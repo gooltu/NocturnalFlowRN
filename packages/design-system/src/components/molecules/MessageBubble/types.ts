@@ -125,5 +125,9 @@ export interface MessageBubbleProps {
   status?: DeliveryState;
   onPress?: () => void;
   onLongPress?: () => void;
+  /** Enables swipe-to-reply (drag toward the thread's center, release past a
+   * threshold) when provided. Fires once per completed swipe; the bubble
+   * always springs back to place, whether or not the threshold was met. */
+  onSwipeReply?: () => void;
   style?: StyleProp<ViewStyle>;
 }

@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { Edit3, MoreVertical, Search } from 'lucide-react-native';
 import { FlatList, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 import {
   spacing,
   useStyles,
@@ -9,28 +10,37 @@ import {
   ChatListItem,
   EmptyState,
   FloatingButton,
-  Header,
   InputField,
   SkeletonRow,
 } from '@nocturnalflow/design-system';
 import { chats, currentUser } from '../data/mockData';
+import '../navigation/types';
 
 const crateIcon = require('../../assets/jewelbox.png');
 const gemIcon = require('../../assets/factory.png');
 
-export interface ChatsScreenProps {
-  onOpenChat: (chatId: string) => void;
-  onNewMessage: () => void;
-}
-
 /** Chats list: search bar over a list of ChatListItem rows, with a brief
  * skeleton-loading state on mount and an EmptyState for no search results.
- * A floating "new message" button sits bottom-right, above the app's
- * floating NavigationBar. */
-export function ChatsScreen({ onOpenChat, onNewMessage }: ChatsScreenProps) {
+ * A floating "new message" button sits bottom-right, above the tab bar. */
+export function ChatsScreen() {
   const styles = useStyles(makeStyles);
+  const navigation = useNavigation();
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState('');
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      title: 'Chats',
+      headerProps: {
+        actions: [
+          { key: 'crates', label: `${currentUser.crates} crates`, image: crateIcon },
+          { key: 'gems', label: `${currentUser.gems} gems`, image: gemIcon },
+          { key: 'more', label: 'Chats options', icon: MoreVertical },
+        ],
+        gamebar: { level: currentUser.level, xpCurrent: currentUser.xp, xpMax: currentUser.xpMax },
+      },
+    });
+  }, [navigation]);
 
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 700);
@@ -43,19 +53,6 @@ export function ChatsScreen({ onOpenChat, onNewMessage }: ChatsScreenProps) {
 
   return (
     <SafeAreaView style={styles.base} edges={[]}>
-      <Header
-        title="Chats"
-        actions={[
-          { key: 'crates', label: `${currentUser.crates} crates`, image: crateIcon },
-          { key: 'gems', label: `${currentUser.gems} gems`, image: gemIcon },          
-          { key: 'more', label: 'Chats options', icon: MoreVertical },
-        ]}
-        gamebar={{
-          level: currentUser.level,
-          xpCurrent: currentUser.xp,
-          xpMax: currentUser.xpMax,
-        }}
-      />
       <View style={styles.searchWrap}>
         <InputField
           icon={Search}
@@ -89,7 +86,7 @@ export function ChatsScreen({ onOpenChat, onNewMessage }: ChatsScreenProps) {
               snippet={item.isTyping ? 'typing…' : item.snippet}
               timestamp={item.timestamp}
               unreadCount={item.unreadCount}
-              onPress={() => onOpenChat(item.id)}
+              onPress={() => navigation.navigate('Conversation', { chatId: item.id })}
             />
           )}
         />
@@ -98,7 +95,7 @@ export function ChatsScreen({ onOpenChat, onNewMessage }: ChatsScreenProps) {
       <FloatingButton
         icon={Edit3}
         label="New message"
-        onPress={onNewMessage}
+        onPress={() => navigation.navigate('SelectContacts')}
         style={styles.fab}
       />
     </SafeAreaView>
@@ -115,11 +112,11 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     paddingVertical: spacing.sm,
   },
   listContent: {
-    paddingBottom: 96,
+    paddingBottom: spacing.lg,
   },
   fab: {
     position: 'absolute',
     right: spacing.md,
-    bottom: 96,
+    bottom: spacing.lg,
   },
 });

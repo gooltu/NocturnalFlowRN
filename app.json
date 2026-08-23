@@ -23,7 +23,13 @@
     },
     "plugins": [
       "expo-font",
-      "expo-status-bar"
+      "expo-status-bar",
+      [
+        "expo-audio",
+        {
+          "microphonePermission": "Allow NocturnalFlow to access your microphone to record voice messages."
+        }
+      ]
     ]
   }
 }

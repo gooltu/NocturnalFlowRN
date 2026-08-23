@@ -40,6 +40,28 @@ export type MessageItem =
     sender: 'me' | 'them';
     duration: string;
     timestamp: string;
+    /** Relative bar heights (0-1) — set on messages sent via the recorder so
+     * the bubble reflects what was actually "recorded" instead of the
+     * bubble's generic default pattern. */
+    waveform?: number[];
+    /** Local file URI from expo-audio, set only on messages actually sent
+     * via the recorder — the scripted mock voice messages below have none,
+     * since no real audio was ever recorded for them. */
+    uri?: string;
+  }
+  | {
+    id: string;
+    type: 'sticker';
+    sender: 'me' | 'them';
+    imageUri: string;
+    timestamp: string;
+  }
+  | {
+    id: string;
+    type: 'gif';
+    sender: 'me' | 'them';
+    imageUri: string;
+    timestamp: string;
   };
 
 export interface ChatSummary {

@@ -27,7 +27,9 @@ export function MessageMeta({ direction, timestamp, status, align = 'right' }: M
 
   return (
     <View style={[styles.row, align === 'right' ? styles.alignRight : styles.alignLeft]}>
-      <Text style={[typography.labelSm, { color: skin.meta }]}>{timestamp}</Text>
+      <Text style={[typography.labelSm, { color: skin.meta }]} numberOfLines={1}>
+        {timestamp}
+      </Text>
       {showTicks && (
         <View style={status === 'seen' ? undefined : styles.muted}>
           <DeliveryStatus status={status!} tone="onAccent" />

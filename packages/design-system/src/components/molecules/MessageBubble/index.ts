@@ -1,4 +1,5 @@
 export { MessageBubble } from './MessageBubble';
+export { describeQuotedContent } from './parts/QuoteBlock';
 export type {
   MessageBubbleProps,
   MessageDirection,

@@ -1,46 +1,74 @@
 import React from 'react';
+import { LucideIcon, UserPlus, Users } from 'lucide-react-native';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 import {
+  iconTokens,
   spacing,
   states,
   typography,
   useStyles,
+  useThemeColors,
   ThemeColors,
   PresenceState,
   Avatar,
-  Header,
 } from '@nocturnalflow/design-system';
 import { chats } from '../data/mockData';
 
-export interface SelectContactsScreenProps {
-  onBack: () => void;
-  onSelectContact: (chatId: string) => void;
-}
-
-/** Contact picker for starting a new conversation: lists every known contact
- * (reusing the chat records' contacts — there's no separate contacts
- * dataset) and opens that contact's existing chat on tap. */
-export function SelectContactsScreen({ onBack, onSelectContact }: SelectContactsScreenProps) {
+/** Contact picker for starting a new conversation: a "New Contact"/"New Group"
+ * action bar above a list of every known contact (reusing the chat records'
+ * contacts — there's no separate contacts dataset), which opens that
+ * contact's existing chat on tap. Title/gamebar are set statically on the
+ * `SelectContacts` route in RootNavigator (no route-param dependency). */
+export function SelectContactsScreen() {
   const styles = useStyles(makeStyles);
+  const navigation = useNavigation();
 
   return (
     <SafeAreaView style={styles.base} edges={[]}>
-      <Header title="New Message" onBack={onBack} />
       <FlatList
         data={chats}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContent}
+        ListHeaderComponent={
+          <View style={styles.actionsWrap}>
+            <ActionRow icon={UserPlus} label="New Contact" />
+            <ActionRow icon={Users} label="New Group" />
+          </View>
+        }
         renderItem={({ item }) => (
           <ContactRow
             name={item.contact.name}
             initials={item.contact.initials}
             presence={item.contact.presence}
-            onPress={() => onSelectContact(item.id)}
+            onPress={() => navigation.navigate('Conversation', { chatId: item.id })}
           />
         )}
       />
     </SafeAreaView>
+  );
+}
+
+interface ActionRowProps {
+  icon: LucideIcon;
+  label: string;
+  onPress?: () => void;
+}
+
+function ActionRow({ icon: Icon, label, onPress }: ActionRowProps) {
+  const colors = useThemeColors();
+  const styles = useStyles(makeStyles);
+  return (
+    <Pressable
+      onPress={onPress}
+      style={({ pressed }) => [styles.row, pressed && { opacity: states.pressedOpacity }]}
+    >
+      <View style={styles.actionIcon}>
+        <Icon size={iconTokens.sizeLg} strokeWidth={iconTokens.strokeWidth} color={colors.primary} />
+      </View>
+      <Text style={[typography.headlineMd, styles.name]}>{label}</Text>
+    </Pressable>
   );
 }
 
@@ -76,6 +104,20 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
   },
   listContent: {
     paddingVertical: spacing.sm,
+  },
+  actionsWrap: {
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: colors.outlineVariant,
+    marginBottom: spacing.xs,
+    paddingBottom: spacing.xs,
+  },
+  actionIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: colors.primaryContainer,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   row: {
     flexDirection: 'row',

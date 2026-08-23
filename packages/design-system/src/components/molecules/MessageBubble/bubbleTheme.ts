@@ -6,9 +6,26 @@ import { MessageDirection } from './types';
  * 390pt frame, which is this proportion. */
 export const BUBBLE_MAX_WIDTH: DimensionValue = '75%';
 
-/** Media bubbles need a definite width for `aspectRatio` to resolve, so they
- * take the cap as their width instead of maxing out at it. */
-export const MEDIA_BUBBLE_WIDTH: DimensionValue = '75%';
+/** Media bubbles need a definite *pixel* width for `aspectRatio` to resolve
+ * (unlike `BUBBLE_MAX_WIDTH`, which only caps a shrink-wrapped box). A
+ * percentage string here requires every ancestor up to a definite-width one
+ * to also be definite-width — `SwipeToReply`'s wrapper views are
+ * shrink-to-fit, which broke that chain and collapsed media bubbles to a
+ * few dozen px. Resolve against the window directly instead, via
+ * `useWindowDimensions()` in `MessageBubble`, so it's independent of
+ * whatever wraps the bubble. */
+export const MEDIA_BUBBLE_WIDTH_FRACTION = 0.75;
+
+/** Text bubbles otherwise shrink-wrap to the message content, and a
+ * one-or-two-character word (`"Hi"`, `"Ok"`) can end up narrower than the
+ * timestamp/delivery-ticks row sitting under it, or just visually cramped.
+ * Floor width covers that row with a little breathing room. Sized against
+ * `"12:09 PM"` (8 chars), not a 24-hour `"21:04"` (5 chars) — mock data uses
+ * 24-hour strings, but real messages get their timestamp from
+ * `toLocaleTimeString()`, which follows the device's locale and can come
+ * back 12-hour with an AM/PM suffix. A floor sized for the shorter format
+ * let the timestamp text wrap mid-word on narrow bubbles on such devices. */
+export const MIN_TEXT_BUBBLE_WIDTH = 120;
 
 /** Scrims and media badges sit on `surface-container-lowest`; translucency
  * comes from opacity, never from an alpha hex. */
