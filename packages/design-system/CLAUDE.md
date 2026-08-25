@@ -183,11 +183,27 @@ change, in this package, not in the consumer).
 - `{ kind: 'gif', source, aspectRatio?, onPress? }` — renders a `GIF` badge.
 - `{ kind: 'video', thumbnail, duration, aspectRatio?, onPlay? }`
 - `{ kind: 'voice', duration, waveform?: number[], progress?: number, playing?, onTogglePlay? }`
+- `{ kind: 'document', fileName, fileSize, fileType, status?: AttachmentStatus, onPress? }`
+- `{ kind: 'location', label, address?, mapImage?: ImageSourcePropType, status?: AttachmentStatus, onPress? }`
+  — omit `mapImage` to show a generic placeholder tile (e.g. still generating a real preview).
+- `{ kind: 'contact', name, subtitle?, avatar?: ImageSourcePropType, initials?, status?: AttachmentStatus, onPress? }`
+  — avatar falls back to `initials`, then to a generic person glyph.
+- `{ kind: 'link', url, title?, description?, image?: ImageSourcePropType, siteName?, status?: AttachmentStatus, onPress? }`
+  — an unfurled link preview card. The package does no unfurling itself; fetch title/description/
+  image yourself (or supply mock data) and pass the result in.
+
+`document`/`location`/`contact`/`link` are the four "attachment-style" content kinds: content that
+typically must be fetched before it's usable. All four share one `status?: AttachmentStatus` field
+(`'downloading' | 'failed'`, omit for the normal ready/loaded look) — `'downloading'` shows a
+spinner in place of the file glyph/map/avatar/preview image, `'failed'` shows a failure glyph and,
+if you also pass `onPress`, makes the whole bubble tappable to retry. There's no `'downloaded'`
+state to set — that's just the default look with `status` omitted.
 
 `replyTo: QuotedMessage = { senderName, content: QuotedContent, onPress? }` renders a nested quote
 block inside the bubble. `QuotedContent` is a **separate**, narrower union (thumbnails/snippets,
 not full content — e.g. `{ kind: 'image', thumbnail }` not `source`): `text`, `image`, `video`,
-`sticker`, `gif`, `imageGroup`, `voice`.
+`sticker`, `gif`, `imageGroup`, `voice`, `document` (`{ fileName }`), `location` (`{ label }`),
+`contact` (`{ name }`), `link` (`{ title?, url }`).
 
 Reactions (e.g. `ReactionPill` rows) are **not** part of `MessageBubble` — render them separately,
 positioned under the bubble, keyed off your own message data.

@@ -3,7 +3,12 @@ import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { spacing, states, typography, useThemeColors } from '../../../../theme';
 import { bubbleSkin } from '../bubbleTheme';
 import { MessageContent as MessageContentModel, MessageDirection } from '../types';
+import { AttachmentScrim } from './AttachmentScrim';
+import { ContactContent } from './ContactContent';
+import { DocumentContent } from './DocumentContent';
 import { ImageGrid } from './ImageGrid';
+import { LinkMedia } from './LinkMedia';
+import { LocationMedia } from './LocationMedia';
 import { MediaBadge, PlayHalo } from './MediaChrome';
 import { MessageMeta, MessageMetaProps } from './MessageMeta';
 import { VoiceContent } from './VoiceContent';
@@ -47,6 +52,26 @@ export function MessageContent({ direction, content, meta, header, quote }: Mess
           {header}
           {quote}
           <VoiceContent direction={direction} content={content} />
+          <MessageMeta {...meta} />
+        </View>
+      );
+
+    case 'document':
+      return (
+        <View style={styles.flowPad}>
+          {header}
+          {quote}
+          <DocumentContent direction={direction} content={content} />
+          <MessageMeta {...meta} />
+        </View>
+      );
+
+    case 'contact':
+      return (
+        <View style={styles.flowPad}>
+          {header}
+          {quote}
+          <ContactContent direction={direction} content={content} />
           <MessageMeta {...meta} />
         </View>
       );
@@ -105,6 +130,70 @@ export function MessageContent({ direction, content, meta, header, quote }: Mess
             </View>
           </Tappable>
           <CaptionStrip meta={meta} />
+        </MediaFrame>
+      );
+
+    case 'location':
+      return (
+        <MediaFrame header={header} quote={quote}>
+          <Tappable onPress={content.onPress} label="Open location">
+            <LocationMedia content={content} />
+            {content.status && (
+              <AttachmentScrim
+                status={content.status}
+                downloadingLabel="Loading location…"
+                failedLabel="Couldn’t load location"
+                onRetry={content.onPress}
+              />
+            )}
+          </Tappable>
+          <CaptionStrip meta={meta}>
+            <Text style={[typography.bodyMd, { color: skin.text }]} numberOfLines={1}>
+              {content.label}
+            </Text>
+            {!!content.address && (
+              <Text style={[typography.labelSm, { color: skin.meta }]} numberOfLines={1}>
+                {content.address}
+              </Text>
+            )}
+          </CaptionStrip>
+        </MediaFrame>
+      );
+
+    case 'link':
+      return (
+        <MediaFrame header={header} quote={quote}>
+          <Tappable onPress={content.onPress} label="Open link">
+            <LinkMedia content={content} />
+            {content.status && (
+              <AttachmentScrim
+                status={content.status}
+                downloadingLabel="Fetching preview…"
+                failedLabel="Couldn’t load preview"
+                onRetry={content.onPress}
+              />
+            )}
+          </Tappable>
+          <CaptionStrip meta={meta}>
+            {!!content.siteName && (
+              <Text style={[typography.labelSm, styles.linkSite, { color: skin.meta }]} numberOfLines={1}>
+                {content.siteName.toUpperCase()}
+              </Text>
+            )}
+            {!!content.title && (
+              <Text style={[typography.bodyMd, styles.linkTitle, { color: skin.text }]} numberOfLines={2}>
+                {content.title}
+              </Text>
+            )}
+            {!!content.description && (
+              <Text style={[typography.labelSm, { color: skin.meta }]} numberOfLines={2}>
+                {content.description}
+              </Text>
+            )}
+            <Text style={[typography.labelSm, { color: skin.meta }]} numberOfLines={1}>
+              {content.url}
+            </Text>
+          </CaptionStrip>
         </MediaFrame>
       );
   }
@@ -218,5 +307,11 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: spacing.sm,
     bottom: spacing.sm,
+  },
+  linkSite: {
+    letterSpacing: 0.5,
+  },
+  linkTitle: {
+    fontWeight: '600',
   },
 });

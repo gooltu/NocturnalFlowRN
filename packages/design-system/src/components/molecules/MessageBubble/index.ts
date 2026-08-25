@@ -13,6 +13,11 @@ export type {
   GifMessageContent,
   VideoMessageContent,
   VoiceMessageContent,
+  AttachmentStatus,
+  DocumentMessageContent,
+  LocationMessageContent,
+  ContactMessageContent,
+  LinkMessageContent,
   QuotedMessage,
   QuotedContent,
 } from './types';

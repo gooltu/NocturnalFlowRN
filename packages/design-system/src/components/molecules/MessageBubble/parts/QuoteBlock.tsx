@@ -1,11 +1,15 @@
 import React from 'react';
 import {
+  FileText,
   Film,
   Image as ImageGlyph,
   Images,
+  Link2,
+  MapPin,
   Mic,
   Play,
   Sticker as StickerGlyph,
+  User,
   Video as VideoGlyph,
 } from 'lucide-react-native';
 import { Image, ImageSourcePropType, Pressable, StyleSheet, Text, View } from 'react-native';
@@ -119,6 +123,14 @@ export function describeQuotedContent(content: QuotedContent): {
       };
     case 'voice':
       return { label: `Voice message · ${content.duration}`, Glyph: Mic };
+    case 'document':
+      return { label: content.fileName, Glyph: FileText };
+    case 'location':
+      return { label: content.label, Glyph: MapPin };
+    case 'contact':
+      return { label: content.name, Glyph: User };
+    case 'link':
+      return { label: content.title ?? content.url, Glyph: Link2 };
   }
 }
 
@@ -181,6 +193,22 @@ function QuoteArtefact({
           />
         </View>
       );
+
+    case 'document':
+    case 'location':
+    case 'contact':
+    case 'link': {
+      const Glyph = { document: FileText, location: MapPin, contact: User, link: Link2 }[content.kind];
+      return (
+        <View style={[styles.tile, { backgroundColor: skin.quoteTileFill }]}>
+          <Glyph
+            size={iconTokens.sizeSm}
+            strokeWidth={iconTokens.strokeWidth}
+            color={skin.quoteSnippet}
+          />
+        </View>
+      );
+    }
   }
 }
 

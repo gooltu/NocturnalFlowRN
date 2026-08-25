@@ -17,6 +17,8 @@ const MEDIA_KINDS: ReadonlySet<MessageContentModel['kind']> = new Set([
   'textImage',
   'gif',
   'video',
+  'location',
+  'link',
 ]);
 
 /** One message bubble for every content type and layout state in the design

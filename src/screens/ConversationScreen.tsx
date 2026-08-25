@@ -9,13 +9,14 @@ import {
   useStyles,
   ThemeColors,
   MessageBubble,
+  MessageContext,
   PickerMediaItem,
   QuotedContent,
+  QuotedMessage,
   ReactionPill,
   TypingIndicator,
   AttachmentSheet,
   ChatInputBar,
-  describeQuotedContent,
   EmptyState,
 } from '@nocturnalflow/design-system';
 import { chats, MessageItem } from '../data/mockData';
@@ -34,7 +35,9 @@ export function ConversationScreen() {
   const chat = chats.find((c) => c.id === chatId);
   const [sheetVisible, setSheetVisible] = useState(false);
   const [localMessages, setLocalMessages] = useState<MessageItem[]>([]);
-  const [replyingTo, setReplyingTo] = useState<{ senderName: string; content: QuotedContent } | null>(null);
+  const [replyingTo, setReplyingTo] = useState<{ id: string; senderName: string; content: QuotedContent } | null>(
+    null
+  );
   const gifs = useMediaPicker('gifs');
   const stickers = useMediaPicker('stickers');
   const voiceRecorder = useVoiceRecorder();
@@ -75,15 +78,7 @@ export function ConversationScreen() {
         text,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         status: 'sent',
-        replyTo: replyingTo
-          ? {
-              senderName: replyingTo.senderName,
-              snippet:
-                replyingTo.content.kind === 'text'
-                  ? replyingTo.content.snippet
-                  : describeQuotedContent(replyingTo.content).label,
-            }
-          : undefined,
+        replyToId: replyingTo?.id,
       },
     ]);
     setReplyingTo(null);
@@ -149,7 +144,13 @@ export function ConversationScreen() {
           contentContainerStyle={styles.listContent}
           ListFooterComponent={chat.isTyping ? <TypingIndicator /> : null}
           renderItem={({ item }) => (
-            <MessageRow item={item} contactName={chat.contact.name} onSwipeReply={setReplyingTo} />
+            <MessageRow
+              item={item}
+              messages={messages}
+              contactName={chat.contact.name}
+              context={chat.context ?? 'direct'}
+              onSwipeReply={setReplyingTo}
+            />
           )}
         />
       )}
@@ -178,8 +179,10 @@ export function ConversationScreen() {
 
 interface MessageRowProps {
   item: MessageItem;
+  messages: MessageItem[];
   contactName: string;
-  onSwipeReply: (quoted: { senderName: string; content: QuotedContent }) => void;
+  context: MessageContext;
+  onSwipeReply: (quoted: { id: string; senderName: string; content: QuotedContent }) => void;
 }
 
 /** Given a swiped message, the quote it should appear as in the reply bar —
@@ -187,16 +190,54 @@ interface MessageRowProps {
  * describes media/voice by kind since there's nothing richer to quote them
  * with here (matches the existing reply feature's fidelity). */
 function quotedContentFor(
-  item: Extract<MessageItem, { type: 'text' | 'media' | 'voice' | 'sticker' | 'gif' }>
+  item: Extract<
+    MessageItem,
+    {
+      type:
+        | 'text'
+        | 'media'
+        | 'voice'
+        | 'sticker'
+        | 'gif'
+        | 'video'
+        | 'document'
+        | 'location'
+        | 'contact'
+        | 'link';
+    }
+  >
 ): QuotedContent {
   if (item.type === 'text') return { kind: 'text', snippet: item.text };
   if (item.type === 'media') return { kind: 'image', thumbnail: { uri: item.imageUri } };
   if (item.type === 'sticker') return { kind: 'sticker', source: { uri: item.imageUri } };
   if (item.type === 'gif') return { kind: 'gif', thumbnail: { uri: item.imageUri } };
+  if (item.type === 'video') return { kind: 'video', thumbnail: { uri: item.thumbnailUri }, duration: item.duration };
+  if (item.type === 'document') return { kind: 'document', fileName: item.fileName };
+  if (item.type === 'location') return { kind: 'location', label: item.label };
+  if (item.type === 'contact') return { kind: 'contact', name: item.name };
+  if (item.type === 'link') return { kind: 'link', title: item.title, url: item.url };
   return { kind: 'voice', duration: item.duration };
 }
 
-function MessageRow({ item, contactName, onSwipeReply }: MessageRowProps) {
+/** Resolves a message's `replyToId` (if any) against the full message list
+ * into the `QuotedMessage` `MessageBubble` needs — reused for every content
+ * kind, static mock replies and live composer replies alike, since both just
+ * store a target id. */
+function resolveReplyTo(
+  item: MessageItem,
+  messages: MessageItem[],
+  contactName: string
+): QuotedMessage | undefined {
+  if (item.type === 'divider' || !item.replyToId) return undefined;
+  const target = messages.find((m) => m.id === item.replyToId);
+  if (!target || target.type === 'divider') return undefined;
+  return {
+    senderName: target.sender === 'me' ? 'You' : target.senderName ?? contactName,
+    content: quotedContentFor(target),
+  };
+}
+
+function MessageRow({ item, messages, contactName, context, onSwipeReply }: MessageRowProps) {
   const styles = useStyles(makeStyles);
   // Called unconditionally, before the `if (item.type === 'divider')` early
   // return below — this codebase previously hit a "Rendered fewer hooks
@@ -212,9 +253,12 @@ function MessageRow({ item, contactName, onSwipeReply }: MessageRowProps) {
   }
 
   const align = item.sender === 'me' ? 'flex-end' : 'flex-start';
+  const replyTo = resolveReplyTo(item, messages, contactName);
+  const senderName = item.sender === 'them' ? item.senderName : undefined;
   const handleSwipeReply = () =>
     onSwipeReply({
-      senderName: item.sender === 'me' ? 'You' : contactName,
+      id: item.id,
+      senderName: item.sender === 'me' ? 'You' : item.senderName ?? contactName,
       content: quotedContentFor(item),
     });
 
@@ -223,17 +267,12 @@ function MessageRow({ item, contactName, onSwipeReply }: MessageRowProps) {
       <View style={[styles.messageWrap, { alignItems: align }]}>
         <MessageBubble
           direction={item.sender === 'me' ? 'outgoing' : 'incoming'}
+          context={context}
+          senderName={senderName}
           content={{ kind: 'text', text: item.text }}
           timestamp={item.timestamp}
           status={item.sender === 'me' ? item.status ?? 'sent' : undefined}
-          replyTo={
-            item.replyTo
-              ? {
-                  senderName: item.replyTo.senderName,
-                  content: { kind: 'text', snippet: item.replyTo.snippet },
-                }
-              : undefined
-          }
+          replyTo={replyTo}
           onSwipeReply={handleSwipeReply}
         />
       </View>
@@ -245,12 +284,15 @@ function MessageRow({ item, contactName, onSwipeReply }: MessageRowProps) {
       <View style={[styles.messageWrap, { alignItems: align }]}>
         <MessageBubble
           direction={item.sender === 'me' ? 'outgoing' : 'incoming'}
+          context={context}
+          senderName={senderName}
           content={
             item.caption
               ? { kind: 'textImage', source: { uri: item.imageUri }, caption: item.caption }
               : { kind: 'image', source: { uri: item.imageUri } }
           }
           timestamp={item.timestamp}
+          replyTo={replyTo}
           onSwipeReply={handleSwipeReply}
         />
         {item.reactions && (
@@ -269,8 +311,11 @@ function MessageRow({ item, contactName, onSwipeReply }: MessageRowProps) {
       <View style={[styles.messageWrap, { alignItems: align }]}>
         <MessageBubble
           direction={item.sender === 'me' ? 'outgoing' : 'incoming'}
+          context={context}
+          senderName={senderName}
           content={{ kind: 'sticker', source: { uri: item.imageUri } }}
           timestamp={item.timestamp}
+          replyTo={replyTo}
           onSwipeReply={handleSwipeReply}
         />
       </View>
@@ -282,8 +327,118 @@ function MessageRow({ item, contactName, onSwipeReply }: MessageRowProps) {
       <View style={[styles.messageWrap, { alignItems: align }]}>
         <MessageBubble
           direction={item.sender === 'me' ? 'outgoing' : 'incoming'}
+          context={context}
+          senderName={senderName}
           content={{ kind: 'gif', source: { uri: item.imageUri } }}
           timestamp={item.timestamp}
+          replyTo={replyTo}
+          onSwipeReply={handleSwipeReply}
+        />
+      </View>
+    );
+  }
+
+  if (item.type === 'video') {
+    return (
+      <View style={[styles.messageWrap, { alignItems: align }]}>
+        <MessageBubble
+          direction={item.sender === 'me' ? 'outgoing' : 'incoming'}
+          context={context}
+          senderName={senderName}
+          content={{ kind: 'video', thumbnail: { uri: item.thumbnailUri }, duration: item.duration }}
+          timestamp={item.timestamp}
+          replyTo={replyTo}
+          onSwipeReply={handleSwipeReply}
+        />
+      </View>
+    );
+  }
+
+  if (item.type === 'document') {
+    return (
+      <View style={[styles.messageWrap, { alignItems: align }]}>
+        <MessageBubble
+          direction={item.sender === 'me' ? 'outgoing' : 'incoming'}
+          context={context}
+          senderName={senderName}
+          content={{
+            kind: 'document',
+            fileName: item.fileName,
+            fileSize: item.fileSize,
+            fileType: item.fileType,
+            status: item.status,
+          }}
+          timestamp={item.timestamp}
+          replyTo={replyTo}
+          onSwipeReply={handleSwipeReply}
+        />
+      </View>
+    );
+  }
+
+  if (item.type === 'location') {
+    return (
+      <View style={[styles.messageWrap, { alignItems: align }]}>
+        <MessageBubble
+          direction={item.sender === 'me' ? 'outgoing' : 'incoming'}
+          context={context}
+          senderName={senderName}
+          content={{
+            kind: 'location',
+            label: item.label,
+            address: item.address,
+            mapImage: item.mapImageUri ? { uri: item.mapImageUri } : undefined,
+            status: item.status,
+          }}
+          timestamp={item.timestamp}
+          replyTo={replyTo}
+          onSwipeReply={handleSwipeReply}
+        />
+      </View>
+    );
+  }
+
+  if (item.type === 'contact') {
+    return (
+      <View style={[styles.messageWrap, { alignItems: align }]}>
+        <MessageBubble
+          direction={item.sender === 'me' ? 'outgoing' : 'incoming'}
+          context={context}
+          senderName={senderName}
+          content={{
+            kind: 'contact',
+            name: item.name,
+            subtitle: item.subtitle,
+            avatar: item.avatarUri ? { uri: item.avatarUri } : undefined,
+            initials: item.initials,
+            status: item.status,
+          }}
+          timestamp={item.timestamp}
+          replyTo={replyTo}
+          onSwipeReply={handleSwipeReply}
+        />
+      </View>
+    );
+  }
+
+  if (item.type === 'link') {
+    return (
+      <View style={[styles.messageWrap, { alignItems: align }]}>
+        <MessageBubble
+          direction={item.sender === 'me' ? 'outgoing' : 'incoming'}
+          context={context}
+          senderName={senderName}
+          content={{
+            kind: 'link',
+            url: item.url,
+            title: item.title,
+            description: item.description,
+            image: item.imageUri ? { uri: item.imageUri } : undefined,
+            siteName: item.siteName,
+            status: item.status,
+          }}
+          timestamp={item.timestamp}
+          replyTo={replyTo}
           onSwipeReply={handleSwipeReply}
         />
       </View>
@@ -294,6 +449,8 @@ function MessageRow({ item, contactName, onSwipeReply }: MessageRowProps) {
     <View style={[styles.messageWrap, { alignItems: align }]}>
       <MessageBubble
         direction={item.sender === 'me' ? 'outgoing' : 'incoming'}
+        context={context}
+        senderName={senderName}
         content={{
           kind: 'voice',
           duration: item.duration,
@@ -303,6 +460,7 @@ function MessageRow({ item, contactName, onSwipeReply }: MessageRowProps) {
             : {}),
         }}
         timestamp={item.timestamp}
+        replyTo={replyTo}
         onSwipeReply={handleSwipeReply}
       />
     </View>

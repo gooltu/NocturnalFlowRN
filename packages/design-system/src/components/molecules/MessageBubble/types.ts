@@ -82,6 +82,63 @@ export interface VoiceMessageContent {
   onTogglePlay?: () => void;
 }
 
+/** Transfer state for content that must be fetched before it's usable.
+ * Omit for the normal, fully-loaded look — `'downloading'` shows an
+ * intermediate progress treatment, `'failed'` shows a failure glyph (and,
+ * where a handler is given, a tap-to-retry). */
+export type AttachmentStatus = 'downloading' | 'failed';
+
+/** A shared file: name, size and type badge. `onPress` opens/saves it when
+ * loaded; while `status` is `'downloading'` or `'failed'` it instead retries
+ * or is disabled, at the consumer's discretion. */
+export interface DocumentMessageContent {
+  kind: 'document';
+  fileName: string;
+  fileSize: string;
+  /** Short extension (`'pdf'`, `'doc'`, `'zip'`, ...) — drives the glyph. */
+  fileType: string;
+  status?: AttachmentStatus;
+  onPress?: () => void;
+}
+
+/** A shared pin: static map thumbnail plus a label/address. Omit `mapImage`
+ * to show a generic map placeholder tile (e.g. while a real preview is still
+ * being generated). */
+export interface LocationMessageContent {
+  kind: 'location';
+  mapImage?: ImageSourcePropType;
+  label: string;
+  address?: string;
+  status?: AttachmentStatus;
+  onPress?: () => void;
+}
+
+/** A shared contact card: avatar (or initials fallback), name and a subtitle
+ * line (phone number, etc). */
+export interface ContactMessageContent {
+  kind: 'contact';
+  name: string;
+  subtitle?: string;
+  avatar?: ImageSourcePropType;
+  initials?: string;
+  status?: AttachmentStatus;
+  onPress?: () => void;
+}
+
+/** An unfurled link preview: title/description/image pulled from the target
+ * page, plus the site name and raw URL. Any of the unfurled fields may be
+ * absent (e.g. while `status === 'downloading'`, or a page with no OG tags). */
+export interface LinkMessageContent {
+  kind: 'link';
+  url: string;
+  title?: string;
+  description?: string;
+  image?: ImageSourcePropType;
+  siteName?: string;
+  status?: AttachmentStatus;
+  onPress?: () => void;
+}
+
 export type MessageContent =
   | TextMessageContent
   | ImageMessageContent
@@ -90,7 +147,11 @@ export type MessageContent =
   | StickerMessageContent
   | GifMessageContent
   | VideoMessageContent
-  | VoiceMessageContent;
+  | VoiceMessageContent
+  | DocumentMessageContent
+  | LocationMessageContent
+  | ContactMessageContent
+  | LinkMessageContent;
 
 /** What the quoted message was. Each kind renders its own 40pt artefact
  * alongside the sender name inside the quote block. */
@@ -101,7 +162,11 @@ export type QuotedContent =
   | { kind: 'sticker'; source: ImageSourcePropType }
   | { kind: 'gif'; thumbnail: ImageSourcePropType }
   | { kind: 'imageGroup'; thumbnails: ImageSourcePropType[]; count?: number }
-  | { kind: 'voice'; duration: string };
+  | { kind: 'voice'; duration: string }
+  | { kind: 'document'; fileName: string }
+  | { kind: 'location'; label: string }
+  | { kind: 'contact'; name: string }
+  | { kind: 'link'; title?: string; url: string };
 
 /** The message being replied to, rendered as a nested quote block at the top
  * of the bubble. */
