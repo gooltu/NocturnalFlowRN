@@ -1,6 +1,6 @@
 import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
-import { states, useStyles, ThemeColors } from '../../theme';
+import { radius, states, useStyles, ThemeColors } from '../../theme';
 import Coin from './jsx_svg_icons/Coin';
 import Diamond from './jsx_svg_icons/Diamond';
 import J3 from './jsx_svg_icons/J3';
@@ -102,7 +102,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
   },
   tile: {
     backgroundColor: colors.surfaceContainer,
-    borderRadius: 16,
+    borderRadius: radius.lg,
     elevation: 0,
   },
 });

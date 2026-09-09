@@ -51,7 +51,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     flexDirection: 'row',
     alignSelf: 'flex-start',
     alignItems: 'center',
-    gap: 4,
+    gap: spacing.xs,
     backgroundColor: colors.surfaceContainer,
     borderRadius: radius.lg,
     paddingHorizontal: spacing.md,

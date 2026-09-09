@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Pause, Play } from 'lucide-react-native';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { iconTokens, spacing, states, typography, useThemeColors } from '../../../../theme';
+import { iconTokens, spacing, states, typography, useThemeColors, useStyles, ThemeColors } from '../../../../theme';
 import { bubbleSkin } from '../bubbleTheme';
 import { MessageDirection, VoiceMessageContent } from '../types';
 import { DEFAULT_WAVEFORM, Waveform } from './Waveform';
@@ -16,6 +16,7 @@ export interface VoiceContentProps {
  * local state. */
 export function VoiceContent({ direction, content }: VoiceContentProps) {
   const colors = useThemeColors();
+  const styles = useStyles(makeStyles);
   const skin = bubbleSkin(colors, direction);
   const [localPlaying, setLocalPlaying] = useState(false);
   const controlled = content.playing != null;
@@ -60,7 +61,7 @@ export function VoiceContent({ direction, content }: VoiceContentProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: ThemeColors) => StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',

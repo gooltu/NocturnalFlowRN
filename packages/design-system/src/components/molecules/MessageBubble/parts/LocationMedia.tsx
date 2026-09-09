@@ -1,7 +1,7 @@
 import React from 'react';
 import { MapPin } from 'lucide-react-native';
 import { Image, StyleSheet, View } from 'react-native';
-import { useThemeColors } from '../../../../theme';
+import { useThemeColors, useStyles, ThemeColors } from '../../../../theme';
 import { LocationMessageContent } from '../types';
 
 const DEFAULT_ASPECT = 4 / 3;
@@ -15,6 +15,7 @@ export interface LocationMediaProps {
  * generating a real preview). */
 export function LocationMedia({ content }: LocationMediaProps) {
   const colors = useThemeColors();
+  const styles = useStyles(makeStyles);
 
   if (content.mapImage) {
     return <Image source={content.mapImage} style={styles.image} resizeMode="cover" />;
@@ -27,7 +28,7 @@ export function LocationMedia({ content }: LocationMediaProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: ThemeColors) => StyleSheet.create({
   image: {
     width: '100%',
     aspectRatio: DEFAULT_ASPECT,

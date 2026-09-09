@@ -1,6 +1,6 @@
 import React from 'react';
 import { Image, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
-import { states, useThemeColors } from '../../../theme';
+import { states, useThemeColors, useStyles, ThemeColors } from '../../../theme';
 import { bubbleSkin, BUBBLE_MAX_WIDTH, MEDIA_BUBBLE_WIDTH_FRACTION, MIN_TEXT_BUBBLE_WIDTH } from './bubbleTheme';
 import { MessageContent } from './parts/MessageContent';
 import { MessageMeta } from './parts/MessageMeta';
@@ -46,6 +46,7 @@ export function MessageBubble({
   style,
 }: MessageBubbleProps) {
   const colors = useThemeColors();
+  const styles = useStyles(makeStyles);
   const skin = bubbleSkin(colors, direction);
   const { width: windowWidth } = useWindowDimensions();
   const isOutgoing = direction === 'outgoing';
@@ -118,7 +119,7 @@ export function MessageBubble({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: ThemeColors) => StyleSheet.create({
   bubble: {
     overflow: 'hidden',
   },

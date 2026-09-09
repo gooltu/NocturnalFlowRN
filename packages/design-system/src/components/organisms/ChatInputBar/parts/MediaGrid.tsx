@@ -65,7 +65,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
   cell: {
     flexBasis: `${100 / COLUMNS}%`,
     aspectRatio: 1,
-    padding: 4,
+    padding: spacing.xs,
   },
   image: {
     flex: 1,

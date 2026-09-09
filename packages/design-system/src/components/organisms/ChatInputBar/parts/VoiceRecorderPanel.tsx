@@ -88,7 +88,7 @@ export function VoiceRecorderPanel({
           <>
             <Pressable
               onPress={onTogglePreview}
-              hitSlop={8}
+              hitSlop={12}
               accessibilityRole="button"
               accessibilityLabel={isPreviewPlaying ? 'Pause preview' : 'Play preview'}
             >

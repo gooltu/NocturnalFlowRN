@@ -12,10 +12,10 @@ import Animated, {
 } from 'react-native-reanimated';
 import { scheduleOnRN } from 'react-native-worklets';
 import * as Haptics from 'expo-haptics';
-import { iconTokens, useThemeColors } from '../../../../theme';
+import { iconTokens, useThemeColors, useStyles, ThemeColors } from '../../../../theme';
 import { MessageDirection } from '../types';
 
-interface SwipeToReplyProps {
+export interface SwipeToReplyProps {
   direction: MessageDirection;
   onReply: () => void;
   children: React.ReactNode;
@@ -39,6 +39,7 @@ function rubberband(overshoot: number, dimension: number, constant = 0.55) {
  * intent so this never steals the message list's vertical scroll. */
 export function SwipeToReply({ direction, onReply, children }: SwipeToReplyProps) {
   const colors = useThemeColors();
+  const styles = useStyles(makeStyles);
   const sign = direction === 'outgoing' ? -1 : 1;
   const drag = useSharedValue(0);
   const armed = useSharedValue(false);
@@ -96,7 +97,7 @@ export function SwipeToReply({ direction, onReply, children }: SwipeToReplyProps
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: ThemeColors) => StyleSheet.create({
   wrap: {
     flexDirection: 'row',
   },

@@ -257,7 +257,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     position: 'absolute',
     width: 20,
     height: 20,
-    borderRadius: 10,
+    borderRadius: radius.full,
     backgroundColor: colors.surfaceContainerLowest,
     opacity: SCRIM_OPACITY,
   },

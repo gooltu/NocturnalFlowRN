@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link2 } from 'lucide-react-native';
 import { Image, StyleSheet, View } from 'react-native';
-import { useThemeColors } from '../../../../theme';
+import { useThemeColors, useStyles, ThemeColors } from '../../../../theme';
 import { LinkMessageContent } from '../types';
 
 const DEFAULT_ASPECT = 1.9;
@@ -15,6 +15,7 @@ export interface LinkMediaProps {
  * hasn't unfurled yet). */
 export function LinkMedia({ content }: LinkMediaProps) {
   const colors = useThemeColors();
+  const styles = useStyles(makeStyles);
 
   if (content.image) {
     return <Image source={content.image} style={styles.image} resizeMode="cover" />;
@@ -27,7 +28,7 @@ export function LinkMedia({ content }: LinkMediaProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: ThemeColors) => StyleSheet.create({
   image: {
     width: '100%',
     aspectRatio: DEFAULT_ASPECT,

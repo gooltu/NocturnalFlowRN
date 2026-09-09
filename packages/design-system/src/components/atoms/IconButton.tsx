@@ -1,7 +1,7 @@
 import React from 'react';
 import { LucideIcon } from 'lucide-react-native';
 import { Pressable, StyleSheet } from 'react-native';
-import { iconTokens, states, useThemeColors, useStyles, ThemeColors } from '../../theme';
+import { iconTokens, radius, states, useThemeColors, useStyles, ThemeColors } from '../../theme';
 
 export type IconButtonVariant = 'plain' | 'filled';
 export type IconButtonSize = 'sm' | 'md' | 'lg';
@@ -64,7 +64,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
   },
   filled: {
     backgroundColor: colors.surfaceContainerHigh,
-    borderRadius: 9999,
+    borderRadius: radius.full,
     width: 40,
     height: 40,
     elevation: 0,

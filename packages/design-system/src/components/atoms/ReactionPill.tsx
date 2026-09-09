@@ -15,7 +15,7 @@ export function ReactionPill({ emoji, count, active, onPress }: ReactionPillProp
   return (
     <Pressable
       onPress={onPress}
-      hitSlop={6}
+      hitSlop={12}
       style={({ pressed }) => [
         styles.base,
         active && styles.active,
@@ -36,7 +36,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     borderRadius: radius.full,
     paddingHorizontal: spacing.sm,
     paddingVertical: 3,
-    gap: 4,
+    gap: spacing.xs,
   },
   active: {
     borderWidth: 1,

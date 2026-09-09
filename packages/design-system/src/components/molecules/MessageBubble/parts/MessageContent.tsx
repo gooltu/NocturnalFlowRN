@@ -1,6 +1,6 @@
 import React from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
-import { spacing, states, typography, useThemeColors } from '../../../../theme';
+import { fontFamilies, spacing, states, typography, useThemeColors, useStyles, ThemeColors } from '../../../../theme';
 import { bubbleSkin } from '../bubbleTheme';
 import { MessageContent as MessageContentModel, MessageDirection } from '../types';
 import { AttachmentScrim } from './AttachmentScrim';
@@ -33,6 +33,7 @@ const DEFAULT_ASPECT = 4 / 3;
  * job; the sticker case has no bubble and is handled by the shell directly. */
 export function MessageContent({ direction, content, meta, header, quote }: MessageContentProps) {
   const colors = useThemeColors();
+  const styles = useStyles(makeStyles);
   const skin = bubbleSkin(colors, direction);
 
   switch (content.kind) {
@@ -228,6 +229,7 @@ function MediaFrame({
   quote?: React.ReactNode;
   children: React.ReactNode;
 }) {
+  const styles = useStyles(makeStyles);
   return (
     <View style={styles.mediaFrame}>
       {header && <View style={styles.mediaStrip}>{header}</View>}
@@ -244,6 +246,7 @@ function CaptionStrip({
   meta: MessageMetaProps;
   children?: React.ReactNode;
 }) {
+  const styles = useStyles(makeStyles);
   return (
     <View style={styles.captionStrip}>
       {children}
@@ -262,6 +265,7 @@ function Tappable({
   label?: string;
   children: React.ReactNode;
 }) {
+  const styles = useStyles(makeStyles);
   if (!onPress) return <View style={styles.mediaLayer}>{children}</View>;
   return (
     <Pressable
@@ -275,7 +279,7 @@ function Tappable({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: ThemeColors) => StyleSheet.create({
   flowPad: {
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm + 2,
@@ -296,7 +300,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     paddingTop: spacing.sm,
     paddingBottom: spacing.sm + 2,
-    gap: 4,
+    gap: spacing.xs,
   },
   topLeftBadge: {
     position: 'absolute',
@@ -312,6 +316,6 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   linkTitle: {
-    fontWeight: '600',
+    fontFamily: fontFamilies.interSemiBold,
   },
 });

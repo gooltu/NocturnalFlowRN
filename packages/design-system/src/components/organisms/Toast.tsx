@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { AlertCircle, CheckCircle2, LucideIcon, WifiOff, X } from 'lucide-react-native';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { radius, spacing, typography, useThemeColors, useStyles, ThemeColors } from '../../theme';
+import { radius, spacing, states, typography, useThemeColors, useStyles, ThemeColors } from '../../theme';
 
 export type ToastVariant = 'success' | 'warning' | 'error';
 
@@ -21,6 +21,10 @@ const variantConfig = (colors: ThemeColors): Record<ToastVariant, { color: strin
   error: { color: colors.error, icon: AlertCircle },
 });
 
+/** Inline banner for success/warning/error feedback: a tinted left rule and
+ * icon carry the variant, title/description sit beside it, and an optional
+ * dismiss control appears when `onDismiss` is passed. Non-critical toasts
+ * auto-dismiss after 4s unless `persist` is set. */
 export function Toast({ variant, title, description, icon, persist, onDismiss }: ToastProps) {
   const colors = useThemeColors();
   const styles = useStyles(makeStyles);
@@ -43,7 +47,13 @@ export function Toast({ variant, title, description, icon, persist, onDismiss }:
         )}
       </View>
       {onDismiss && (
-        <Pressable onPress={onDismiss} hitSlop={8}>
+        <Pressable
+          onPress={onDismiss}
+          hitSlop={14}
+          accessibilityRole="button"
+          accessibilityLabel="Dismiss"
+          style={({ pressed }) => pressed && { opacity: states.pressedOpacity }}
+        >
           <X size={16} strokeWidth={2} color={colors.onSurfaceVariant} />
         </Pressable>
       )}

@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
+import { useStyles, ThemeColors } from '../../../../theme';
 
 export interface WaveformProps {
   /** Relative bar heights, 0-1. */
@@ -21,6 +22,7 @@ const UNPLAYED_OPACITY = 0.45;
 /** Voice-note waveform. Bars up to `progress` render at full opacity, the rest
  * recede — playback position is the only thing separating them. */
 export function Waveform({ bars, color, progress }: WaveformProps) {
+  const styles = useStyles(makeStyles);
   const playedCount = Math.round(bars.length * Math.min(Math.max(progress, 0), 1));
 
   return (
@@ -42,7 +44,7 @@ export function Waveform({ bars, color, progress }: WaveformProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: ThemeColors) => StyleSheet.create({
   wrap: {
     flexDirection: 'row',
     alignItems: 'center',

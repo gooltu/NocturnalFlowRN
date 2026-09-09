@@ -1,14 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Mic, Plus, Send, Smile, X } from 'lucide-react-native';
-import {
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import { Keyboard, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { iconTokens, radius, spacing, states, typography, useThemeColors, useStyles, ThemeColors } from '../../../theme';
 import { IconButton } from '../../atoms/IconButton';
@@ -28,9 +21,15 @@ const MAX_WAVEFORM_BARS = 40;
 /** Fixed bottom composer: an optional reply bar (quoted message + close
  * button), an emoji-face button that toggles an emoji/sticker/GIF panel in
  * place of the native keyboard, attachment icon, text input, and a send/mic
- * button that swaps based on whether there's text. Wrapped in
- * KeyboardAvoidingView per platform, since this is the most failure-prone
- * piece of a messenger UI. */
+ * button that swaps based on whether there's text. Rides the keyboard via a
+ * `Keyboard` show/hide listener driving a reanimated shared value (translateY
+ * on the interaction thread), rather than `KeyboardAvoidingView` or
+ * `useAnimatedKeyboard` — `KeyboardAvoidingView`'s window-resize-based offset
+ * breaks under Android's mandatory edge-to-edge window (Expo SDK 54+), and
+ * `useAnimatedKeyboard`'s native-cached height can read stale/nonzero on a
+ * fresh mount of this screen. A shared value always starts at 0 per mount and
+ * only moves in response to a live event, so neither bites here. This is the
+ * most failure-prone piece of a messenger UI. */
 export function ChatInputBar({
   onSend,
   onAttach,
@@ -60,6 +59,25 @@ export function ChatInputBar({
   const insets = useSafeAreaInsets();
   const hasText = text.trim().length > 0;
   const inputRef = useRef<TextInput>(null);
+  const keyboardOffset = useSharedValue(0);
+  const keyboardAvoidingStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: -keyboardOffset.value }],
+  }));
+
+  useEffect(() => {
+    const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const hideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
+    const showSub = Keyboard.addListener(showEvent, (e) => {
+      keyboardOffset.value = withTiming(e.endCoordinates.height, { duration: e.duration || 250 });
+    });
+    const hideSub = Keyboard.addListener(hideEvent, (e) => {
+      keyboardOffset.value = withTiming(0, { duration: e?.duration || 250 });
+    });
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, [keyboardOffset]);
 
   useEffect(() => {
     if (recorderPhase !== 'recording') return;
@@ -140,10 +158,7 @@ export function ChatInputBar({
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={0}
-    >
+    <Animated.View style={keyboardAvoidingStyle}>
       {replyTo && (
         <View style={styles.replyBar}>
           <View style={styles.replyAccent} />
@@ -153,7 +168,7 @@ export function ChatInputBar({
             </Text>
             <ReplySnippet content={replyTo.content} />
           </View>
-          <Pressable onPress={onCancelReply} hitSlop={8} accessibilityLabel="Cancel reply">
+          <Pressable onPress={onCancelReply} hitSlop={12} accessibilityLabel="Cancel reply">
             {({ pressed }) => (
               <X
                 size={iconTokens.sizeMd}
@@ -217,7 +232,7 @@ export function ChatInputBar({
           onSelectGif={handleSelectGif}
         />
       )}
-    </KeyboardAvoidingView>
+    </Animated.View>
   );
 }
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Image, ImageSourcePropType, Pressable, StyleSheet, View } from 'react-native';
-import { states, useStyles, ThemeColors } from '../../theme';
+import { radius, states, useStyles, ThemeColors } from '../../theme';
 
 export interface ImageIconProps {
   source: ImageSourcePropType;
@@ -57,7 +57,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
   },
   tile: {
     backgroundColor: colors.surfaceContainer,
-    borderRadius: 16,
+    borderRadius: radius.lg,
     elevation: 0,
   },
   image: {

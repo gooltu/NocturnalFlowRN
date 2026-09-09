@@ -490,7 +490,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
   reactionsRow: {
     flexDirection: 'row',
     gap: spacing.xs,
-    marginTop: 4,
+    marginTop: spacing.xs,
   },
   emptyWrap: {
     flex: 1,

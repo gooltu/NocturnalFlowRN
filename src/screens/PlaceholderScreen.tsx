@@ -1,5 +1,6 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { EmptyState, ThemeColors, useStyles } from '@nocturnalflow/design-system';
 
 export interface PlaceholderScreenProps {
@@ -15,9 +16,9 @@ export interface PlaceholderScreenProps {
 export function PlaceholderScreen({ icon, title, description, actionLabel, onAction }: PlaceholderScreenProps) {
   const styles = useStyles(makeStyles);
   return (
-    <View style={[styles.root, styles.centered]}>
+    <SafeAreaView style={[styles.root, styles.centered]} edges={[]}>
       <EmptyState icon={icon} title={title} description={description} actionLabel={actionLabel} onAction={onAction} />
-    </View>
+    </SafeAreaView>
   );
 }
 

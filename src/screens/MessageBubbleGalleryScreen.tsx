@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   radius,
   spacing,
+  states,
   typography,
   useStyles,
   useTheme,
@@ -68,7 +69,7 @@ export function MessageBubbleGalleryScreen() {
           onPress={toggleTheme}
           accessibilityRole="switch"
           accessibilityLabel={`Theme: ${themeName}. Tap to switch.`}
-          style={styles.toggle}
+          style={({ pressed }) => [styles.toggle, pressed && { opacity: states.pressedOpacity }]}
         >
           <Text style={[typography.labelLg, styles.toggleLabel]}>
             {`Theme: ${themeName} · tap to switch`}

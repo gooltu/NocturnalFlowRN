@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Pause, Play } from 'lucide-react-native';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { radius, spacing, states, typography, useThemeColors } from '../../theme';
+import { radius, spacing, states, typography, useThemeColors, useStyles, ThemeColors } from '../../theme';
 import { SVGIconName, SVGImageIcon } from '../atoms/SVGImageIcon';
 
 export interface VoiceNoteProps {
@@ -21,6 +21,7 @@ const DEFAULT_WAVEFORM = [
  * vertically centered, standing in for the sender's avatar. */
 export function VoiceNote({ duration, variant = 'outgoing', waveform = DEFAULT_WAVEFORM, icon = 'logo' }: VoiceNoteProps) {
   const colors = useThemeColors();
+  const styles = useStyles(makeStyles);
   const [playing, setPlaying] = useState(false);
   const isOutgoing = variant === 'outgoing';
   const fg = isOutgoing ? colors.onPrimaryContainer : colors.onSurface;
@@ -72,7 +73,7 @@ export function VoiceNote({ duration, variant = 'outgoing', waveform = DEFAULT_W
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: ThemeColors) => StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -90,7 +91,7 @@ const styles = StyleSheet.create({
   playButton: {
     width: 32,
     height: 32,
-    borderRadius: 16,
+    borderRadius: radius.full,
     alignItems: 'center',
     justifyContent: 'center',
   },

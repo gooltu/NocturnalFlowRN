@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { typography, useThemeColors } from '../../../../theme';
+import { spacing, typography, useThemeColors, useStyles, ThemeColors } from '../../../../theme';
 import { DeliveryState, DeliveryStatus } from '../../../atoms/DeliveryStatus';
 import { bubbleSkin } from '../bubbleTheme';
 import { MessageDirection } from '../types';
@@ -22,6 +22,7 @@ export interface MessageMetaProps {
  * is never carried by colour alone. */
 export function MessageMeta({ direction, timestamp, status, align = 'right' }: MessageMetaProps) {
   const colors = useThemeColors();
+  const styles = useStyles(makeStyles);
   const skin = bubbleSkin(colors, direction);
   const showTicks = direction === 'outgoing' && status != null;
 
@@ -39,11 +40,11 @@ export function MessageMeta({ direction, timestamp, status, align = 'right' }: M
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: ThemeColors) => StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    gap: spacing.xs,
   },
   alignRight: {
     alignSelf: 'flex-end',

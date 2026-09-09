@@ -5961,48 +5961,6 @@
     },
     {
       "type": "frame",
-      "id": "I4XbLW",
-      "x": 529,
-      "y": -66,
-      "name": "TaskCard",
-      "clip": true,
-      "width": 100,
-      "height": 100,
-      "fill": "#121414cc",
-      "cornerRadius": 10,
-      "stroke": "$primary-container",
-      "strokeWidth": 1,
-      "strokeAlignment": "inner",
-      "layout": "vertical",
-      "gap": 13,
-      "justifyContent": "center",
-      "alignItems": "center",
-      "children": [
-        {
-          "type": "rectangle",
-          "id": "dbZbv",
-          "fill": {
-            "type": "image",
-            "enabled": true,
-            "url": "clipboard-3",
-            "mode": "fit"
-          },
-          "width": 44,
-          "height": 39
-        },
-        {
-          "type": "text",
-          "id": "FOUKY",
-          "fill": "#ffffff",
-          "content": "01:58",
-          "fontFamily": "Inter",
-          "fontSize": 12,
-          "fontWeight": "normal"
-        }
-      ]
-    },
-    {
-      "type": "frame",
       "id": "MtCMZ",
       "x": 5162.64515675038,
       "y": -1773,
@@ -6046,7 +6004,8 @@
               "content": "45 variants — 15 content types × 3 layout states. Built from Nocturnal Flow tokens only.",
               "lineHeight": 1.45,
               "fontFamily": "$font-body",
-              "fontSize": 14
+              "fontSize": 14,
+              "fontWeight": "normal"
             }
           ]
         },
@@ -6223,7 +6182,8 @@
                   "content": "Wrapped body copy; timestamp drops to its own row. One component covers single and multi-line.",
                   "lineHeight": 1.45,
                   "fontFamily": "$font-body",
-                  "fontSize": 11
+                  "fontSize": 11,
+                  "fontWeight": "normal"
                 }
               ]
             },
@@ -6366,7 +6326,8 @@
                   "content": "Full-bleed photo, media radius clipped by bubble.",
                   "lineHeight": 1.45,
                   "fontFamily": "$font-body",
-                  "fontSize": 11
+                  "fontSize": 11,
+                  "fontWeight": "normal"
                 }
               ]
             },
@@ -6509,7 +6470,8 @@
                   "content": "2×2 grid, 2px gutters, +N overflow badge on the last tile.",
                   "lineHeight": 1.45,
                   "fontFamily": "$font-body",
-                  "fontSize": 11
+                  "fontSize": 11,
+                  "fontWeight": "normal"
                 }
               ]
             },
@@ -6652,7 +6614,8 @@
                   "content": "Media stacked above a caption inside one container.",
                   "lineHeight": 1.45,
                   "fontFamily": "$font-body",
-                  "fontSize": 11
+                  "fontSize": 11,
+                  "fontWeight": "normal"
                 }
               ]
             },
@@ -6795,7 +6758,8 @@
                   "content": "No container fill — art sits directly on the thread.",
                   "lineHeight": 1.45,
                   "fontFamily": "$font-body",
-                  "fontSize": 11
+                  "fontSize": 11,
+                  "fontWeight": "normal"
                 }
               ]
             },
@@ -6938,7 +6902,8 @@
                   "content": "Media radius plus a GIF pill badge, top-left.",
                   "lineHeight": 1.45,
                   "fontFamily": "$font-body",
-                  "fontSize": 11
+                  "fontSize": 11,
+                  "fontWeight": "normal"
                 }
               ]
             },
@@ -7081,7 +7046,8 @@
                   "content": "Thumbnail, centred play overlay, duration badge.",
                   "lineHeight": 1.45,
                   "fontFamily": "$font-body",
-                  "fontSize": 11
+                  "fontSize": 11,
+                  "fontWeight": "normal"
                 }
               ]
             },
@@ -7224,7 +7190,8 @@
                   "content": "Play control, waveform progress, duration counter.",
                   "lineHeight": 1.45,
                   "fontFamily": "$font-body",
-                  "fontSize": 11
+                  "fontSize": 11,
+                  "fontWeight": "normal"
                 }
               ]
             },
@@ -7367,7 +7334,8 @@
                   "content": "Quoted text snippet, truncated to a single line.",
                   "lineHeight": 1.45,
                   "fontFamily": "$font-body",
-                  "fontSize": 11
+                  "fontSize": 11,
+                  "fontWeight": "normal"
                 }
               ]
             },
@@ -7510,7 +7478,8 @@
                   "content": "Quote carries a 40px thumbnail of the photo.",
                   "lineHeight": 1.45,
                   "fontFamily": "$font-body",
-                  "fontSize": 11
+                  "fontSize": 11,
+                  "fontWeight": "normal"
                 }
               ]
             },
@@ -7653,7 +7622,8 @@
                   "content": "Thumbnail with a mini play glyph and duration.",
                   "lineHeight": 1.45,
                   "fontFamily": "$font-body",
-                  "fontSize": 11
+                  "fontSize": 11,
+                  "fontWeight": "normal"
                 }
               ]
             },
@@ -7796,7 +7766,8 @@
                   "content": "Quoted sticker renders as unclipped art, no fill.",
                   "lineHeight": 1.45,
                   "fontFamily": "$font-body",
-                  "fontSize": 11
+                  "fontSize": 11,
+                  "fontWeight": "normal"
                 }
               ]
             },
@@ -7939,7 +7910,8 @@
                   "content": "Quoted GIF thumbnail with a film glyph.",
                   "lineHeight": 1.45,
                   "fontFamily": "$font-body",
-                  "fontSize": 11
+                  "fontSize": 11,
+                  "fontWeight": "normal"
                 }
               ]
             },
@@ -8082,7 +8054,8 @@
                   "content": "Quote shows a 2×2 mini grid and a photo count.",
                   "lineHeight": 1.45,
                   "fontFamily": "$font-body",
-                  "fontSize": 11
+                  "fontSize": 11,
+                  "fontWeight": "normal"
                 }
               ]
             },
@@ -8225,7 +8198,8 @@
                   "content": "Quote reduces the waveform to a mic glyph and duration.",
                   "lineHeight": 1.45,
                   "fontFamily": "$font-body",
-                  "fontSize": 11
+                  "fontSize": 11,
+                  "fontWeight": "normal"
                 }
               ]
             },
@@ -8404,7 +8378,8 @@
                           "fill": "$on-surface-variant",
                           "content": "Sent — single check",
                           "fontFamily": "$font-body",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -8447,7 +8422,8 @@
                           "fill": "$on-surface-variant",
                           "content": "Delivered — double check",
                           "fontFamily": "$font-body",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -8489,7 +8465,8 @@
                           "fill": "$on-surface-variant",
                           "content": "Seen — read-receipt tint",
                           "fontFamily": "$font-body",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     }
@@ -8547,7 +8524,8 @@
                           "fill": "$on-surface-variant",
                           "content": "$primary",
                           "fontFamily": "$font-body",
-                          "fontSize": 11
+                          "fontSize": 11,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -8561,7 +8539,8 @@
                       "content": "One accent for every sender — name and quote rule both use primary. Senders are told apart by the name itself, not by colour.",
                       "lineHeight": 1.4,
                       "fontFamily": "$font-body",
-                      "fontSize": 12
+                      "fontSize": 12,
+                      "fontWeight": "normal"
                     }
                   ]
                 },
@@ -8613,7 +8592,8 @@
                           "content": "Incoming quote fill + accent left rule",
                           "lineHeight": 1.4,
                           "fontFamily": "$font-body",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -8646,7 +8626,8 @@
                           "content": "Outgoing quote fill on primary-container",
                           "lineHeight": 1.4,
                           "fontFamily": "$font-body",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -8679,7 +8660,8 @@
                           "content": "Media scrims, GIF / duration badges",
                           "lineHeight": 1.4,
                           "fontFamily": "$font-body",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     }
@@ -16131,6 +16113,172 @@
                   "letterSpacing": 0.55
                 }
               ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "CcCW6",
+      "x": 495,
+      "y": -66,
+      "name": "TaskCard / Bomb (Negative)",
+      "clip": true,
+      "width": 100,
+      "height": 100,
+      "fill": "#121414cc",
+      "cornerRadius": 10,
+      "stroke": "$error",
+      "strokeWidth": 1,
+      "strokeAlignment": "inner",
+      "layout": "vertical",
+      "gap": 4,
+      "padding": [
+        10,
+        8
+      ],
+      "justifyContent": "center",
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "frame",
+          "id": "iUmKp",
+          "name": "Bomb Art",
+          "clip": true,
+          "width": 34,
+          "height": 34,
+          "layout": "none",
+          "children": [
+            {
+              "type": "path",
+              "id": "q9tg2C",
+              "x": 13.986487994800045,
+              "y": 2,
+              "geometry": "M9.51042 4.61275c-0.104-0.208-0.13867-0.624-0.24266-0.624-0.104 0-0.17333 0.86667-1.35201 1.83734l-0.17333 0.24267c0-1.21333 0.06933-2.56533-0.624-3.74401-1.07467-1.976-3.46667-2.35733-3.50133-2.32266-0.03467 0.03467 0.48533 1.10933 0.52 2.25333 0.03467 1.56-0.832 2.56533-1.17867 3.016-0.03467-1.10933-0.55467-1.69867-1.144-2.392-0.03467 1.00533 0.03467 1.31733-1.21333 3.39734-0.416 0.76267-0.65867 1.352-0.58934 2.184 0.06933 0.936 0.624 1.94133 1.456 2.53066 0.90133 0.65867 2.14933 0.97067 2.912 0.97067 1.28267 0.03467 5.2-0.06933 5.824-3.432 0.13867-1.42133-0.34667-2.87733-0.69333-3.91734z",
+              "fill": "#FF6400",
+              "width": 6.715295878772759,
+              "height": 7.856594160555188
+            },
+            {
+              "type": "path",
+              "id": "Uv5Mo",
+              "x": 15.496444727494765,
+              "y": 5.096796643665181,
+              "geometry": "M0.624 2.87733c-0.312 0.45067-0.624 1.352-0.624 1.94134 0.06933 1.28267 1.144 2.25333 1.456 2.32266 0.55467 0.17333 2.288 0.24267 2.98133-0.24266 0.416-0.24267 1.17867-0.90133 1.21334-2.14934 0-0.65867-0.208-1.352-0.208-2.01066-0.34667 0.45067-0.416 0.832-1.38667 1.248-0.936-0.65867 0.03467-1.768-0.416-2.73867-0.17333-0.38133-0.76266-1.248-0.79733-1.248-0.03467 0 0.06933 0.55467 0 1.352-0.13867 1.04-1.456 1.10933-1.42133 2.912-0.38134-0.45067-0.65867-0.90133-0.79734-1.38667z",
+              "fill": "#FECB00",
+              "width": 3.7100237018167017,
+              "height": 4.774110525313672
+            },
+            {
+              "type": "path",
+              "id": "uX9E7",
+              "x": 14.76805704193449,
+              "y": 10.991852090158824,
+              "geometry": "M6.864 3.46667l0-2.56534c0-0.38133-0.27734-0.65866-0.65867-0.90133l-5.47733 0c-0.38133 0.03467-0.69333 0.34667-0.728 0.69333l0 2.73867 6.864 0.03467z",
+              "fill": "#0E0D0D",
+              "width": 4.5066279733961885,
+              "height": 2.27609661937246,
+              "stroke": "#000000",
+              "strokeWidth": 0.936,
+              "strokeLinejoin": "round"
+            },
+            {
+              "type": "path",
+              "id": "OQLKM",
+              "x": 7.439140168998549,
+              "y": 13.108601592814608,
+              "geometry": "M19.552 0.86667c-1.07466-0.38133-2.56533-0.86667-4.95733-0.86667-6.30933 0.03467-14.56 5.512-14.59467 14.17866 0 6.37867 4.92267 14.59467 14.62933 14.59467 8.04266 0 14.456-5.96267 14.49067-13.97066 0.17333-7.62667-5.13067-12.48-9.568-13.936z",
+              "fill": "#101010",
+              "width": 19.121719662002903,
+              "height": 18.891398407185395,
+              "stroke": "#000000",
+              "strokeWidth": 0.908024,
+              "strokeLinejoin": "round",
+              "strokeLinecap": "square"
+            },
+            {
+              "type": "path",
+              "id": "zjFM8",
+              "x": 16.998654051960163,
+              "y": 8.829602978156249,
+              "geometry": "M0 3.25867c0.13866-1.352 0.65866-2.46133 1.07467-3.25867",
+              "width": 0.7056050528859096,
+              "height": 2.1395321353301515,
+              "stroke": "#000000",
+              "strokeWidth": 0.908024,
+              "strokeLinecap": "round"
+            },
+            {
+              "type": "path",
+              "id": "Gc6aP",
+              "x": 9.30547768024214,
+              "y": 14.770158033996678,
+              "geometry": "M18.824 0c1.80267 1.83733 3.50133 4.992 3.50133 8.77067 0.03467 6.76-5.13067 13.76267-13.79733 13.76267-2.392 0-5.37333-0.83201-8.528-2.91201 2.84267 4.54134 7.696 6.24 11.78667 6.24 7.93867 0 14.10933-5.89333 14.10933-13.58933 0.06933-6.032-3.848-10.504-7.072-12.272z",
+              "fill": "#0A0A0A",
+              "width": 17.002869167284928,
+              "height": 16.97949563059307
+            },
+            {
+              "type": "path",
+              "id": "YjNZ5",
+              "x": 17.52212935545503,
+              "y": 11.310480667590229,
+              "geometry": "M0 0l1.83734 0c0.208 0 0.38133 0.13867 0.38133 0.38133l0 2.11467c-0.58933-0.13867-1.872-0.24266-2.21867-0.24267l0-2.25333z",
+              "fill": "#0C0C0C",
+              "width": 1.4567097151186077,
+              "height": 1.6387738085077048
+            },
+            {
+              "type": "path",
+              "id": "Nf7q5",
+              "x": 11.513292057593446,
+              "y": 15.908173515681936,
+              "geometry": "M2.184 0c-1.17867 0-2.184 0.97067-2.184 2.184 0 1.17867 0.90133 2.11467 2.08 2.11467 1.10933 0.06933 2.21867-0.832 2.21867-2.08 0-1.21333-0.90133-2.184-2.11467-2.21867z",
+              "fill": "#FFFFFF",
+              "width": 2.822354555541695,
+              "height": 2.8247838276136013
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "qAHyF",
+          "name": "Timer",
+          "fill": "$error",
+          "content": "0:07",
+          "fontFamily": "Inter",
+          "fontSize": 16,
+          "fontWeight": "bold",
+          "letterSpacing": 0.5
+        },
+        {
+          "type": "frame",
+          "id": "wjICb",
+          "name": "Penalty",
+          "gap": 4,
+          "justifyContent": "center",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "icon",
+              "id": "n7iTq8",
+              "name": "Warning Icon",
+              "width": 12,
+              "height": 12,
+              "icon": "triangle-alert",
+              "library": "lucide",
+              "fill": "$error"
+            },
+            {
+              "type": "text",
+              "id": "PkBse",
+              "name": "Penalty Value",
+              "fill": "$error",
+              "content": "-100 XP",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "normal"
             }
           ]
         }

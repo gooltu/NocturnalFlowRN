@@ -50,7 +50,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
   avatar: {
     width: 48,
     height: 48,
-    borderRadius: 24,
+    borderRadius: radius.full,
     backgroundColor: colors.surfaceContainerHighest,
   },
   lines: {

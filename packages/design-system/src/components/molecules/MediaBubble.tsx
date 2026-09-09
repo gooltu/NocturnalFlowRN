@@ -85,7 +85,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
   footer: {
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
-    gap: 4,
+    gap: spacing.xs,
   },
   caption: {
     color: colors.onSurface,

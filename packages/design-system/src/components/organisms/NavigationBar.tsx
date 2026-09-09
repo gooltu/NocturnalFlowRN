@@ -1,30 +1,31 @@
 import React from 'react';
-import { MessageCircle, Phone, Settings, Users } from 'lucide-react-native';
 import { LucideIcon } from 'lucide-react-native';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { radius, spacing, states, typography, useThemeColors, useStyles, ThemeColors } from '../../theme';
 
-export type NavTab = 'chats' | 'calls' | 'contacts' | 'settings';
-
-export interface NavigationBarProps {
-  active: NavTab;
-  onChange: (tab: NavTab) => void;
+/** One tab's identity — the consumer supplies its own key union (typically
+ * its route-name type) plus a label and any lucide icon. */
+export interface NavTabItem<T extends string = string> {
+  key: T;
+  label: string;
+  icon: LucideIcon;
 }
 
-const TABS: { key: NavTab; label: string; icon: LucideIcon }[] = [
-  { key: 'chats', label: 'Chats', icon: MessageCircle },
-  { key: 'calls', label: 'Calls', icon: Phone },
-  { key: 'contacts', label: 'Contacts', icon: Users },
-  { key: 'settings', label: 'Settings', icon: Settings },
-];
+export interface NavigationBarProps<T extends string = string> {
+  /** 2 or more tabs, in display order. Count, labels and icons are entirely
+   * caller-defined — this component has no built-in tab set. */
+  tabs: NavTabItem<T>[];
+  active: T;
+  onChange: (tab: T) => void;
+}
 
 /** Floating-capsule tab bar — ~40% transparent, with a pill highlight and
  * `primary` tint on the active tab. Renders in normal layout flow (not
  * self-overlaid); a host that wants it fixed to the screen bottom, such as a
- * `bottom-tabs` custom `tabBar`, positions it. Controlled via `active`/
+ * `bottom-tabs` custom `tabBar`, positions it. Controlled via `tabs`/`active`/
  * `onChange` only — no navigation-library dependency. */
-export function NavigationBar({ active, onChange }: NavigationBarProps) {
+export function NavigationBar<T extends string = string>({ tabs, active, onChange }: NavigationBarProps<T>) {
   const colors = useThemeColors();
   const styles = useStyles(makeStyles);
   const insets = useSafeAreaInsets();
@@ -32,7 +33,7 @@ export function NavigationBar({ active, onChange }: NavigationBarProps) {
   return (
     <View style={[styles.wrap, { paddingBottom: Math.max(insets.bottom, spacing.sm) }]}>
       <View style={styles.bar}>
-        {TABS.map(({ key, label, icon: Icon }) => {
+        {tabs.map(({ key, label, icon: Icon }) => {
           const isActive = key === active;
           return (
             <Pressable

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { EmojiKeyboard } from 'rn-emoji-keyboard';
-import { radius, spacing, typography, useThemeColors, useStyles, ThemeColors } from '../../../../theme';
+import { radius, spacing, states, typography, useThemeColors, useStyles, ThemeColors } from '../../../../theme';
 import { MediaSearchState, PickerMediaItem } from '../types';
 import { MediaGrid } from './MediaGrid';
 
@@ -62,7 +62,12 @@ export function EmojiGifPanel({ onSelectEmoji, stickers, gifs, onSelectSticker, 
         {TABS.map(({ key, label }) => {
           const active = tab === key;
           return (
-            <Pressable key={key} onPress={() => setTab(key)} style={styles.tabButton}>
+            <Pressable
+              key={key}
+              onPress={() => setTab(key)}
+              hitSlop={8}
+              style={({ pressed }) => [styles.tabButton, pressed && { opacity: states.pressedOpacity }]}
+            >
               <Text style={[typography.labelLg, { color: active ? colors.primary : colors.onSurfaceVariant }]}>
                 {label}
               </Text>
@@ -132,7 +137,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
   tabButton: {
     paddingVertical: spacing.sm,
     alignItems: 'center',
-    gap: 4,
+    gap: spacing.xs,
   },
   tabIndicator: {
     height: 2,

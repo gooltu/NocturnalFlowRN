@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import {
   iconTokens,
+  radius,
   spacing,
   states,
   typography,
@@ -114,7 +115,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
   actionIcon: {
     width: 48,
     height: 48,
-    borderRadius: 24,
+    borderRadius: radius.full,
     backgroundColor: colors.primaryContainer,
     alignItems: 'center',
     justifyContent: 'center',
