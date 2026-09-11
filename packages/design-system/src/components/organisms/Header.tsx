@@ -1,9 +1,9 @@
 import React, { ReactNode } from 'react';
 import { ChevronLeft, LucideIcon } from 'lucide-react-native';
-import { ImageSourcePropType, StyleSheet, Text, View } from 'react-native';
+import { ImageSourcePropType, Pressable, StyleSheet, Text, View } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { fontFamilies, spacing, typography, useTheme, useStyles, ThemeColors } from '../../theme';
+import { fontFamilies, spacing, states, typography, useTheme, useStyles, ThemeColors } from '../../theme';
 import { Avatar, PresenceState } from '../atoms/Avatar';
 import { IconButton } from '../atoms/IconButton';
 import { ImageIcon } from '../atoms/ImageIcon';
@@ -42,6 +42,8 @@ export interface HeaderProps {
   onBack?: () => void;
   /** Defaults to `true` whenever `onBack` is supplied. */
   showBack?: boolean;
+  /** Fires when the title/subtitle block is tapped. Omit to leave it inert. */
+  onTitlePress?: () => void;
   /** Contact picture or monogram. Omit on top-level list screens. */
   avatar?: HeaderAvatar;
   /** Trailing controls, rendered left to right. */
@@ -63,6 +65,7 @@ export function Header({
   presence,
   onBack,
   showBack,
+  onTitlePress,
   avatar,
   actions,
   gamebar,
@@ -96,16 +99,34 @@ export function Header({
           />
         )}
 
-        <View style={styles.identity}>
-          <Text style={styles.title} numberOfLines={1}>
-            {title}
-          </Text>
-          {subtitle && (
-            <Text style={[typography.labelSm, { color: subtitleColor }]} numberOfLines={1}>
-              {subtitle}
+        {onTitlePress ? (
+          <Pressable
+            onPress={onTitlePress}
+            accessibilityRole="button"
+            accessibilityLabel={title}
+            style={({ pressed }) => [styles.identity, pressed && { opacity: states.pressedOpacity }]}
+          >
+            <Text style={styles.title} numberOfLines={1}>
+              {title}
             </Text>
-          )}
-        </View>
+            {subtitle && (
+              <Text style={[typography.labelSm, { color: subtitleColor }]} numberOfLines={1}>
+                {subtitle}
+              </Text>
+            )}
+          </Pressable>
+        ) : (
+          <View style={styles.identity}>
+            <Text style={styles.title} numberOfLines={1}>
+              {title}
+            </Text>
+            {subtitle && (
+              <Text style={[typography.labelSm, { color: subtitleColor }]} numberOfLines={1}>
+                {subtitle}
+              </Text>
+            )}
+          </View>
+        )}
 
         {rightSlot ?? (
           <View style={styles.actions}>

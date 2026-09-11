@@ -124,6 +124,7 @@ Atoms — small, single-purpose, no sub-component composition:
 | `SVGImageIcon` | `icon: SVGIconName`, `size=40`, `tile?`, `onPress?`, `label?`, `disabled?` | Vector counterpart to `ImageIcon`, `react-native-svg`-backed. `SVGIconName` = `'coin'\|'diamond'\|'j3'..'j17'\|'logo'\|'xp'`. |
 | `InputField` | extends `TextInputProps` + `icon?: LucideIcon` | Search/chat text input. |
 | `ReactionPill` | `emoji`, `count`, `active?`, `onPress?` | Small chip, meant to anchor to a bubble's bottom edge. |
+| `SystemLabel` | `text` | Centered, muted, non-interactive pill — inline group-system events ("Alice added Bob") and date-section dividers ("Today", "8/9/2026") in a message list. Not part of `MessageBubble`; drop it in as its own list item, same as `ReactionPill`. |
 | `DeliveryStatus` | `status: 'sent'\|'delivered'\|'seen'`, `size=14`, `tone?: 'default'\|'onAccent'` | Use `tone="onAccent"` when drawn on a `primaryContainer` fill (e.g. inside an outgoing bubble). |
 | `UnreadBadge` | `count` | Renders `null` when `count <= 0`; caps display at `"99+"`. |
 

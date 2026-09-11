@@ -7,5 +7,6 @@ export * from './ImageIcon';
 export * from './InputField';
 export * from './SVGImageIcon';
 export * from './ReactionPill';
+export * from './SystemLabel';
 export * from './DeliveryStatus';
 export * from './UnreadBadge';
