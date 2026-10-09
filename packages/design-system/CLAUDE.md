@@ -125,7 +125,7 @@ Atoms — small, single-purpose, no sub-component composition:
 | `InputField` | extends `TextInputProps` + `icon?: LucideIcon` | Search/chat text input. |
 | `ReactionPill` | `emoji`, `count`, `active?`, `onPress?` | Small chip, meant to anchor to a bubble's bottom edge. |
 | `SystemLabel` | `text` | Centered, muted, non-interactive pill — inline group-system events ("Alice added Bob") and date-section dividers ("Today", "8/9/2026") in a message list. Not part of `MessageBubble`; drop it in as its own list item, same as `ReactionPill`. |
-| `DeliveryStatus` | `status: 'sent'\|'delivered'\|'seen'`, `size=14`, `tone?: 'default'\|'onAccent'` | Use `tone="onAccent"` when drawn on a `primaryContainer` fill (e.g. inside an outgoing bubble). |
+| `DeliveryStatus` | `status: 'pending'\|'sent'\|'delivered'\|'seen'`, `size=14`, `tone?: 'default'\|'onAccent'` | `'pending'` (not yet submitted to the server) renders a clock glyph in place of the ticks. Use `tone="onAccent"` when drawn on a `primaryContainer` fill (e.g. inside an outgoing bubble). |
 | `UnreadBadge` | `count` | Renders `null` when `count <= 0`; caps display at `"99+"`. |
 
 Molecules — composed from atoms:
@@ -144,7 +144,7 @@ Organisms — screen-level regions:
 
 | Component | Key props | Notes |
 |---|---|---|
-| `Header` | `title`, `subtitle?`, `presence?`, `onBack?`, `showBack?`, `avatar?: {source?, initials?}`, `actions?: HeaderAction[]`, `gamebar?: {level, xpCurrent, xpMax}`, `rightSlot?: ReactNode` | Fully prop-driven — nothing is implied by context. Pass `title` alone for a list-screen header; add `onBack`+`avatar`+`presence`+`subtitle` for a conversation header. `HeaderAction = { key, label, icon? XOR image?, onPress?, active?, disabled? }`. `rightSlot` replaces `actions` entirely when supplied. There is intentionally no separate "GameHeader" — the gamebar is one optional prop. |
+| `Header` | `title`, `subtitle?`, `presence?`, `onBack?`, `showBack?`, `onIdentityPress?: () => void`, `avatar?: {source?, initials?}`, `actions?: HeaderAction[]`, `gamebar?: {level, xpCurrent, xpMax}`, `rightSlot?: ReactNode` | Fully prop-driven — nothing is implied by context. Pass `title` alone for a list-screen header; add `onBack`+`avatar`+`presence`+`subtitle` for a conversation header. `onIdentityPress` makes the avatar and the title/subtitle block one shared tap target (e.g. navigate to a profile screen) — omit to leave both inert. `HeaderAction = { key, label, icon? XOR image?, onPress?, active?, disabled? }`. `rightSlot` replaces `actions` entirely when supplied. There is intentionally no separate "GameHeader" — the gamebar is one optional prop. |
 | `ChatInputBar` | `onSend?: (text: string) => void`, `onAttach?: () => void`, `replyTo?: QuotedMessage`, `onCancelReply?: () => void`, `stickers?: MediaSearchState`, `gifs?: MediaSearchState`, `onSendSticker?: (item: PickerMediaItem) => void`, `onSendGif?: (item: PickerMediaItem) => void`, `onSendVoiceNote?: (result: {duration: string; waveform: number[]}) => void`, `onRecordingStart?: () => void`, `onRecordingStop?: () => void`, `onDiscardRecording?: () => void`, `previewPlaying?: boolean`, `onTogglePreviewPlayback?: () => void` | Composer. Already wraps itself in `KeyboardAvoidingView` — don't double-wrap. Passing `replyTo` shows a reply bar (quoted sender + snippet/glyph via `describeQuotedContent`, close button) above the input row — pair with a bubble's `onSwipeReply` (see below) and clear it in `onSend`. A leading emoji-face button toggles a fixed-height (320) Emoji/Sticker/GIF panel *in place of* the native keyboard (ref-based blur/focus, no `react-native-keyboard-controller` needed) — Emoji is a bundled Unicode grid (tap inserts into the text field), Sticker/GIF are network-backed (tap sends immediately via `onSendSticker`/`onSendGif`, then the panel closes). The mic button (shown when the text field is empty) opens a record → stop → review → send flow in place of the composer row — see the voice-recorder section below. See `MediaSearchState`/`PickerMediaItem` below. |
 | `AttachmentSheet` | `visible`, `onClose`, `onSelect?: (kind: 'photos'\|'camera'\|'file'\|'audio') => void` | Bottom sheet, top-only rounded corners. |
 | `EmptyState` | `icon?: LucideIcon` (defaults to `MessageCircle`), `title`, `description`, `actionLabel?`, `onAction?` | Generic empty/no-results state. |
@@ -167,7 +167,7 @@ change, in this package, not in the consumer).
   content={{ kind: 'text', text: 'On my way' }}
   replyTo={{ senderName: 'Dev Rao', content: { kind: 'text', snippet: 'New palette is in the shared folder' } }}
   timestamp="21:04"
-  status="seen"                  // outgoing only: 'sent' | 'delivered' | 'seen'
+  status="seen"                  // outgoing only: 'pending' | 'sent' | 'delivered' | 'seen'
   onPress={...}
   onLongPress={...}
   onSwipeReply={...}             // enables swipe-to-reply — see below

@@ -9,6 +9,7 @@ import {
   useStyles,
   useTheme,
   ThemeColors,
+  DeliveryState,
   MessageBubble,
   MessageContent,
   MessageContext,
@@ -51,6 +52,13 @@ const TYPES: {
 ];
 
 const SENDERS = ['Maya Chen', 'Dev Rao', '+91 98110 22417'];
+
+const DELIVERY_STATES: { status: DeliveryState; label: string }[] = [
+  { status: 'pending', label: 'Pending' },
+  { status: 'sent', label: 'Sent' },
+  { status: 'delivered', label: 'Delivered' },
+  { status: 'seen', label: 'Seen' },
+];
 
 /** Visual index of every MessageBubble permutation — 15 content types × 3
  * layout states. Doubles as the usage reference for the component. */
@@ -99,6 +107,19 @@ export function MessageBubbleGalleryScreen() {
             ))}
           </View>
         ))}
+
+        <View style={styles.row}>
+          <Text style={[typography.labelLg, styles.rowTitle]}>Delivery Status</Text>
+          {DELIVERY_STATES.map(({ status, label }) => (
+            <MessageBubble
+              key={status}
+              direction="outgoing"
+              content={{ kind: 'text', text: label }}
+              timestamp="21:04"
+              status={status}
+            />
+          ))}
+        </View>
       </ScrollView>
     </SafeAreaView>
   );

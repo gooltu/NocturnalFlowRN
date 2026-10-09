@@ -69,19 +69,27 @@ export function ConversationScreen() {
   const messages = [...chat.messages, ...localMessages];
 
   const handleSend = (text: string) => {
+    const id = `local-${Date.now()}`;
     setLocalMessages((prev) => [
       ...prev,
       {
-        id: `local-${Date.now()}`,
+        id,
         type: 'text',
         sender: 'me',
         text,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        status: 'sent',
+        status: 'pending',
         replyToId: replyingTo?.id,
       },
     ]);
     setReplyingTo(null);
+    // Simulates the server round-trip a real send would need to confirm —
+    // the clock glyph gets a moment on screen before it flips to a tick.
+    setTimeout(() => {
+      setLocalMessages((prev) =>
+        prev.map((m) => (m.id === id && m.type === 'text' ? { ...m, status: 'sent' } : m))
+      );
+    }, 1000);
   };
 
   const handleSendMedia = (type: 'sticker' | 'gif', item: PickerMediaItem) => {

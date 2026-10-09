@@ -14,12 +14,13 @@ export interface MessageMetaProps {
   align?: 'left' | 'right';
 }
 
-/** Timestamp plus, on outgoing messages, the delivery ticks.
+/** Timestamp plus, on outgoing messages, the delivery glyph.
  *
- * Sent and delivered both draw in `on-primary-container` at 70% and differ by
- * glyph — the spec's `on-surface-variant` for delivered has too little
- * contrast on `primary-container`. Seen keeps the `read-receipt` tint. State
- * is never carried by colour alone. */
+ * Pending, sent and delivered all draw in `on-primary-container` at 70% and
+ * differ by glyph (clock / single check / double check) — the spec's
+ * `on-surface-variant` for delivered has too little contrast on
+ * `primary-container`. Seen keeps the `read-receipt` tint. State is never
+ * carried by colour alone. */
 export function MessageMeta({ direction, timestamp, status, align = 'right' }: MessageMetaProps) {
   const colors = useThemeColors();
   const styles = useStyles(makeStyles);

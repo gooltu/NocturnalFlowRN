@@ -42,8 +42,10 @@ export interface HeaderProps {
   onBack?: () => void;
   /** Defaults to `true` whenever `onBack` is supplied. */
   showBack?: boolean;
-  /** Fires when the title/subtitle block is tapped. Omit to leave it inert. */
-  onTitlePress?: () => void;
+  /** Fires when the avatar or the title/subtitle block is tapped — both sit
+   * in one pressable region (e.g. navigate to a profile screen). Omit to
+   * leave both inert. */
+  onIdentityPress?: () => void;
   /** Contact picture or monogram. Omit on top-level list screens. */
   avatar?: HeaderAvatar;
   /** Trailing controls, rendered left to right. */
@@ -65,7 +67,7 @@ export function Header({
   presence,
   onBack,
   showBack,
-  onTitlePress,
+  onIdentityPress,
   avatar,
   actions,
   gamebar,
@@ -90,33 +92,16 @@ export function Header({
           <IconButton icon={ChevronLeft} onPress={onBack} size="lg" />
         )}
 
-        {avatar && (
-          <Avatar
-            source={avatar.source}
-            initials={avatar.initials}
-            presence={presence ?? 'none'}
-            size={40}
-          />
-        )}
-
-        {onTitlePress ? (
-          <Pressable
-            onPress={onTitlePress}
-            accessibilityRole="button"
-            accessibilityLabel={title}
-            style={({ pressed }) => [styles.identity, pressed && { opacity: states.pressedOpacity }]}
-          >
-            <Text style={styles.title} numberOfLines={1}>
-              {title}
-            </Text>
-            {subtitle && (
-              <Text style={[typography.labelSm, { color: subtitleColor }]} numberOfLines={1}>
-                {subtitle}
-              </Text>
-            )}
-          </Pressable>
-        ) : (
-          <View style={styles.identity}>
+        <IdentityWrap onPress={onIdentityPress} label={title}>
+          {avatar && (
+            <Avatar
+              source={avatar.source}
+              initials={avatar.initials}
+              presence={presence ?? 'none'}
+              size={40}
+            />
+          )}
+          <View style={styles.identityText}>
             <Text style={styles.title} numberOfLines={1}>
               {title}
             </Text>
@@ -126,7 +111,7 @@ export function Header({
               </Text>
             )}
           </View>
-        )}
+        </IdentityWrap>
 
         {rightSlot ?? (
           <View style={styles.actions}>
@@ -160,6 +145,34 @@ export function Header({
   );
 }
 
+/** Avatar + title/subtitle, sharing one tap target when `onPress` is given —
+ * falls back to a plain, inert `View` with the same layout otherwise. */
+function IdentityWrap({
+  onPress,
+  label,
+  children,
+}: {
+  onPress?: () => void;
+  label: string;
+  children: ReactNode;
+}) {
+  const styles = useStyles(makeStyles);
+  if (!onPress) {
+    return <View style={styles.identity}>{children}</View>;
+  }
+  return (
+    <Pressable
+      onPress={onPress}
+      hitSlop={2}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      style={({ pressed }) => [styles.identity, pressed && { opacity: states.pressedOpacity }]}
+    >
+      {children}
+    </Pressable>
+  );
+}
+
 function Gamebar({ level, xpCurrent, xpMax }: HeaderGamebar) {
   const styles = useStyles(makeStyles);
   const xpLabel = `${xpCurrent}/${xpMax}`;
@@ -189,6 +202,12 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     paddingHorizontal: spacing.gutterChat,
   },
   identity: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.gutterChat,
+  },
+  identityText: {
     flex: 1,
     gap: 2,
   },

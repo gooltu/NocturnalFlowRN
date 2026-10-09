@@ -200,12 +200,20 @@ export const chats: ChatSummary[] = [
       xp: 0,
       xpMax: 100,
     },
-    snippet: 'Incoming + sent/delivered/seen + reply',
+    snippet: 'Incoming + pending/sent/delivered/seen + reply',
     timestamp: '09:06',
     unreadCount: 0,
     messages: [
       { id: 'd1', type: 'divider', label: 'Today' },
       { id: 'text-in', type: 'text', sender: 'them', text: 'Hey — did the export finish?', timestamp: '09:01' },
+      {
+        id: 'text-out-pending',
+        type: 'text',
+        sender: 'me',
+        text: 'Hang on, checking now…',
+        timestamp: '09:02',
+        status: 'pending',
+      },
       {
         id: 'text-out-sent',
         type: 'text',

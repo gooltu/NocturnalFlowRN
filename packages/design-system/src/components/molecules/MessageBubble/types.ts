@@ -186,7 +186,9 @@ export interface MessageBubbleProps {
   content: MessageContent;
   replyTo?: QuotedMessage;
   timestamp: string;
-  /** Outgoing only — incoming messages have no delivery state to report. */
+  /** Outgoing only — incoming messages have no delivery state to report.
+   * `'pending'` is for a message not yet submitted to the server (optimistic
+   * send), shown with a clock glyph in place of the ticks. */
   status?: DeliveryState;
   onPress?: () => void;
   onLongPress?: () => void;
