@@ -9,8 +9,12 @@ export type MessageDirection = 'incoming' | 'outgoing';
  * neither context renders an avatar — identity comes from the Header. */
 export type MessageContext = 'direct' | 'group';
 
-/** Plain text. Wraps at the bubble's max width; a short message simply
- * occupies one line, which is why there is no separate single-line variant. */
+/** Plain text. Wraps at the bubble's max width with the timestamp on its own
+ * row underneath — except for a message short enough to confidently fit one
+ * line (see `COMPACT_TEXT_MAX_LENGTH` in `MessageContent.tsx`, e.g. "Hi" or a
+ * single emoji), which instead renders through a compact variant with the
+ * timestamp trailing inline at the end of that line. Chosen automatically
+ * from the text itself — not a prop on this type. */
 export interface TextMessageContent {
   kind: 'text';
   text: string;
@@ -43,12 +47,15 @@ export interface TextImageMessageContent {
   onPress?: () => void;
 }
 
-/** Sticker art. Renders with no bubble fill — art plus timestamp only. */
+/** Sticker art. Renders with no bubble fill — art, an optional caption, then
+ * timestamp. */
 export interface StickerMessageContent {
   kind: 'sticker';
   source: ImageSourcePropType;
   /** Square edge length. Defaults to 132. */
   size?: number;
+  /** Optional caption line below the art, same treatment as `textImage`'s. */
+  caption?: string;
 }
 
 /** Animated image with a `GIF` pill badge, top-left. */

@@ -1,7 +1,7 @@
 import React from 'react';
-import { Image, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { states, useThemeColors, useStyles, ThemeColors } from '../../../theme';
-import { bubbleSkin, BUBBLE_MAX_WIDTH, MEDIA_BUBBLE_WIDTH_FRACTION, MIN_TEXT_BUBBLE_WIDTH } from './bubbleTheme';
+import { bubbleSkin, MEDIA_BUBBLE_WIDTH_FRACTION } from './bubbleTheme';
 import { MessageContent } from './parts/MessageContent';
 import { MessageMeta } from './parts/MessageMeta';
 import { QuoteBlock } from './parts/QuoteBlock';
@@ -26,8 +26,10 @@ const MEDIA_KINDS: ReadonlySet<MessageContentModel['kind']> = new Set([
  * `context` adds the sender header on incoming group messages. Neither context
  * renders an avatar — identity comes from the screen Header.
  *
- * Stickers are the one kind with no bubble fill: art plus a timestamp, aligned
- * to the message's own side.
+ * Every content kind, including stickers, renders through `MessageContent`;
+ * stickers are the one kind with no bubble fill (art plus a timestamp,
+ * aligned to the message's own side), which `bubbleStyle` below accounts for
+ * by conditionally dropping the fill/corners rather than a separate layout.
  *
  * This is the code counterpart to the 45 `Component / Bubble / *` symbols on
  * the canvas (15 content types × 3 states), collapsed to one component with
@@ -65,24 +67,8 @@ export function MessageBubble({
       element
     );
 
-  if (content.kind === 'sticker') {
-    const size = content.size ?? 132;
-    return wrap(
-      <View style={[styles.stickerWrap, { alignSelf }, style]}>
-        {showHeader && <SenderName name={senderName!} />}
-        <Image
-          source={content.source}
-          style={{ width: size, height: size }}
-          resizeMode="contain"
-          accessibilityRole="image"
-          accessibilityLabel={senderName ? `Sticker from ${senderName}` : 'Sticker'}
-        />
-        <MessageMeta {...meta} align={isOutgoing ? 'right' : 'left'} />
-      </View>
-    );
-  }
-
   const isMedia = MEDIA_KINDS.has(content.kind);
+  const isSticker = content.kind === 'sticker';
 
   const inner = (
     <MessageContent
@@ -91,15 +77,18 @@ export function MessageBubble({
       meta={meta}
       header={showHeader ? <SenderName name={senderName!} /> : undefined}
       quote={replyTo ? <QuoteBlock direction={direction} quote={replyTo} /> : undefined}
+      senderName={senderName}
     />
   );
 
   const bubbleStyle = [
     styles.bubble,
-    skin.corners,
-    { backgroundColor: skin.fill },
-    isMedia ? { width: windowWidth * MEDIA_BUBBLE_WIDTH_FRACTION } : { maxWidth: BUBBLE_MAX_WIDTH },
-    content.kind === 'text' && { minWidth: MIN_TEXT_BUBBLE_WIDTH },
+    // Stickers render with no container fill — art plus a timestamp, not a
+    // coloured/rounded box — so the shell's fill and corners are conditional
+    // on content kind rather than a separate code path.
+    !isSticker && skin.corners,
+    !isSticker && { backgroundColor: skin.fill },
+    isMedia && { width: windowWidth * MEDIA_BUBBLE_WIDTH_FRACTION },
     { alignSelf },
     style,
   ];
@@ -122,9 +111,5 @@ export function MessageBubble({
 const makeStyles = (colors: ThemeColors) => StyleSheet.create({
   bubble: {
     overflow: 'hidden',
-  },
-  stickerWrap: {
-    maxWidth: BUBBLE_MAX_WIDTH,
-    gap: 6,
   },
 });

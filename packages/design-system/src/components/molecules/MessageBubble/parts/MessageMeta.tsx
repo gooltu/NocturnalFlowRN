@@ -28,10 +28,8 @@ export function MessageMeta({ direction, timestamp, status, align = 'right' }: M
   const showTicks = direction === 'outgoing' && status != null;
 
   return (
-    <View style={[styles.row, align === 'right' ? styles.alignRight : styles.alignLeft]}>
-      <Text style={[typography.labelSm, { color: skin.meta }]} numberOfLines={1}>
-        {timestamp}
-      </Text>
+    <View style={[styles.row, styles.justifyRight]}>
+      <Text style={[typography.labelSm, styles.timestamp, { color: skin.meta }]}>{timestamp}</Text>
       {showTicks && (
         <View style={status === 'seen' ? undefined : styles.muted}>
           <DeliveryStatus status={status!} tone="onAccent" />
@@ -46,12 +44,19 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.xs,
+    //flexShrink: 0,    
+    minWidth: 150
+
   },
-  alignRight: {
-    alignSelf: 'flex-end',
+  timestamp: {
+    //flexShrink: 0,
+    //minWidth: 120,
   },
-  alignLeft: {
-    alignSelf: 'flex-start',
+  justifyRight: {
+    justifyContent: 'flex-end',
+  },
+  justifyLeft: {
+    justifyContent: 'flex-start',
   },
   muted: {
     opacity: 0.7,

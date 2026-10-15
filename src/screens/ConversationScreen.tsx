@@ -202,16 +202,16 @@ function quotedContentFor(
     MessageItem,
     {
       type:
-        | 'text'
-        | 'media'
-        | 'voice'
-        | 'sticker'
-        | 'gif'
-        | 'video'
-        | 'document'
-        | 'location'
-        | 'contact'
-        | 'link';
+      | 'text'
+      | 'media'
+      | 'voice'
+      | 'sticker'
+      | 'gif'
+      | 'video'
+      | 'document'
+      | 'location'
+      | 'contact'
+      | 'link';
     }
   >
 ): QuotedContent {
@@ -300,6 +300,7 @@ function MessageRow({ item, messages, contactName, context, onSwipeReply }: Mess
               : { kind: 'image', source: { uri: item.imageUri } }
           }
           timestamp={item.timestamp}
+          status={item.sender === 'me' ? item.status ?? 'sent' : undefined}
           replyTo={replyTo}
           onSwipeReply={handleSwipeReply}
         />
@@ -323,6 +324,7 @@ function MessageRow({ item, messages, contactName, context, onSwipeReply }: Mess
           senderName={senderName}
           content={{ kind: 'sticker', source: { uri: item.imageUri } }}
           timestamp={item.timestamp}
+          status={item.sender === 'me' ? item.status ?? 'sent' : undefined}
           replyTo={replyTo}
           onSwipeReply={handleSwipeReply}
         />
@@ -339,6 +341,7 @@ function MessageRow({ item, messages, contactName, context, onSwipeReply }: Mess
           senderName={senderName}
           content={{ kind: 'gif', source: { uri: item.imageUri } }}
           timestamp={item.timestamp}
+          status={item.sender === 'me' ? item.status ?? 'sent' : undefined}
           replyTo={replyTo}
           onSwipeReply={handleSwipeReply}
         />
@@ -355,6 +358,7 @@ function MessageRow({ item, messages, contactName, context, onSwipeReply }: Mess
           senderName={senderName}
           content={{ kind: 'video', thumbnail: { uri: item.thumbnailUri }, duration: item.duration }}
           timestamp={item.timestamp}
+          status={item.sender === 'me' ? item.status ?? 'sent' : undefined}
           replyTo={replyTo}
           onSwipeReply={handleSwipeReply}
         />
@@ -468,6 +472,7 @@ function MessageRow({ item, messages, contactName, context, onSwipeReply }: Mess
             : {}),
         }}
         timestamp={item.timestamp}
+        status={item.sender === 'me' ? item.status ?? 'sent' : undefined}
         replyTo={replyTo}
         onSwipeReply={handleSwipeReply}
       />

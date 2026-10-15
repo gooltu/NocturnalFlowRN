@@ -1,7 +1,7 @@
 import React from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { fontFamilies, spacing, states, typography, useThemeColors, useStyles, ThemeColors } from '../../../../theme';
-import { bubbleSkin } from '../bubbleTheme';
+import { bubbleSkin, BUBBLE_MAX_WIDTH } from '../bubbleTheme';
 import { MessageContent as MessageContentModel, MessageDirection } from '../types';
 import { AttachmentScrim } from './AttachmentScrim';
 import { ContactContent } from './ContactContent';
@@ -11,6 +11,7 @@ import { LinkMedia } from './LinkMedia';
 import { LocationMedia } from './LocationMedia';
 import { MediaBadge, PlayHalo } from './MediaChrome';
 import { MessageMeta, MessageMetaProps } from './MessageMeta';
+import { TextContent } from './TextContent';
 import { VoiceContent } from './VoiceContent';
 
 export interface MessageContentProps {
@@ -22,6 +23,10 @@ export interface MessageContentProps {
   header?: React.ReactNode;
   /** Quoted reply block, placed the same way as the header. */
   quote?: React.ReactNode;
+  /** Raw sender name, independent of whether `header` renders it — the
+   * sticker case folds it into the sticker `Image`'s accessibility label
+   * even though a sticker never shows a visible header strip. */
+  senderName?: string;
 }
 
 const DEFAULT_ASPECT = 4 / 3;
@@ -29,20 +34,42 @@ const DEFAULT_ASPECT = 4 / 3;
 /** Renders a message body by content kind and positions the meta row, header
  * and quote for that kind. Flow content (text, voice) stacks everything in one
  * padded column; media content keeps the media full-bleed with the header and
- * caption on their own padded strips. Bubble fill and corners are the shell's
- * job; the sticker case has no bubble and is handled by the shell directly. */
-export function MessageContent({ direction, content, meta, header, quote }: MessageContentProps) {
+ * caption on their own padded strips; the sticker case has no padding and no
+ * bubble fill (that's conditional in `MessageBubble`'s shell) — just the art
+ * capped at `BUBBLE_MAX_WIDTH`, an optional caption line, then the meta. */
+export function MessageContent({ direction, content, meta, header, quote, senderName }: MessageContentProps) {
   const colors = useThemeColors();
   const styles = useStyles(makeStyles);
   const skin = bubbleSkin(colors, direction);
 
   switch (content.kind) {
+    case 'sticker':
+      return (
+        <View style={styles.stickerFrame}>
+          {header}
+          {quote}
+          <Image
+            source={content.source}
+            style={{ width: content.size ?? 150, height: content.size ?? 150 }}
+            resizeMode="contain"
+            accessibilityRole="image"
+            accessibilityLabel={senderName ? `Sticker from ${senderName}` : 'Sticker'}
+          />
+          {/* {!!content.caption && (
+            <Text style={[typography.bodyMd, { color: skin.text }]}>{content.caption}</Text>
+          )} */}
+          {/* <View style={{ backgroundColor: colors.primary }}> */}
+          <MessageMeta {...meta} />
+          {/* ?</View */}
+        </View>
+      );
+
     case 'text':
       return (
         <View style={styles.flowPad}>
           {header}
           {quote}
-          <Text style={[typography.bodyLg, { color: skin.text }]}>{content.text}</Text>
+          <TextContent direction={direction} content={content} />
           <MessageMeta {...meta} />
         </View>
       );
@@ -280,6 +307,10 @@ function Tappable({
 }
 
 const makeStyles = (colors: ThemeColors) => StyleSheet.create({
+  stickerFrame: {
+    //maxWidth: BUBBLE_MAX_WIDTH,
+    gap: 6,
+  },
   flowPad: {
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm + 2,

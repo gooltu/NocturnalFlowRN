@@ -39,6 +39,8 @@ export type MessageItem =
     imageUri: string;
     caption?: string;
     timestamp: string;
+    /** Outgoing only — incoming messages have no delivery state to report. */
+    status?: DeliveryState;
     reactions?: { emoji: string; count: number }[];
     replyToId?: string;
     /** Group-thread sender label, shown as a header above incoming bubbles
@@ -52,6 +54,8 @@ export type MessageItem =
     sender: 'me' | 'them';
     duration: string;
     timestamp: string;
+    /** Outgoing only — incoming messages have no delivery state to report. */
+    status?: DeliveryState;
     /** Relative bar heights (0-1) — set on messages sent via the recorder so
      * the bubble reflects what was actually "recorded" instead of the
      * bubble's generic default pattern. */
@@ -72,6 +76,8 @@ export type MessageItem =
     sender: 'me' | 'them';
     imageUri: string;
     timestamp: string;
+    /** Outgoing only — incoming messages have no delivery state to report. */
+    status?: DeliveryState;
     replyToId?: string;
     /** Group-thread sender label, shown as a header above incoming bubbles
      * when the chat's `context` is `'group'`. Ignored for `sender: 'me'` and
@@ -84,6 +90,8 @@ export type MessageItem =
     sender: 'me' | 'them';
     imageUri: string;
     timestamp: string;
+    /** Outgoing only — incoming messages have no delivery state to report. */
+    status?: DeliveryState;
     replyToId?: string;
     /** Group-thread sender label, shown as a header above incoming bubbles
      * when the chat's `context` is `'group'`. Ignored for `sender: 'me'` and
@@ -97,6 +105,8 @@ export type MessageItem =
     thumbnailUri: string;
     duration: string;
     timestamp: string;
+    /** Outgoing only — incoming messages have no delivery state to report. */
+    status?: DeliveryState;
     replyToId?: string;
     /** Group-thread sender label, shown as a header above incoming bubbles
      * when the chat's `context` is `'group'`. Ignored for `sender: 'me'` and
@@ -201,25 +211,25 @@ export const chats: ChatSummary[] = [
       xpMax: 100,
     },
     snippet: 'Incoming + pending/sent/delivered/seen + reply',
-    timestamp: '09:06',
+    timestamp: '09:06 AM',
     unreadCount: 0,
     messages: [
       { id: 'd1', type: 'divider', label: 'Today' },
-      { id: 'text-in', type: 'text', sender: 'them', text: 'Hey — did the export finish?', timestamp: '09:01' },
+      { id: 'text-in', type: 'text', sender: 'them', text: 'Hi', timestamp: '09:01 AM' },
       {
         id: 'text-out-pending',
         type: 'text',
         sender: 'me',
-        text: 'Hang on, checking now…',
-        timestamp: '09:02',
-        status: 'pending',
+        text: 'Hi',
+        timestamp: '09:02 AM',
+        status: 'sent',
       },
       {
         id: 'text-out-sent',
         type: 'text',
         sender: 'me',
         text: 'Yep, uploading now.',
-        timestamp: '09:02',
+        timestamp: '09:02 AM',
         status: 'sent',
       },
       {
@@ -227,7 +237,7 @@ export const chats: ChatSummary[] = [
         type: 'text',
         sender: 'me',
         text: 'Should be visible on your end.',
-        timestamp: '09:03',
+        timestamp: '09:03 AM',
         status: 'delivered',
       },
       {
@@ -235,7 +245,7 @@ export const chats: ChatSummary[] = [
         type: 'text',
         sender: 'me',
         text: 'Nice, I can see it 👍',
-        timestamp: '09:04',
+        timestamp: '09:04 AM',
         status: 'seen',
       },
       {
@@ -243,7 +253,7 @@ export const chats: ChatSummary[] = [
         type: 'text',
         sender: 'them',
         text: 'Got it, thanks!',
-        timestamp: '09:05',
+        timestamp: '09:05 AM',
         replyToId: 'text-out-seen',
       },
       {
@@ -251,7 +261,7 @@ export const chats: ChatSummary[] = [
         type: 'text',
         sender: 'me',
         text: 'Anytime — let me know if anything looks off.',
-        timestamp: '09:06',
+        timestamp: '09:06 AM',
         status: 'sent',
         replyToId: 'text-in',
       },
@@ -269,7 +279,7 @@ export const chats: ChatSummary[] = [
       xpMax: 100,
     },
     snippet: 'Incoming + outgoing, with/without caption + reply',
-    timestamp: '09:06',
+    timestamp: '09:06 AM',
     unreadCount: 0,
     messages: [
       { id: 'd1', type: 'divider', label: 'Today' },
@@ -278,7 +288,7 @@ export const chats: ChatSummary[] = [
         type: 'media',
         sender: 'them',
         imageUri: 'https://picsum.photos/seed/nocturnal-img-in-plain/800/600',
-        timestamp: '09:01',
+        timestamp: '09:01 AM',
       },
       {
         id: 'image-in-caption',
@@ -286,14 +296,15 @@ export const chats: ChatSummary[] = [
         sender: 'them',
         imageUri: 'https://picsum.photos/seed/nocturnal-img-in-caption/800/600',
         caption: 'Found this spot downtown',
-        timestamp: '09:02',
+        timestamp: '09:02 AM',
       },
       {
         id: 'image-out-plain',
         type: 'media',
         sender: 'me',
         imageUri: 'https://picsum.photos/seed/nocturnal-img-out-plain/800/600',
-        timestamp: '09:03',
+        timestamp: '09:03 AM',
+        status: 'delivered',
       },
       {
         id: 'image-out-caption',
@@ -301,7 +312,8 @@ export const chats: ChatSummary[] = [
         sender: 'me',
         imageUri: 'https://picsum.photos/seed/nocturnal-img-out-caption/800/600',
         caption: "Here's the final crop",
-        timestamp: '09:04',
+        timestamp: '09:04 AM',
+        status: 'seen',
       },
       {
         id: 'image-reply-in',
@@ -309,7 +321,7 @@ export const chats: ChatSummary[] = [
         sender: 'them',
         imageUri: 'https://picsum.photos/seed/nocturnal-img-reply-in/800/600',
         caption: 'Love this crop',
-        timestamp: '09:05',
+        timestamp: '09:05 AM',
         replyToId: 'image-out-caption',
       },
       {
@@ -317,7 +329,8 @@ export const chats: ChatSummary[] = [
         type: 'media',
         sender: 'me',
         imageUri: 'https://picsum.photos/seed/nocturnal-img-reply-out/800/600',
-        timestamp: '09:06',
+        timestamp: '09:06 AM',
+        status: 'sent',
         replyToId: 'image-in-caption',
       },
     ],
@@ -334,7 +347,7 @@ export const chats: ChatSummary[] = [
       xpMax: 100,
     },
     snippet: 'Incoming + outgoing + reply',
-    timestamp: '09:04',
+    timestamp: '09:04 AM',
     unreadCount: 0,
     messages: [
       { id: 'd1', type: 'divider', label: 'Today' },
@@ -343,21 +356,22 @@ export const chats: ChatSummary[] = [
         type: 'sticker',
         sender: 'them',
         imageUri: 'https://picsum.photos/seed/nocturnal-sticker-in/300/300',
-        timestamp: '09:01',
+        timestamp: '09:01 AM',
       },
       {
         id: 'sticker-out',
         type: 'sticker',
         sender: 'me',
         imageUri: 'https://picsum.photos/seed/nocturnal-sticker-out/300/300',
-        timestamp: '09:02',
+        timestamp: '09:02 AM',
+        status: 'delivered',
       },
       {
         id: 'sticker-reply-in',
         type: 'sticker',
         sender: 'them',
         imageUri: 'https://picsum.photos/seed/nocturnal-sticker-reply-in/300/300',
-        timestamp: '09:03',
+        timestamp: '09:03 AM',
         replyToId: 'sticker-out',
       },
       {
@@ -365,7 +379,8 @@ export const chats: ChatSummary[] = [
         type: 'sticker',
         sender: 'me',
         imageUri: 'https://picsum.photos/seed/nocturnal-sticker-reply-out/300/300',
-        timestamp: '09:04',
+        timestamp: '09:04 AM',
+        status: 'sent',
         replyToId: 'sticker-in',
       },
     ],
@@ -382,7 +397,7 @@ export const chats: ChatSummary[] = [
       xpMax: 100,
     },
     snippet: 'Incoming + outgoing + reply',
-    timestamp: '09:04',
+    timestamp: '09:04 AM',
     unreadCount: 0,
     messages: [
       { id: 'd1', type: 'divider', label: 'Today' },
@@ -391,21 +406,22 @@ export const chats: ChatSummary[] = [
         type: 'gif',
         sender: 'them',
         imageUri: 'https://picsum.photos/seed/nocturnal-gif-in/480/320',
-        timestamp: '09:01',
+        timestamp: '09:01 AM',
       },
       {
         id: 'gif-out',
         type: 'gif',
         sender: 'me',
         imageUri: 'https://picsum.photos/seed/nocturnal-gif-out/480/320',
-        timestamp: '09:02',
+        timestamp: '09:02 AM',
+        status: 'delivered',
       },
       {
         id: 'gif-reply-in',
         type: 'gif',
         sender: 'them',
         imageUri: 'https://picsum.photos/seed/nocturnal-gif-reply-in/480/320',
-        timestamp: '09:03',
+        timestamp: '09:03 AM',
         replyToId: 'gif-out',
       },
       {
@@ -413,7 +429,8 @@ export const chats: ChatSummary[] = [
         type: 'gif',
         sender: 'me',
         imageUri: 'https://picsum.photos/seed/nocturnal-gif-reply-out/480/320',
-        timestamp: '09:04',
+        timestamp: '09:04 AM',
+        status: 'sent',
         replyToId: 'gif-in',
       },
     ],
@@ -430,7 +447,7 @@ export const chats: ChatSummary[] = [
       xpMax: 100,
     },
     snippet: 'Incoming + outgoing + reply',
-    timestamp: '09:04',
+    timestamp: '09:04 AM',
     unreadCount: 0,
     messages: [
       { id: 'd1', type: 'divider', label: 'Today' },
@@ -440,7 +457,7 @@ export const chats: ChatSummary[] = [
         sender: 'them',
         thumbnailUri: 'https://picsum.photos/seed/nocturnal-video-in/800/450',
         duration: '0:45',
-        timestamp: '09:01',
+        timestamp: '09:01 AM',
       },
       {
         id: 'video-out',
@@ -448,7 +465,8 @@ export const chats: ChatSummary[] = [
         sender: 'me',
         thumbnailUri: 'https://picsum.photos/seed/nocturnal-video-out/800/450',
         duration: '1:12',
-        timestamp: '09:02',
+        timestamp: '09:02 AM',
+        status: 'delivered',
       },
       {
         id: 'video-reply-in',
@@ -456,7 +474,7 @@ export const chats: ChatSummary[] = [
         sender: 'them',
         thumbnailUri: 'https://picsum.photos/seed/nocturnal-video-reply-in/800/450',
         duration: '0:18',
-        timestamp: '09:03',
+        timestamp: '09:03 AM',
         replyToId: 'video-out',
       },
       {
@@ -465,7 +483,8 @@ export const chats: ChatSummary[] = [
         sender: 'me',
         thumbnailUri: 'https://picsum.photos/seed/nocturnal-video-reply-out/800/450',
         duration: '0:33',
-        timestamp: '09:04',
+        timestamp: '09:04 AM',
+        status: 'sent',
         replyToId: 'video-in',
       },
     ],
@@ -482,18 +501,25 @@ export const chats: ChatSummary[] = [
       xpMax: 100,
     },
     snippet: 'Incoming + outgoing + reply',
-    timestamp: '09:04',
+    timestamp: '09:04 AM',
     unreadCount: 0,
     messages: [
       { id: 'd1', type: 'divider', label: 'Today' },
-      { id: 'voice-in', type: 'voice', sender: 'them', duration: '0:09', timestamp: '09:01' },
-      { id: 'voice-out', type: 'voice', sender: 'me', duration: '0:22', timestamp: '09:02' },
+      { id: 'voice-in', type: 'voice', sender: 'them', duration: '0:09', timestamp: '09:01 AM' },
+      {
+        id: 'voice-out',
+        type: 'voice',
+        sender: 'me',
+        duration: '0:22',
+        timestamp: '09:02 AM',
+        status: 'delivered',
+      },
       {
         id: 'voice-reply-in',
         type: 'voice',
         sender: 'them',
         duration: '0:07',
-        timestamp: '09:03',
+        timestamp: '09:03 AM',
         replyToId: 'voice-out',
       },
       {
@@ -501,7 +527,8 @@ export const chats: ChatSummary[] = [
         type: 'voice',
         sender: 'me',
         duration: '0:11',
-        timestamp: '09:04',
+        timestamp: '09:04 AM',
+        status: 'sent',
         replyToId: 'voice-in',
       },
     ],
@@ -518,7 +545,7 @@ export const chats: ChatSummary[] = [
       xpMax: 100,
     },
     snippet: 'Incoming + outgoing, ready/downloading/failed + reply',
-    timestamp: '09:08',
+    timestamp: '09:08 AM',
     unreadCount: 0,
     messages: [
       { id: 'd1', type: 'divider', label: 'Today' },
@@ -529,7 +556,7 @@ export const chats: ChatSummary[] = [
         fileName: 'Design_Spec_v3.pdf',
         fileSize: '2.4 MB',
         fileType: 'pdf',
-        timestamp: '09:01',
+        timestamp: '09:01 AM',
       },
       {
         id: 'doc-out-ready',
@@ -538,7 +565,7 @@ export const chats: ChatSummary[] = [
         fileName: 'Sprint_Notes.docx',
         fileSize: '184 KB',
         fileType: 'docx',
-        timestamp: '09:02',
+        timestamp: '09:02 AM',
       },
       {
         id: 'doc-in-downloading',
@@ -548,7 +575,7 @@ export const chats: ChatSummary[] = [
         fileSize: '18.2 MB',
         fileType: 'zip',
         status: 'downloading',
-        timestamp: '09:03',
+        timestamp: '09:03 AM',
       },
       {
         id: 'doc-out-downloading',
@@ -558,7 +585,7 @@ export const chats: ChatSummary[] = [
         fileSize: '1.1 MB',
         fileType: 'pdf',
         status: 'downloading',
-        timestamp: '09:04',
+        timestamp: '09:04 AM',
       },
       {
         id: 'doc-in-failed',
@@ -568,7 +595,7 @@ export const chats: ChatSummary[] = [
         fileSize: '6.7 MB',
         fileType: 'pptx',
         status: 'failed',
-        timestamp: '09:05',
+        timestamp: '09:05 AM',
       },
       {
         id: 'doc-out-failed',
@@ -578,7 +605,7 @@ export const chats: ChatSummary[] = [
         fileSize: '340 KB',
         fileType: 'pdf',
         status: 'failed',
-        timestamp: '09:06',
+        timestamp: '09:06 AM',
       },
       {
         id: 'doc-reply-in',
@@ -587,7 +614,7 @@ export const chats: ChatSummary[] = [
         fileName: 'Sprint_Notes_Reviewed.docx',
         fileSize: '190 KB',
         fileType: 'docx',
-        timestamp: '09:07',
+        timestamp: '09:07 AM',
         replyToId: 'doc-out-ready',
       },
       {
@@ -597,7 +624,7 @@ export const chats: ChatSummary[] = [
         fileName: 'Design_Spec_v4.pdf',
         fileSize: '2.6 MB',
         fileType: 'pdf',
-        timestamp: '09:08',
+        timestamp: '09:08 AM',
         replyToId: 'doc-in-ready',
       },
     ],
@@ -614,7 +641,7 @@ export const chats: ChatSummary[] = [
       xpMax: 100,
     },
     snippet: 'Incoming + outgoing, ready/downloading/failed + reply',
-    timestamp: '09:17',
+    timestamp: '09:17 AM',
     unreadCount: 0,
     messages: [
       { id: 'd1', type: 'divider', label: 'Today' },
@@ -625,7 +652,7 @@ export const chats: ChatSummary[] = [
         label: 'Rooftop Bar',
         address: '212 8th Ave, New York, NY',
         mapImageUri: 'https://picsum.photos/seed/nocturnal-map-rooftop/800/500',
-        timestamp: '09:10',
+        timestamp: '09:10 AM',
       },
       {
         id: 'loc-out-ready',
@@ -634,7 +661,7 @@ export const chats: ChatSummary[] = [
         label: 'Studio Office',
         address: '88 Lafayette St, New York, NY',
         mapImageUri: 'https://picsum.photos/seed/nocturnal-map-studio/800/500',
-        timestamp: '09:11',
+        timestamp: '09:11 AM',
       },
       {
         id: 'loc-in-downloading',
@@ -642,7 +669,7 @@ export const chats: ChatSummary[] = [
         sender: 'them',
         label: 'Current Location',
         status: 'downloading',
-        timestamp: '09:12',
+        timestamp: '09:12 AM',
       },
       {
         id: 'loc-out-downloading',
@@ -650,7 +677,7 @@ export const chats: ChatSummary[] = [
         sender: 'me',
         label: 'Meeting Point',
         status: 'downloading',
-        timestamp: '09:13',
+        timestamp: '09:13 AM',
       },
       {
         id: 'loc-in-failed',
@@ -658,7 +685,7 @@ export const chats: ChatSummary[] = [
         sender: 'them',
         label: 'Shared Location',
         status: 'failed',
-        timestamp: '09:14',
+        timestamp: '09:14 AM',
       },
       {
         id: 'loc-out-failed',
@@ -666,7 +693,7 @@ export const chats: ChatSummary[] = [
         sender: 'me',
         label: 'Shared Location',
         status: 'failed',
-        timestamp: '09:15',
+        timestamp: '09:15 AM',
       },
       {
         id: 'loc-reply-in',
@@ -675,7 +702,7 @@ export const chats: ChatSummary[] = [
         label: 'Nearby Cafe',
         address: '10 Bond St, New York, NY',
         mapImageUri: 'https://picsum.photos/seed/nocturnal-map-reply-in/800/500',
-        timestamp: '09:16',
+        timestamp: '09:16 AM',
         replyToId: 'loc-out-ready',
       },
       {
@@ -685,7 +712,7 @@ export const chats: ChatSummary[] = [
         label: 'Parking Garage',
         address: '5 Astor Pl, New York, NY',
         mapImageUri: 'https://picsum.photos/seed/nocturnal-map-reply-out/800/500',
-        timestamp: '09:17',
+        timestamp: '09:17 AM',
         replyToId: 'loc-in-ready',
       },
     ],
@@ -702,7 +729,7 @@ export const chats: ChatSummary[] = [
       xpMax: 100,
     },
     snippet: 'Incoming + outgoing, ready/downloading/failed + reply',
-    timestamp: '09:27',
+    timestamp: '09:27 AM',
     unreadCount: 0,
     messages: [
       { id: 'd1', type: 'divider', label: 'Today' },
@@ -713,7 +740,7 @@ export const chats: ChatSummary[] = [
         name: 'Priya Nair',
         subtitle: '+1 (415) 555-0148',
         initials: 'PN',
-        timestamp: '09:20',
+        timestamp: '09:20 AM',
       },
       {
         id: 'contact-out-ready',
@@ -722,7 +749,7 @@ export const chats: ChatSummary[] = [
         name: 'Marcus Webb',
         subtitle: '+1 (212) 555-0199',
         avatarUri: 'https://picsum.photos/seed/nocturnal-contact-marcus/200/200',
-        timestamp: '09:21',
+        timestamp: '09:21 AM',
       },
       {
         id: 'contact-in-downloading',
@@ -730,7 +757,7 @@ export const chats: ChatSummary[] = [
         sender: 'them',
         name: 'Contact card',
         status: 'downloading',
-        timestamp: '09:22',
+        timestamp: '09:22 AM',
       },
       {
         id: 'contact-out-downloading',
@@ -738,7 +765,7 @@ export const chats: ChatSummary[] = [
         sender: 'me',
         name: 'Contact card',
         status: 'downloading',
-        timestamp: '09:23',
+        timestamp: '09:23 AM',
       },
       {
         id: 'contact-in-failed',
@@ -746,7 +773,7 @@ export const chats: ChatSummary[] = [
         sender: 'them',
         name: 'Contact card',
         status: 'failed',
-        timestamp: '09:24',
+        timestamp: '09:24 AM',
       },
       {
         id: 'contact-out-failed',
@@ -754,7 +781,7 @@ export const chats: ChatSummary[] = [
         sender: 'me',
         name: 'Contact card',
         status: 'failed',
-        timestamp: '09:25',
+        timestamp: '09:25 AM',
       },
       {
         id: 'contact-reply-in',
@@ -763,7 +790,7 @@ export const chats: ChatSummary[] = [
         name: 'Elena Ruiz',
         subtitle: '+1 (650) 555-0173',
         initials: 'ER',
-        timestamp: '09:26',
+        timestamp: '09:26 AM',
         replyToId: 'contact-out-ready',
       },
       {
@@ -773,7 +800,7 @@ export const chats: ChatSummary[] = [
         name: 'Sam Torres',
         subtitle: '+1 (917) 555-0122',
         initials: 'ST',
-        timestamp: '09:27',
+        timestamp: '09:27 AM',
         replyToId: 'contact-in-ready',
       },
     ],
@@ -790,7 +817,7 @@ export const chats: ChatSummary[] = [
       xpMax: 100,
     },
     snippet: 'Incoming + outgoing, ready/downloading/failed + reply',
-    timestamp: '09:37',
+    timestamp: '09:37 AM',
     unreadCount: 0,
     messages: [
       { id: 'd1', type: 'divider', label: 'Today' },
@@ -803,7 +830,7 @@ export const chats: ChatSummary[] = [
         description: 'A rundown of the latest architecture and tooling improvements.',
         siteName: 'React Native Blog',
         imageUri: 'https://picsum.photos/seed/nocturnal-link-rn/800/420',
-        timestamp: '09:30',
+        timestamp: '09:30 AM',
       },
       {
         id: 'link-out-ready',
@@ -814,7 +841,7 @@ export const chats: ChatSummary[] = [
         description: 'New APIs, config plugins and platform support in this release.',
         siteName: 'Expo',
         imageUri: 'https://picsum.photos/seed/nocturnal-link-expo/800/420',
-        timestamp: '09:31',
+        timestamp: '09:31 AM',
       },
       {
         id: 'link-in-downloading',
@@ -822,7 +849,7 @@ export const chats: ChatSummary[] = [
         sender: 'them',
         url: 'youtube.com/watch?v=abc123',
         status: 'downloading',
-        timestamp: '09:32',
+        timestamp: '09:32 AM',
       },
       {
         id: 'link-out-downloading',
@@ -830,7 +857,7 @@ export const chats: ChatSummary[] = [
         sender: 'me',
         url: 'medium.com/@team/design-tokens',
         status: 'downloading',
-        timestamp: '09:33',
+        timestamp: '09:33 AM',
       },
       {
         id: 'link-in-failed',
@@ -838,7 +865,7 @@ export const chats: ChatSummary[] = [
         sender: 'them',
         url: 'news.ycombinator.com/item?id=1',
         status: 'failed',
-        timestamp: '09:34',
+        timestamp: '09:34 AM',
       },
       {
         id: 'link-out-failed',
@@ -846,7 +873,7 @@ export const chats: ChatSummary[] = [
         sender: 'me',
         url: 'github.com/expo/expo',
         status: 'failed',
-        timestamp: '09:35',
+        timestamp: '09:35 AM',
       },
       {
         id: 'link-reply-in',
@@ -857,7 +884,7 @@ export const chats: ChatSummary[] = [
         description: 'Cloud builds for iOS and Android from a single command.',
         siteName: 'Expo',
         imageUri: 'https://picsum.photos/seed/nocturnal-link-reply-in/800/420',
-        timestamp: '09:36',
+        timestamp: '09:36 AM',
         replyToId: 'link-out-ready',
       },
       {
@@ -869,7 +896,7 @@ export const chats: ChatSummary[] = [
         description: 'Set up your environment and create your first app.',
         siteName: 'React Native',
         imageUri: 'https://picsum.photos/seed/nocturnal-link-reply-out/800/420',
-        timestamp: '09:37',
+        timestamp: '09:37 AM',
         replyToId: 'link-in-ready',
       },
     ],
@@ -893,7 +920,7 @@ export const chats: ChatSummary[] = [
     },
     context: 'group',
     snippet: 'Priya, Marcus + you — sender headers',
-    timestamp: '09:03',
+    timestamp: '09:03 AM',
     unreadCount: 0,
     messages: [
       { id: 'd1', type: 'divider', label: 'Today' },
@@ -903,7 +930,7 @@ export const chats: ChatSummary[] = [
         sender: 'them',
         senderName: 'Priya Nair',
         text: 'Anyone free to review the PR?',
-        timestamp: '09:01',
+        timestamp: '09:01 AM',
       },
       {
         id: 'text-group-marcus',
@@ -911,14 +938,14 @@ export const chats: ChatSummary[] = [
         sender: 'them',
         senderName: 'Marcus Webb',
         text: 'I can take a look after lunch.',
-        timestamp: '09:02',
+        timestamp: '09:02 AM',
       },
       {
         id: 'text-group-me',
         type: 'text',
         sender: 'me',
         text: "I'll check it now.",
-        timestamp: '09:03',
+        timestamp: '09:03 AM',
         status: 'sent',
       },
     ],
@@ -936,7 +963,7 @@ export const chats: ChatSummary[] = [
     },
     context: 'group',
     snippet: 'Priya, Marcus + you — sender headers',
-    timestamp: '09:03',
+    timestamp: '09:03 AM',
     unreadCount: 0,
     messages: [
       { id: 'd1', type: 'divider', label: 'Today' },
@@ -946,7 +973,7 @@ export const chats: ChatSummary[] = [
         sender: 'them',
         senderName: 'Priya Nair',
         imageUri: 'https://picsum.photos/seed/nocturnal-img-group-priya/800/600',
-        timestamp: '09:01',
+        timestamp: '09:01 AM',
       },
       {
         id: 'image-group-marcus',
@@ -955,14 +982,15 @@ export const chats: ChatSummary[] = [
         senderName: 'Marcus Webb',
         imageUri: 'https://picsum.photos/seed/nocturnal-img-group-marcus/800/600',
         caption: 'From the offsite',
-        timestamp: '09:02',
+        timestamp: '09:02 AM',
       },
       {
         id: 'image-group-me',
         type: 'media',
         sender: 'me',
         imageUri: 'https://picsum.photos/seed/nocturnal-img-group-me/800/600',
-        timestamp: '09:03',
+        timestamp: '09:03 AM',
+        status: 'sent',
       },
     ],
   },
@@ -979,7 +1007,7 @@ export const chats: ChatSummary[] = [
     },
     context: 'group',
     snippet: 'Priya, Marcus + you — sender headers',
-    timestamp: '09:03',
+    timestamp: '09:03 AM',
     unreadCount: 0,
     messages: [
       { id: 'd1', type: 'divider', label: 'Today' },
@@ -989,7 +1017,7 @@ export const chats: ChatSummary[] = [
         sender: 'them',
         senderName: 'Priya Nair',
         imageUri: 'https://picsum.photos/seed/nocturnal-sticker-group-priya/300/300',
-        timestamp: '09:01',
+        timestamp: '09:01 AM',
       },
       {
         id: 'sticker-group-marcus',
@@ -997,14 +1025,15 @@ export const chats: ChatSummary[] = [
         sender: 'them',
         senderName: 'Marcus Webb',
         imageUri: 'https://picsum.photos/seed/nocturnal-sticker-group-marcus/300/300',
-        timestamp: '09:02',
+        timestamp: '09:02 AM',
       },
       {
         id: 'sticker-group-me',
         type: 'sticker',
         sender: 'me',
         imageUri: 'https://picsum.photos/seed/nocturnal-sticker-group-me/300/300',
-        timestamp: '09:03',
+        timestamp: '09:03 AM',
+        status: 'sent',
       },
     ],
   },
@@ -1021,7 +1050,7 @@ export const chats: ChatSummary[] = [
     },
     context: 'group',
     snippet: 'Priya, Marcus + you — sender headers',
-    timestamp: '09:03',
+    timestamp: '09:03 AM',
     unreadCount: 0,
     messages: [
       { id: 'd1', type: 'divider', label: 'Today' },
@@ -1031,7 +1060,7 @@ export const chats: ChatSummary[] = [
         sender: 'them',
         senderName: 'Priya Nair',
         imageUri: 'https://picsum.photos/seed/nocturnal-gif-group-priya/480/320',
-        timestamp: '09:01',
+        timestamp: '09:01 AM',
       },
       {
         id: 'gif-group-marcus',
@@ -1039,14 +1068,15 @@ export const chats: ChatSummary[] = [
         sender: 'them',
         senderName: 'Marcus Webb',
         imageUri: 'https://picsum.photos/seed/nocturnal-gif-group-marcus/480/320',
-        timestamp: '09:02',
+        timestamp: '09:02 AM',
       },
       {
         id: 'gif-group-me',
         type: 'gif',
         sender: 'me',
         imageUri: 'https://picsum.photos/seed/nocturnal-gif-group-me/480/320',
-        timestamp: '09:03',
+        timestamp: '09:03 AM',
+        status: 'sent',
       },
     ],
   },
@@ -1063,7 +1093,7 @@ export const chats: ChatSummary[] = [
     },
     context: 'group',
     snippet: 'Priya, Marcus + you — sender headers',
-    timestamp: '09:03',
+    timestamp: '09:03 AM',
     unreadCount: 0,
     messages: [
       { id: 'd1', type: 'divider', label: 'Today' },
@@ -1074,7 +1104,7 @@ export const chats: ChatSummary[] = [
         senderName: 'Priya Nair',
         thumbnailUri: 'https://picsum.photos/seed/nocturnal-video-group-priya/800/450',
         duration: '0:28',
-        timestamp: '09:01',
+        timestamp: '09:01 AM',
       },
       {
         id: 'video-group-marcus',
@@ -1083,7 +1113,7 @@ export const chats: ChatSummary[] = [
         senderName: 'Marcus Webb',
         thumbnailUri: 'https://picsum.photos/seed/nocturnal-video-group-marcus/800/450',
         duration: '0:52',
-        timestamp: '09:02',
+        timestamp: '09:02 AM',
       },
       {
         id: 'video-group-me',
@@ -1091,7 +1121,8 @@ export const chats: ChatSummary[] = [
         sender: 'me',
         thumbnailUri: 'https://picsum.photos/seed/nocturnal-video-group-me/800/450',
         duration: '0:14',
-        timestamp: '09:03',
+        timestamp: '09:03 AM',
+        status: 'sent',
       },
     ],
   },
@@ -1108,7 +1139,7 @@ export const chats: ChatSummary[] = [
     },
     context: 'group',
     snippet: 'Priya, Marcus + you — sender headers',
-    timestamp: '09:03',
+    timestamp: '09:03 AM',
     unreadCount: 0,
     messages: [
       { id: 'd1', type: 'divider', label: 'Today' },
@@ -1118,7 +1149,7 @@ export const chats: ChatSummary[] = [
         sender: 'them',
         senderName: 'Priya Nair',
         duration: '0:12',
-        timestamp: '09:01',
+        timestamp: '09:01 AM',
       },
       {
         id: 'voice-group-marcus',
@@ -1126,14 +1157,15 @@ export const chats: ChatSummary[] = [
         sender: 'them',
         senderName: 'Marcus Webb',
         duration: '0:31',
-        timestamp: '09:02',
+        timestamp: '09:02 AM',
       },
       {
         id: 'voice-group-me',
         type: 'voice',
         sender: 'me',
         duration: '0:08',
-        timestamp: '09:03',
+        timestamp: '09:03 AM',
+        status: 'sent',
       },
     ],
   },
@@ -1150,7 +1182,7 @@ export const chats: ChatSummary[] = [
     },
     context: 'group',
     snippet: 'Priya, Marcus + you — sender headers',
-    timestamp: '09:03',
+    timestamp: '09:03 AM',
     unreadCount: 0,
     messages: [
       { id: 'd1', type: 'divider', label: 'Today' },
@@ -1162,7 +1194,7 @@ export const chats: ChatSummary[] = [
         fileName: 'Agenda.pdf',
         fileSize: '210 KB',
         fileType: 'pdf',
-        timestamp: '09:01',
+        timestamp: '09:01 AM',
       },
       {
         id: 'document-group-marcus',
@@ -1172,7 +1204,7 @@ export const chats: ChatSummary[] = [
         fileName: 'Budget_Q3.xlsx',
         fileSize: '96 KB',
         fileType: 'xlsx',
-        timestamp: '09:02',
+        timestamp: '09:02 AM',
       },
       {
         id: 'document-group-me',
@@ -1181,7 +1213,7 @@ export const chats: ChatSummary[] = [
         fileName: 'Notes.docx',
         fileSize: '48 KB',
         fileType: 'docx',
-        timestamp: '09:03',
+        timestamp: '09:03 AM',
       },
     ],
   },
@@ -1198,7 +1230,7 @@ export const chats: ChatSummary[] = [
     },
     context: 'group',
     snippet: 'Priya, Marcus + you — sender headers',
-    timestamp: '09:03',
+    timestamp: '09:03 AM',
     unreadCount: 0,
     messages: [
       { id: 'd1', type: 'divider', label: 'Today' },
@@ -1210,7 +1242,7 @@ export const chats: ChatSummary[] = [
         label: 'Conference Center',
         address: '655 W 34th St, New York, NY',
         mapImageUri: 'https://picsum.photos/seed/nocturnal-map-group-priya/800/500',
-        timestamp: '09:01',
+        timestamp: '09:01 AM',
       },
       {
         id: 'location-group-marcus',
@@ -1220,7 +1252,7 @@ export const chats: ChatSummary[] = [
         label: 'Lunch Spot',
         address: '30 W 26th St, New York, NY',
         mapImageUri: 'https://picsum.photos/seed/nocturnal-map-group-marcus/800/500',
-        timestamp: '09:02',
+        timestamp: '09:02 AM',
       },
       {
         id: 'location-group-me',
@@ -1229,7 +1261,7 @@ export const chats: ChatSummary[] = [
         label: "Meeting In 10",
         address: '20 W 34th St, New York, NY',
         mapImageUri: 'https://picsum.photos/seed/nocturnal-map-group-me/800/500',
-        timestamp: '09:03',
+        timestamp: '09:03 AM',
       },
     ],
   },
@@ -1246,7 +1278,7 @@ export const chats: ChatSummary[] = [
     },
     context: 'group',
     snippet: 'Priya, Marcus + you — sender headers',
-    timestamp: '09:03',
+    timestamp: '09:03 AM',
     unreadCount: 0,
     messages: [
       { id: 'd1', type: 'divider', label: 'Today' },
@@ -1258,7 +1290,7 @@ export const chats: ChatSummary[] = [
         name: 'Elena Ruiz',
         subtitle: '+1 (650) 555-0173',
         initials: 'ER',
-        timestamp: '09:01',
+        timestamp: '09:01 AM',
       },
       {
         id: 'contact-group-marcus',
@@ -1268,7 +1300,7 @@ export const chats: ChatSummary[] = [
         name: 'Sam Torres',
         subtitle: '+1 (917) 555-0122',
         initials: 'ST',
-        timestamp: '09:02',
+        timestamp: '09:02 AM',
       },
       {
         id: 'contact-group-me',
@@ -1277,7 +1309,7 @@ export const chats: ChatSummary[] = [
         name: 'Dana Kim',
         subtitle: '+1 (312) 555-0166',
         initials: 'DK',
-        timestamp: '09:03',
+        timestamp: '09:03 AM',
       },
     ],
   },
@@ -1294,7 +1326,7 @@ export const chats: ChatSummary[] = [
     },
     context: 'group',
     snippet: 'Priya, Marcus + you — sender headers',
-    timestamp: '09:03',
+    timestamp: '09:03 AM',
     unreadCount: 0,
     messages: [
       { id: 'd1', type: 'divider', label: 'Today' },
@@ -1308,7 +1340,7 @@ export const chats: ChatSummary[] = [
         description: 'Latest updates to components and variables.',
         siteName: 'Figma Blog',
         imageUri: 'https://picsum.photos/seed/nocturnal-link-group-priya/800/420',
-        timestamp: '09:01',
+        timestamp: '09:01 AM',
       },
       {
         id: 'link-group-marcus',
@@ -1320,7 +1352,7 @@ export const chats: ChatSummary[] = [
         description: 'New database views and AI features.',
         siteName: 'Notion Blog',
         imageUri: 'https://picsum.photos/seed/nocturnal-link-group-marcus/800/420',
-        timestamp: '09:02',
+        timestamp: '09:02 AM',
       },
       {
         id: 'link-group-me',
@@ -1331,7 +1363,7 @@ export const chats: ChatSummary[] = [
         description: 'Weekly product updates from the Linear team.',
         siteName: 'Linear',
         imageUri: 'https://picsum.photos/seed/nocturnal-link-group-me/800/420',
-        timestamp: '09:03',
+        timestamp: '09:03 AM',
       },
     ],
   },

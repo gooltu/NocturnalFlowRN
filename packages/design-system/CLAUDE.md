@@ -175,12 +175,19 @@ change, in this package, not in the consumer).
 ```
 
 `content: MessageContent` is a discriminated union on `kind`:
-- `{ kind: 'text', text }`
+- `{ kind: 'text', text }` — normally renders with the timestamp (and, outgoing, delivery
+  ticks) on its own row underneath, same as every other kind below. A message short enough
+  to confidently stay on one line (currently ≤16 chars, no line breaks —
+  `COMPACT_TEXT_MAX_LENGTH`/`isCompactText` in `MessageContent.tsx`) automatically renders
+  through a second, compact variant instead, with the timestamp trailing inline at the end
+  of that line (e.g. "Hi  09:01"). Chosen from the text alone, not a prop — ordinary
+  messages are unaffected.
 - `{ kind: 'image', source, aspectRatio?, onPress? }`
 - `{ kind: 'imageGroup', sources: ImageSourcePropType[], onPressItem?(index) }` — 2×2 grid, `+N`
   overflow badge past 4.
 - `{ kind: 'textImage', source, caption, aspectRatio?, onPress? }`
-- `{ kind: 'sticker', source, size? }` — no bubble fill, art + timestamp only.
+- `{ kind: 'sticker', source, size?, caption? }` — no bubble fill; art, an optional caption
+  line, then timestamp.
 - `{ kind: 'gif', source, aspectRatio?, onPress? }` — renders a `GIF` badge.
 - `{ kind: 'video', thumbnail, duration, aspectRatio?, onPlay? }`
 - `{ kind: 'voice', duration, waveform?: number[], progress?: number, playing?, onTogglePlay? }`
