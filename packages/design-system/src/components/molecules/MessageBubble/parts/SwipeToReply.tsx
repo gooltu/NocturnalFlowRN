@@ -19,6 +19,13 @@ export interface SwipeToReplyProps {
   direction: MessageDirection;
   onReply: () => void;
   children: React.ReactNode;
+  /** When true, this wrapper fills its row instead of shrink-wrapping to
+   * `children`'s natural width — for bubbles whose width cap is enforced by
+   * a flex sibling further up the tree (`MessageBubble`'s text-bubble width
+   * limiter), which needs every layer in between to pass its squeeze through
+   * rather than opt out of it via this component's usual alignSelf-based
+   * shrink-wrap. */
+  stretch?: boolean;
 }
 
 const THRESHOLD = 56;
@@ -37,7 +44,7 @@ function rubberband(overshoot: number, dimension: number, constant = 0.55) {
  * Always springs back — a fire-and-return gesture, not a persistent reveal.
  * `activeOffsetX`/`failOffsetY` restrict activation to deliberate horizontal
  * intent so this never steals the message list's vertical scroll. */
-export function SwipeToReply({ direction, onReply, children }: SwipeToReplyProps) {
+export function SwipeToReply({ direction, onReply, children, stretch }: SwipeToReplyProps) {
   const colors = useThemeColors();
   const styles = useStyles(makeStyles);
   const sign = direction === 'outgoing' ? -1 : 1;
@@ -84,14 +91,19 @@ export function SwipeToReply({ direction, onReply, children }: SwipeToReplyProps
 
   return (
     <GestureDetector gesture={pan}>
-      <View style={[styles.wrap, direction === 'outgoing' ? styles.alignEnd : styles.alignStart]}>
+      <View
+        style={[
+          styles.wrap,
+          stretch ? styles.stretchSelf : direction === 'outgoing' ? styles.alignEnd : styles.alignStart,
+        ]}
+      >
         <Animated.View
           pointerEvents="none"
           style={[styles.icon, direction === 'outgoing' ? styles.iconRight : styles.iconLeft, iconStyle]}
         >
           <Reply size={iconTokens.sizeMd} strokeWidth={iconTokens.strokeWidth} color={colors.onSurfaceVariant} />
         </Animated.View>
-        <Animated.View style={bubbleStyle}>{children}</Animated.View>
+        <Animated.View style={[bubbleStyle, stretch && styles.expand]}>{children}</Animated.View>
       </View>
     </GestureDetector>
   );
@@ -108,6 +120,19 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
   alignEnd: {
     alignSelf: 'flex-end',
     alignItems: 'flex-end',
+  },
+  stretchSelf: {
+    alignSelf: 'stretch',
+  },
+  expand: {
+    // flexBasis: 0 would tell Yoga to ignore this node's own content size,
+    // which collapses `widthLimiterContent`'s flexBasis: 'auto' measurement
+    // (in MessageBubble) to zero — the bubble rendering at zero width. Only
+    // flexShrink is needed: 'auto' keeps the natural content size for that
+    // measurement, while still allowing this to shrink down when the outer
+    // width-limiter row actually squeezes it below that natural size.
+    flexShrink: 1,
+    flexBasis: 'auto',
   },
   icon: {
     position: 'absolute',

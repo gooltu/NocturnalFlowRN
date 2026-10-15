@@ -14,5 +14,5 @@ export function TextContent({ direction, content }: TextContentProps) {
   const colors = useThemeColors();
   const skin = bubbleSkin(colors, direction);
 
-  return <Text style={[typography.bodyLg, { color: skin.text, minWidth: 150 }]}>{content.text}</Text>;
+  return <Text style={[typography.bodyLg, { color: skin.text }]}>{content.text}</Text>;
 }

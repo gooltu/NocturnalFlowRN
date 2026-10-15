@@ -58,17 +58,18 @@ export function MessageBubble({
 
   const alignSelf: 'flex-end' | 'flex-start' = isOutgoing ? 'flex-end' : 'flex-start';
 
+  const isMedia = MEDIA_KINDS.has(content.kind);
+  const isSticker = content.kind === 'sticker';
+  const isText = content.kind === 'text';
+
   const wrap = (element: React.ReactNode) =>
     onSwipeReply ? (
-      <SwipeToReply direction={direction} onReply={onSwipeReply}>
+      <SwipeToReply direction={direction} onReply={onSwipeReply} stretch={isText}>
         {element}
       </SwipeToReply>
     ) : (
       element
     );
-
-  const isMedia = MEDIA_KINDS.has(content.kind);
-  const isSticker = content.kind === 'sticker';
 
   const inner = (
     <MessageContent
@@ -89,27 +90,62 @@ export function MessageBubble({
     !isSticker && skin.corners,
     !isSticker && { backgroundColor: skin.fill },
     isMedia && { width: windowWidth * MEDIA_BUBBLE_WIDTH_FRACTION },
-    { alignSelf },
+    // Text bubbles are positioned by the width-limiter row below instead —
+    // this own alignSelf would just fight that row's flex-shrink squeeze.
+    !isText && { alignSelf },
     style,
   ];
 
-  if (!onPress && !onLongPress) {
-    return wrap(<View style={bubbleStyle}>{inner}</View>);
+  const bubbleElement =
+    !onPress && !onLongPress ? (
+      <View style={bubbleStyle}>{inner}</View>
+    ) : (
+      <Pressable
+        onPress={onPress}
+        onLongPress={onLongPress}
+        style={({ pressed }) => [...bubbleStyle, pressed && { opacity: states.pressedOpacity }]}
+      >
+        {inner}
+      </Pressable>
+    );
+
+  const wrapped = wrap(bubbleElement);
+
+  if (!isText) {
+    return wrapped;
   }
 
-  return wrap(
-    <Pressable
-      onPress={onPress}
-      onLongPress={onLongPress}
-      style={({ pressed }) => [...bubbleStyle, pressed && { opacity: states.pressedOpacity }]}
-    >
-      {inner}
-    </Pressable>
+  // Caps a text bubble at ~75% of its row's width using only flexbox: the
+  // filler reserves at least 25% (flexShrink: 0 pins it there), so the
+  // content cell's flexShrink: 1 only has the remaining ≤75% to work with —
+  // shrinking below its natural size when content would exceed that, and
+  // doing nothing (staying at its smaller natural size) otherwise. No
+  // minWidth/maxWidth/explicit width anywhere in this mechanism.
+  return (
+    <View style={styles.widthLimiterRow}>
+      {isOutgoing && <View style={styles.widthLimiterFiller} />}
+      <View style={styles.widthLimiterContent}>{wrapped}</View>
+      {!isOutgoing && <View style={styles.widthLimiterFiller} />}
+    </View>
   );
 }
 
 const makeStyles = (colors: ThemeColors) => StyleSheet.create({
   bubble: {
     overflow: 'hidden',
+  },
+  widthLimiterRow: {
+    flexDirection: 'row',
+    alignSelf: 'stretch',
+  },
+  widthLimiterFiller: {
+    flexGrow: 1,
+    flexShrink: 0,
+    flexBasis: '25%',
+  },
+  widthLimiterContent: {
+    flexGrow: 0,
+    flexShrink: 1,
+    flexBasis: 'auto',
   },
 });

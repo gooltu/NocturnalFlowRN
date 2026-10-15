@@ -29,7 +29,7 @@ export function MessageMeta({ direction, timestamp, status, align = 'right' }: M
 
   return (
     <View style={[styles.row, styles.justifyRight]}>
-      <Text style={[typography.labelSm, styles.timestamp, { color: skin.meta }]}>{timestamp}</Text>
+      <Text style={[typography.labelSm, { color: skin.meta }]}>{timestamp}</Text>
       {showTicks && (
         <View style={status === 'seen' ? undefined : styles.muted}>
           <DeliveryStatus status={status!} tone="onAccent" />
@@ -44,13 +44,6 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.xs,
-    //flexShrink: 0,    
-    minWidth: 150
-
-  },
-  timestamp: {
-    //flexShrink: 0,
-    //minWidth: 120,
   },
   justifyRight: {
     justifyContent: 'flex-end',
