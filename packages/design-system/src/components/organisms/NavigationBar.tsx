@@ -2,6 +2,7 @@ import React from 'react';
 import { LucideIcon } from 'lucide-react-native';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { subTestID } from '../../utils';
 import { radius, spacing, states, typography, useThemeColors, useStyles, ThemeColors } from '../../theme';
 
 /** One tab's identity — the consumer supplies its own key union (typically
@@ -18,6 +19,8 @@ export interface NavigationBarProps<T extends string = string> {
   tabs: NavTabItem<T>[];
   active: T;
   onChange: (tab: T) => void;
+  /** Stable ID for E2E tools, set on the bar root; each tab gets `.tab.<key>`. */
+  testID?: string;
 }
 
 /** Floating-capsule tab bar — ~40% transparent, with a pill highlight and
@@ -25,19 +28,23 @@ export interface NavigationBarProps<T extends string = string> {
  * self-overlaid); a host that wants it fixed to the screen bottom, such as a
  * `bottom-tabs` custom `tabBar`, positions it. Controlled via `tabs`/`active`/
  * `onChange` only — no navigation-library dependency. */
-export function NavigationBar<T extends string = string>({ tabs, active, onChange }: NavigationBarProps<T>) {
+export function NavigationBar<T extends string = string>({ tabs, active, onChange, testID }: NavigationBarProps<T>) {
   const colors = useThemeColors();
   const styles = useStyles(makeStyles);
   const insets = useSafeAreaInsets();
 
   return (
-    <View style={[styles.wrap, { paddingBottom: Math.max(insets.bottom, spacing.sm) }]}>
+    <View testID={testID} style={[styles.wrap, { paddingBottom: Math.max(insets.bottom, spacing.sm) }]}>
       <View style={styles.bar}>
         {tabs.map(({ key, label, icon: Icon }) => {
           const isActive = key === active;
           return (
             <Pressable
               key={key}
+              testID={subTestID(testID, 'tab', key)}
+              accessibilityRole="tab"
+              accessibilityLabel={label}
+              accessibilityState={{ selected: isActive }}
               onPress={() => onChange(key)}
               style={({ pressed }) => [
                 styles.tab,

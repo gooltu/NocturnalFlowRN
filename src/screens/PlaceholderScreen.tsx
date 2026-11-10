@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { EmptyState, ThemeColors, useStyles } from '@nocturnalflow/design-system';
+import { EmptyState, testIDSegment, ThemeColors, useStyles } from '@nocturnalflow/design-system';
 
 export interface PlaceholderScreenProps {
   icon: React.ComponentProps<typeof EmptyState>['icon'];
@@ -15,9 +15,10 @@ export interface PlaceholderScreenProps {
  * Contacts/Settings tabs, none of which have real content yet. */
 export function PlaceholderScreen({ icon, title, description, actionLabel, onAction }: PlaceholderScreenProps) {
   const styles = useStyles(makeStyles);
+  const testID = `placeholder.${testIDSegment(title)}`;
   return (
-    <SafeAreaView style={[styles.root, styles.centered]} edges={[]}>
-      <EmptyState icon={icon} title={title} description={description} actionLabel={actionLabel} onAction={onAction} />
+    <SafeAreaView testID={testID} style={[styles.root, styles.centered]} edges={[]}>
+      <EmptyState testID={`${testID}.empty`} icon={icon} title={title} description={description} actionLabel={actionLabel} onAction={onAction} />
     </SafeAreaView>
   );
 }

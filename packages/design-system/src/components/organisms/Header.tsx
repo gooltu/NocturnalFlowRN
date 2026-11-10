@@ -3,6 +3,7 @@ import { ChevronLeft, LucideIcon } from 'lucide-react-native';
 import { ImageSourcePropType, Pressable, StyleSheet, Text, View } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { subTestID } from '../../utils';
 import { fontFamilies, spacing, states, typography, useTheme, useStyles, ThemeColors } from '../../theme';
 import { Avatar, PresenceState } from '../atoms/Avatar';
 import { IconButton } from '../atoms/IconButton';
@@ -54,6 +55,9 @@ export interface HeaderProps {
   gamebar?: HeaderGamebar;
   /** Escape hatch for trailing content that `actions` can't express. Replaces `actions`. */
   rightSlot?: ReactNode;
+  /** Stable ID for E2E tools, set on the header root. Children derive from it:
+   * `.back`, `.identity`, `.title`, `.subtitle`, `.action.<key>`, `.gamebar`. */
+  testID?: string;
 }
 
 /** Sticky top bar with a blurred backdrop over `background`. Every region is
@@ -72,6 +76,7 @@ export function Header({
   actions,
   gamebar,
   rightSlot,
+  testID,
 }: HeaderProps) {
   const { colors, themeName } = useTheme();
   const styles = useStyles(makeStyles);
@@ -86,13 +91,14 @@ export function Header({
       tint={themeName === 'dark' ? 'dark' : 'light'}
       style={[styles.base, { paddingTop: insets.top }]}
       accessibilityRole="header"
+      testID={testID}
     >
       <View style={styles.headerMain}>
         {backVisible && (
-          <IconButton icon={ChevronLeft} onPress={onBack} size="lg" />
+          <IconButton icon={ChevronLeft} onPress={onBack} size="lg" label="Back" testID={subTestID(testID, 'back')} />
         )}
 
-        <IdentityWrap onPress={onIdentityPress} label={title}>
+        <IdentityWrap onPress={onIdentityPress} label={title} testID={subTestID(testID, 'identity')}>
           {avatar && (
             <Avatar
               source={avatar.source}
@@ -102,11 +108,11 @@ export function Header({
             />
           )}
           <View style={styles.identityText}>
-            <Text style={styles.title} numberOfLines={1}>
+            <Text testID={subTestID(testID, 'title')} style={styles.title} numberOfLines={1}>
               {title}
             </Text>
             {subtitle && (
-              <Text style={[typography.labelSm, { color: subtitleColor }]} numberOfLines={1}>
+              <Text testID={subTestID(testID, 'subtitle')} style={[typography.labelSm, { color: subtitleColor }]} numberOfLines={1}>
                 {subtitle}
               </Text>
             )}
@@ -122,6 +128,7 @@ export function Header({
                   source={action.image}
                   size={24}
                   label={action.label}
+                  testID={subTestID(testID, 'action', action.key)}
                   onPress={action.onPress}
                   disabled={action.disabled}
                 />
@@ -129,6 +136,8 @@ export function Header({
                 <IconButton
                   key={action.key}
                   icon={action.icon}
+                  label={action.label}
+                  testID={subTestID(testID, 'action', action.key)}
                   onPress={action.onPress}
                   size="md"
                   active={action.active}
@@ -140,7 +149,7 @@ export function Header({
         )}
       </View>
 
-      {gamebar && <Gamebar {...gamebar} />}
+      {gamebar && <Gamebar {...gamebar} testID={subTestID(testID, 'gamebar')} />}
     </BlurView>
   );
 }
@@ -150,18 +159,21 @@ export function Header({
 function IdentityWrap({
   onPress,
   label,
+  testID,
   children,
 }: {
   onPress?: () => void;
   label: string;
+  testID?: string;
   children: ReactNode;
 }) {
   const styles = useStyles(makeStyles);
   if (!onPress) {
-    return <View style={styles.identity}>{children}</View>;
+    return <View testID={testID} style={styles.identity}>{children}</View>;
   }
   return (
     <Pressable
+      testID={testID}
       onPress={onPress}
       hitSlop={2}
       accessibilityRole="button"
@@ -173,12 +185,12 @@ function IdentityWrap({
   );
 }
 
-function Gamebar({ level, xpCurrent, xpMax }: HeaderGamebar) {
+function Gamebar({ level, xpCurrent, xpMax, testID }: HeaderGamebar & { testID?: string }) {
   const styles = useStyles(makeStyles);
   const xpLabel = `${xpCurrent}/${xpMax}`;
 
   return (
-    <View style={styles.gamebar}>
+    <View testID={testID} style={styles.gamebar}>
       <Text style={styles.gamebarLabel}>{`Level ${String(level).padStart(3, '0')}`}</Text>
       <View style={styles.gamebarBar}>
         <ProgressBar progress={xpMax > 0 ? xpCurrent / xpMax : 0} />

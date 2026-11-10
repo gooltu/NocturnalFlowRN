@@ -1,18 +1,21 @@
 import React from 'react';
 import { ActivityIndicator, FlatList, Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { subTestID } from '../../../../utils';
 import { radius, spacing, states, typography, useThemeColors, useStyles, ThemeColors } from '../../../../theme';
 import { MediaSearchState, PickerMediaItem } from '../types';
 
 export interface MediaGridProps {
   state: MediaSearchState;
   onSelect: (item: PickerMediaItem) => void;
+  /** E2E base ID; the list gets `.grid`, each cell `.item.<index>`. */
+  testID?: string;
 }
 
 const COLUMNS = 3;
 
 /** Shared Sticker/GIF tab body: a square-thumbnail grid over a
  * `MediaSearchState`, with loading/error/empty states. Tap sends. */
-export function MediaGrid({ state, onSelect }: MediaGridProps) {
+export function MediaGrid({ state, onSelect, testID }: MediaGridProps) {
   const colors = useThemeColors();
   const styles = useStyles(makeStyles);
 
@@ -42,12 +45,14 @@ export function MediaGrid({ state, onSelect }: MediaGridProps) {
 
   return (
     <FlatList
+      testID={subTestID(testID, 'grid')}
       data={state.items}
       keyExtractor={(item) => String(item.id)}
       numColumns={COLUMNS}
       contentContainerStyle={styles.content}
-      renderItem={({ item }) => (
+      renderItem={({ item, index }) => (
         <Pressable
+          testID={subTestID(testID, 'item', index)}
           onPress={() => onSelect(item)}
           style={({ pressed }) => [styles.cell, pressed && { opacity: states.pressedOpacity }]}
         >

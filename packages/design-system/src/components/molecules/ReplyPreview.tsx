@@ -5,14 +5,16 @@ import { spacing, typography, useStyles, ThemeColors } from '../../theme';
 export interface ReplyPreviewProps {
   senderName: string;
   snippet: string;
+  /** Stable ID for E2E tools (Maestro/Detox); forwarded to the root element. */
+  testID?: string;
 }
 
 /** Compact left-bordered block above a composed message or inside a bubble,
  * showing the quoted message's sender and a single truncated line. */
-export function ReplyPreview({ senderName, snippet }: ReplyPreviewProps) {
+export function ReplyPreview({ senderName, snippet, testID }: ReplyPreviewProps) {
   const styles = useStyles(makeStyles);
   return (
-    <View style={styles.base}>
+    <View testID={testID} style={styles.base}>
       <Text style={[typography.labelLg, styles.sender]}>{senderName}</Text>
       <Text style={[typography.bodyMd, styles.snippet]} numberOfLines={1}>
         {snippet}

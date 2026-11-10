@@ -66,14 +66,15 @@ export function MessageBubbleGalleryScreen() {
   const styles = useStyles(makeStyles);
   const { themeName, toggleTheme } = useTheme();
   return (
-    <SafeAreaView style={styles.base} edges={['top']}>
-      <ScrollView contentContainerStyle={styles.content}>
+    <SafeAreaView testID="gallery.screen" style={styles.base} edges={['top']}>
+      <ScrollView testID="gallery.scroll" contentContainerStyle={styles.content}>
         <Text style={[typography.headlineLgMobile, styles.title]}>Message Bubbles</Text>
         <Text style={[typography.bodyMd, styles.subtitle]}>
           15 content types × 3 layout states
         </Text>
 
         <Pressable
+          testID="gallery.theme-toggle"
           onPress={toggleTheme}
           accessibilityRole="switch"
           accessibilityLabel={`Theme: ${themeName}. Tap to switch.`}
@@ -92,6 +93,7 @@ export function MessageBubbleGalleryScreen() {
             {STATES.map((state, stateIndex) => (
               <MessageBubble
                 key={state.label}
+                testID={`gallery.bubble.${type.n}.${stateIndex}`}
                 direction={state.direction}
                 context={state.context}
                 senderName={SENDERS[stateIndex]}

@@ -5,14 +5,16 @@ import { senderAccent } from '../bubbleTheme';
 
 export interface SenderNameProps {
   name: string;
+  /** E2E ID, derived by the parent bubble. */
+  testID?: string;
 }
 
 /** Sender header on incoming group messages. Group threads drop the avatar, so
  * this line is what identifies the sender. */
-export function SenderName({ name }: SenderNameProps) {
+export function SenderName({ name, testID }: SenderNameProps) {
   const colors = useThemeColors();
   return (
-    <Text style={[typography.labelLg, { color: senderAccent(colors) }]} numberOfLines={1}>
+    <Text testID={testID} style={[typography.labelLg, { color: senderAccent(colors) }]} numberOfLines={1}>
       {name}
     </Text>
   );

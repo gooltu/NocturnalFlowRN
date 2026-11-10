@@ -20,6 +20,8 @@ import { MessageDirection, QuotedContent, QuotedMessage } from '../types';
 export interface QuoteBlockProps {
   direction: MessageDirection;
   quote: QuotedMessage;
+  /** E2E ID, derived by the parent bubble. */
+  testID?: string;
 }
 
 const THUMB_SIZE = 40;
@@ -38,7 +40,7 @@ const absoluteFill = {
  * quoted. Incoming quotes sit on `surface-container-high`; outgoing ones on
  * `primary`, since `surface-container-high` would vanish into the orange
  * bubble. */
-export function QuoteBlock({ direction, quote }: QuoteBlockProps) {
+export function QuoteBlock({ direction, quote, testID }: QuoteBlockProps) {
   const colors = useThemeColors();
   const skin = bubbleSkin(colors, direction);
   const styles = useStyles(makeStyles);
@@ -46,6 +48,7 @@ export function QuoteBlock({ direction, quote }: QuoteBlockProps) {
 
   const body = (
     <View
+      testID={quote.onPress ? undefined : testID}
       style={[
         styles.block,
         { backgroundColor: skin.quoteFill, borderLeftColor: skin.quoteAccent },
@@ -84,6 +87,7 @@ export function QuoteBlock({ direction, quote }: QuoteBlockProps) {
 
   return (
     <Pressable
+      testID={testID}
       onPress={quote.onPress}
       accessibilityRole="button"
       accessibilityLabel={`Reply to ${quote.senderName}: ${label}. Go to message.`}

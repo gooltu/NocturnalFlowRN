@@ -13,6 +13,8 @@ export interface ChatListItemProps {
   presence?: PresenceState;
   unreadCount?: number;
   onPress?: () => void;
+  /** Stable ID for E2E tools (Maestro/Detox); forwarded to the root element. */
+  testID?: string;
 }
 
 /** Horizontal chat-list row: 48px avatar w/ presence, title + snippet stack,
@@ -26,10 +28,12 @@ export function ChatListItem({
   presence = 'none',
   unreadCount = 0,
   onPress,
+  testID,
 }: ChatListItemProps) {
   const styles = useStyles(makeStyles);
   return (
     <Pressable
+      testID={testID}
       onPress={onPress}
       style={({ pressed }) => [styles.base, pressed && { opacity: states.pressedOpacity }]}
     >

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { EmojiKeyboard } from 'rn-emoji-keyboard';
 import { radius, spacing, states, typography, useThemeColors, useStyles, ThemeColors } from '../../../../theme';
+import { subTestID } from '../../../../utils';
 import { MediaSearchState, PickerMediaItem } from '../types';
 import { MediaGrid } from './MediaGrid';
 
@@ -35,6 +36,8 @@ export interface EmojiGifPanelProps {
   gifs?: MediaSearchState;
   onSelectSticker: (item: PickerMediaItem) => void;
   onSelectGif: (item: PickerMediaItem) => void;
+  /** E2E base ID, derived by `ChatInputBar`. */
+  testID?: string;
 }
 
 type PanelTab = 'emoji' | 'sticker' | 'gif';
@@ -49,7 +52,7 @@ const TABS: { key: PanelTab; label: string }[] = [
  * Sticker/GIF share a search bar and `MediaGrid` — each tab's search text
  * lives on its own `MediaSearchState.query`, so switching tabs and back
  * doesn't lose either search. */
-export function EmojiGifPanel({ onSelectEmoji, stickers, gifs, onSelectSticker, onSelectGif }: EmojiGifPanelProps) {
+export function EmojiGifPanel({ onSelectEmoji, stickers, gifs, onSelectSticker, onSelectGif, testID }: EmojiGifPanelProps) {
   const colors = useThemeColors();
   const styles = useStyles(makeStyles);
   const [tab, setTab] = useState<PanelTab>('emoji');
@@ -57,13 +60,16 @@ export function EmojiGifPanel({ onSelectEmoji, stickers, gifs, onSelectSticker, 
   const activeState = tab === 'sticker' ? stickers : tab === 'gif' ? gifs : undefined;
 
   return (
-    <View style={styles.wrap}>
+    <View testID={testID} style={styles.wrap}>
       <View style={styles.tabs}>
         {TABS.map(({ key, label }) => {
           const active = tab === key;
           return (
             <Pressable
               key={key}
+              testID={subTestID(testID, 'tab', key)}
+              accessibilityRole="tab"
+              accessibilityState={{ selected: active }}
               onPress={() => setTab(key)}
               hitSlop={8}
               style={({ pressed }) => [styles.tabButton, pressed && { opacity: states.pressedOpacity }]}
@@ -80,6 +86,7 @@ export function EmojiGifPanel({ onSelectEmoji, stickers, gifs, onSelectSticker, 
       {tab !== 'emoji' && (
         <View style={styles.searchWrap}>
           <TextInput
+            testID={subTestID(testID, 'search')}
             value={activeState?.query ?? ''}
             onChangeText={(next) => activeState?.onSearch(next)}
             placeholder={`Search ${tab === 'sticker' ? 'stickers' : 'GIFs'}`}
@@ -101,7 +108,7 @@ export function EmojiGifPanel({ onSelectEmoji, stickers, gifs, onSelectSticker, 
         )}
         {tab === 'sticker' &&
           (stickers ? (
-            <MediaGrid state={stickers} onSelect={onSelectSticker} />
+            <MediaGrid state={stickers} onSelect={onSelectSticker} testID={testID} />
           ) : (
             <View style={styles.centered}>
               <Text style={[typography.bodyMd, styles.message]}>Stickers unavailable</Text>
@@ -109,7 +116,7 @@ export function EmojiGifPanel({ onSelectEmoji, stickers, gifs, onSelectSticker, 
           ))}
         {tab === 'gif' &&
           (gifs ? (
-            <MediaGrid state={gifs} onSelect={onSelectGif} />
+            <MediaGrid state={gifs} onSelect={onSelectGif} testID={testID} />
           ) : (
             <View style={styles.centered}>
               <Text style={[typography.bodyMd, styles.message]}>GIFs unavailable</Text>

@@ -6,13 +6,16 @@ export interface ButtonGhostProps {
   label: string;
   onPress?: () => void;
   disabled?: boolean;
+  /** Stable ID for E2E tools (Maestro/Detox); forwarded to the root element. */
+  testID?: string;
 }
 
 /** Ghost button: 1px `primary` border, `primary` text, transparent fill. */
-export function ButtonGhost({ label, onPress, disabled }: ButtonGhostProps) {
+export function ButtonGhost({ label, onPress, disabled, testID }: ButtonGhostProps) {
   const styles = useStyles(makeStyles);
   return (
     <Pressable
+      testID={testID}
       onPress={onPress}
       disabled={disabled}
       hitSlop={8}

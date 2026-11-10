@@ -2,12 +2,16 @@ import React from 'react';
 import { Camera, FileText, Image as ImageIcon, LucideIcon, Mic } from 'lucide-react-native';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { subTestID } from '../../utils';
 import { radius, spacing, states, typography, useThemeColors, useStyles, ThemeColors } from '../../theme';
 
 export interface AttachmentSheetProps {
   visible: boolean;
   onClose: () => void;
   onSelect?: (kind: 'photos' | 'camera' | 'file' | 'audio') => void;
+  /** Stable ID for E2E tools, set on the sheet; derives `.backdrop` and
+   * `.option.<photos|camera|file|audio>`. */
+  testID?: string;
 }
 
 const OPTIONS: { key: 'photos' | 'camera' | 'file' | 'audio'; label: string; icon: LucideIcon }[] = [
@@ -18,20 +22,23 @@ const OPTIONS: { key: 'photos' | 'camera' | 'file' | 'audio'; label: string; ico
 ];
 
 /** Bottom sheet with rounded top corners for choosing an attachment type. */
-export function AttachmentSheet({ visible, onClose, onSelect }: AttachmentSheetProps) {
+export function AttachmentSheet({ visible, onClose, onSelect, testID }: AttachmentSheetProps) {
   const colors = useThemeColors();
   const styles = useStyles(makeStyles);
   const insets = useSafeAreaInsets();
 
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
-      <Pressable style={styles.backdrop} onPress={onClose} />
-      <View style={[styles.sheet, { paddingBottom: Math.max(insets.bottom, spacing.lg) }]}>
+      <Pressable testID={subTestID(testID, 'backdrop')} style={styles.backdrop} onPress={onClose} />
+      <View testID={testID} style={[styles.sheet, { paddingBottom: Math.max(insets.bottom, spacing.lg) }]}>
         <View style={styles.handle} />
         <View style={styles.grid}>
           {OPTIONS.map(({ key, label, icon: Icon }) => (
             <Pressable
               key={key}
+              testID={subTestID(testID, 'option', key)}
+              accessibilityRole="button"
+              accessibilityLabel={label}
               onPress={() => onSelect?.(key)}
               style={({ pressed }) => [styles.option, pressed && { opacity: states.pressedOpacity }]}
             >

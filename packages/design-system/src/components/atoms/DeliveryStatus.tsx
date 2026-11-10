@@ -12,23 +12,26 @@ export interface DeliveryStatusProps {
   status: DeliveryState;
   size?: number;
   tone?: DeliveryTone;
+  /** Stable ID for E2E tools (Maestro/Detox); forwarded to the root element. */
+  testID?: string;
 }
 
 /** Clock = pending (not yet submitted to the server), single check = sent,
  * double check in on-surface-variant = delivered, double check in
  * read-receipt = seen. */
-export function DeliveryStatus({ status, size = 14, tone = 'default' }: DeliveryStatusProps) {
+export function DeliveryStatus({ status, size = 14, tone = 'default', testID }: DeliveryStatusProps) {
   const colors = useThemeColors();
   const muted = tone === 'onAccent' ? colors.onPrimaryContainer : colors.onSurfaceVariant;
 
   if (status === 'pending') {
-    return <Clock size={size} strokeWidth={2} color={muted} />;
+    return <Clock testID={testID} size={size} strokeWidth={2} color={muted} />;
   }
   if (status === 'sent') {
-    return <Check size={size} strokeWidth={2} color={muted} />;
+    return <Check testID={testID} size={size} strokeWidth={2} color={muted} />;
   }
   return (
     <CheckCheck
+      testID={testID}
       size={size}
       strokeWidth={2}
       color={status === 'seen' ? colors.readReceipt : muted}

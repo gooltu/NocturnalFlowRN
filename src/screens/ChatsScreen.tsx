@@ -52,9 +52,10 @@ export function ChatsScreen() {
   );
 
   return (
-    <SafeAreaView style={styles.base} edges={[]}>
+    <SafeAreaView testID="chats.screen" style={styles.base} edges={[]}>
       <View style={styles.searchWrap}>
         <InputField
+          testID="chats.search"
           icon={Search}
           placeholder="Search messages"
           value={query}
@@ -65,21 +66,24 @@ export function ChatsScreen() {
       {loading ? (
         <View>
           {Array.from({ length: 6 }).map((_, i) => (
-            <SkeletonRow key={i} />
+            <SkeletonRow key={i} testID={`chats.skeleton.${i}`} />
           ))}
         </View>
       ) : filtered.length === 0 ? (
         <EmptyState
+          testID="chats.empty"
           title="No results"
           description={`Nothing matches "${query}". Try a different name.`}
         />
       ) : (
         <FlatList
+          testID="chats.list"
           data={filtered}
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.listContent}
           renderItem={({ item }) => (
             <ChatListItem
+              testID={`chats.row.${item.id}`}
               name={item.contact.name}
               avatarInitials={item.contact.initials}
               presence={item.contact.presence}
@@ -93,6 +97,7 @@ export function ChatsScreen() {
       )}
 
       <FloatingButton
+        testID="chats.new-message"
         icon={Edit3}
         label="New message"
         onPress={() => navigation.navigate('SelectContacts')}

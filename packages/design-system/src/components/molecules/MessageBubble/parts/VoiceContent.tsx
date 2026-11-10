@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Pause, Play } from 'lucide-react-native';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { subTestID } from '../../../../utils';
 import { iconTokens, spacing, states, typography, useThemeColors, useStyles, ThemeColors } from '../../../../theme';
 import { bubbleSkin } from '../bubbleTheme';
 import { MessageDirection, VoiceMessageContent } from '../types';
@@ -9,12 +10,14 @@ import { DEFAULT_WAVEFORM, Waveform } from './Waveform';
 export interface VoiceContentProps {
   direction: MessageDirection;
   content: VoiceMessageContent;
+  /** E2E ID, derived by the parent bubble. */
+  testID?: string;
 }
 
 /** Voice-note row: play/pause control, waveform, duration. Playback can be
  * driven from outside (`playing` + `onTogglePlay`) or left to the row's own
  * local state. */
-export function VoiceContent({ direction, content }: VoiceContentProps) {
+export function VoiceContent({ direction, content, testID }: VoiceContentProps) {
   const colors = useThemeColors();
   const styles = useStyles(makeStyles);
   const skin = bubbleSkin(colors, direction);
@@ -30,8 +33,9 @@ export function VoiceContent({ direction, content }: VoiceContentProps) {
   const Glyph = playing ? Pause : Play;
 
   return (
-    <View style={styles.row}>
+    <View testID={testID} style={styles.row}>
       <Pressable
+        testID={subTestID(testID, 'play')}
         onPress={toggle}
         hitSlop={8}
         accessibilityRole="button"

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { subTestID } from '../../../../utils';
 import { fontFamilies, spacing, states, typography, useThemeColors, useStyles, ThemeColors } from '../../../../theme';
 import { bubbleSkin, BUBBLE_MAX_WIDTH } from '../bubbleTheme';
 import { MessageContent as MessageContentModel, MessageDirection } from '../types';
@@ -27,6 +28,8 @@ export interface MessageContentProps {
    * sticker case folds it into the sticker `Image`'s accessibility label
    * even though a sticker never shows a visible header strip. */
   senderName?: string;
+  /** The bubble's E2E ID; every part here derives its own ID from it. */
+  testID?: string;
 }
 
 const DEFAULT_ASPECT = 4 / 3;
@@ -37,10 +40,12 @@ const DEFAULT_ASPECT = 4 / 3;
  * caption on their own padded strips; the sticker case has no padding and no
  * bubble fill (that's conditional in `MessageBubble`'s shell) — just the art
  * capped at `BUBBLE_MAX_WIDTH`, an optional caption line, then the meta. */
-export function MessageContent({ direction, content, meta, header, quote, senderName }: MessageContentProps) {
+export function MessageContent({ direction, content, meta, header, quote, senderName, testID }: MessageContentProps) {
   const colors = useThemeColors();
   const styles = useStyles(makeStyles);
   const skin = bubbleSkin(colors, direction);
+  const id = (...parts: Array<string | number>) => subTestID(testID, ...parts);
+  const metaProps = { ...meta, testID: id('meta'), bubbleTestID: testID };
 
   switch (content.kind) {
     case 'sticker':
@@ -52,6 +57,7 @@ export function MessageContent({ direction, content, meta, header, quote, sender
             source={content.source}
             style={{ width: content.size ?? 150, height: content.size ?? 150 }}
             resizeMode="contain"
+            testID={id('sticker')}
             accessibilityRole="image"
             accessibilityLabel={senderName ? `Sticker from ${senderName}` : 'Sticker'}
           />
@@ -59,7 +65,7 @@ export function MessageContent({ direction, content, meta, header, quote, sender
             <Text style={[typography.bodyMd, { color: skin.text }]}>{content.caption}</Text>
           )} */}
           {/* <View style={{ backgroundColor: colors.primary }}> */}
-          <MessageMeta {...meta} />
+          <MessageMeta {...metaProps} />
           {/* ?</View */}
         </View>
       );
@@ -69,8 +75,8 @@ export function MessageContent({ direction, content, meta, header, quote, sender
         <View style={styles.flowPad}>
           {header}
           {quote}
-          <TextContent direction={direction} content={content} />
-          <MessageMeta {...meta} />
+          <TextContent direction={direction} content={content} testID={id('text')} />
+          <MessageMeta {...metaProps} />
         </View>
       );
 
@@ -79,8 +85,8 @@ export function MessageContent({ direction, content, meta, header, quote, sender
         <View style={styles.flowPad}>
           {header}
           {quote}
-          <VoiceContent direction={direction} content={content} />
-          <MessageMeta {...meta} />
+          <VoiceContent direction={direction} content={content} testID={id('voice')} />
+          <MessageMeta {...metaProps} />
         </View>
       );
 
@@ -89,8 +95,8 @@ export function MessageContent({ direction, content, meta, header, quote, sender
         <View style={styles.flowPad}>
           {header}
           {quote}
-          <DocumentContent direction={direction} content={content} />
-          <MessageMeta {...meta} />
+          <DocumentContent direction={direction} content={content} testID={id('document')} />
+          <MessageMeta {...metaProps} />
         </View>
       );
 
@@ -99,37 +105,37 @@ export function MessageContent({ direction, content, meta, header, quote, sender
         <View style={styles.flowPad}>
           {header}
           {quote}
-          <ContactContent direction={direction} content={content} />
-          <MessageMeta {...meta} />
+          <ContactContent direction={direction} content={content} testID={id('contact')} />
+          <MessageMeta {...metaProps} />
         </View>
       );
 
     case 'image':
       return (
         <MediaFrame header={header} quote={quote}>
-          <Tappable onPress={content.onPress}>
+          <Tappable testID={id('media')} onPress={content.onPress}>
             <MediaImage source={content.source} aspectRatio={content.aspectRatio} />
           </Tappable>
-          <CaptionStrip meta={meta} />
+          <CaptionStrip meta={metaProps} />
         </MediaFrame>
       );
 
     case 'imageGroup':
       return (
         <MediaFrame header={header} quote={quote}>
-          <ImageGrid sources={content.sources} onPressItem={content.onPressItem} />
-          <CaptionStrip meta={meta} />
+          <ImageGrid sources={content.sources} onPressItem={content.onPressItem} testID={testID} />
+          <CaptionStrip meta={metaProps} />
         </MediaFrame>
       );
 
     case 'textImage':
       return (
         <MediaFrame header={header} quote={quote}>
-          <Tappable onPress={content.onPress}>
+          <Tappable testID={id('media')} onPress={content.onPress}>
             <MediaImage source={content.source} aspectRatio={content.aspectRatio} />
           </Tappable>
-          <CaptionStrip meta={meta}>
-            <Text style={[typography.bodyMd, { color: skin.text }]}>{content.caption}</Text>
+          <CaptionStrip meta={metaProps}>
+            <Text testID={id('caption')} style={[typography.bodyMd, { color: skin.text }]}>{content.caption}</Text>
           </CaptionStrip>
         </MediaFrame>
       );
@@ -137,34 +143,34 @@ export function MessageContent({ direction, content, meta, header, quote, sender
     case 'gif':
       return (
         <MediaFrame header={header} quote={quote}>
-          <Tappable onPress={content.onPress}>
+          <Tappable testID={id('media')} onPress={content.onPress}>
             <MediaImage source={content.source} aspectRatio={content.aspectRatio} />
             <View style={styles.topLeftBadge} pointerEvents="none">
               <MediaBadge label="GIF" />
             </View>
           </Tappable>
-          <CaptionStrip meta={meta} />
+          <CaptionStrip meta={metaProps} />
         </MediaFrame>
       );
 
     case 'video':
       return (
         <MediaFrame header={header} quote={quote}>
-          <Tappable onPress={content.onPlay} label="Play video">
+          <Tappable testID={id('media')} onPress={content.onPlay} label="Play video">
             <MediaImage source={content.thumbnail} aspectRatio={content.aspectRatio} />
             <PlayHalo />
             <View style={styles.bottomRightBadge} pointerEvents="none">
               <MediaBadge label={content.duration} />
             </View>
           </Tappable>
-          <CaptionStrip meta={meta} />
+          <CaptionStrip meta={metaProps} />
         </MediaFrame>
       );
 
     case 'location':
       return (
         <MediaFrame header={header} quote={quote}>
-          <Tappable onPress={content.onPress} label="Open location">
+          <Tappable testID={id('media')} onPress={content.onPress} label="Open location">
             <LocationMedia content={content} />
             {content.status && (
               <AttachmentScrim
@@ -172,10 +178,11 @@ export function MessageContent({ direction, content, meta, header, quote, sender
                 downloadingLabel="Loading location…"
                 failedLabel="Couldn’t load location"
                 onRetry={content.onPress}
+                testID={id('retry')}
               />
             )}
           </Tappable>
-          <CaptionStrip meta={meta}>
+          <CaptionStrip meta={metaProps}>
             <Text style={[typography.bodyMd, { color: skin.text }]} numberOfLines={1}>
               {content.label}
             </Text>
@@ -191,7 +198,7 @@ export function MessageContent({ direction, content, meta, header, quote, sender
     case 'link':
       return (
         <MediaFrame header={header} quote={quote}>
-          <Tappable onPress={content.onPress} label="Open link">
+          <Tappable testID={id('media')} onPress={content.onPress} label="Open link">
             <LinkMedia content={content} />
             {content.status && (
               <AttachmentScrim
@@ -199,10 +206,11 @@ export function MessageContent({ direction, content, meta, header, quote, sender
                 downloadingLabel="Fetching preview…"
                 failedLabel="Couldn’t load preview"
                 onRetry={content.onPress}
+                testID={id('retry')}
               />
             )}
           </Tappable>
-          <CaptionStrip meta={meta}>
+          <CaptionStrip meta={metaProps}>
             {!!content.siteName && (
               <Text style={[typography.labelSm, styles.linkSite, { color: skin.meta }]} numberOfLines={1}>
                 {content.siteName.toUpperCase()}
@@ -286,16 +294,19 @@ function CaptionStrip({
 function Tappable({
   onPress,
   label,
+  testID,
   children,
 }: {
   onPress?: () => void;
   label?: string;
+  testID?: string;
   children: React.ReactNode;
 }) {
   const styles = useStyles(makeStyles);
-  if (!onPress) return <View style={styles.mediaLayer}>{children}</View>;
+  if (!onPress) return <View testID={testID} style={styles.mediaLayer}>{children}</View>;
   return (
     <Pressable
+      testID={testID}
       onPress={onPress}
       accessibilityRole="imagebutton"
       accessibilityLabel={label}

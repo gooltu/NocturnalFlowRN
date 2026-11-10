@@ -7,13 +7,16 @@ export interface ReactionPillProps {
   count: number;
   active?: boolean;
   onPress?: () => void;
+  /** Stable ID for E2E tools (Maestro/Detox); forwarded to the root element. */
+  testID?: string;
 }
 
 /** Small rounded-full chip anchored to a bubble's bottom edge. */
-export function ReactionPill({ emoji, count, active, onPress }: ReactionPillProps) {
+export function ReactionPill({ emoji, count, active, onPress, testID }: ReactionPillProps) {
   const styles = useStyles(makeStyles);
   return (
     <Pressable
+      testID={testID}
       onPress={onPress}
       hitSlop={12}
       style={({ pressed }) => [

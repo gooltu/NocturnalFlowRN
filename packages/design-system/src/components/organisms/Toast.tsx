@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { AlertCircle, CheckCircle2, LucideIcon, WifiOff, X } from 'lucide-react-native';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { subTestID } from '../../utils';
 import { radius, spacing, states, typography, useThemeColors, useStyles, ThemeColors } from '../../theme';
 
 export type ToastVariant = 'success' | 'warning' | 'error';
@@ -13,6 +14,8 @@ export interface ToastProps {
   /** Non-critical toasts auto-dismiss after 4s; connectivity/error states should persist until resolved. */
   persist?: boolean;
   onDismiss?: () => void;
+  /** Stable ID for E2E tools, set on the root; the dismiss control gets `.dismiss`. */
+  testID?: string;
 }
 
 const variantConfig = (colors: ThemeColors): Record<ToastVariant, { color: string; icon: LucideIcon }> => ({
@@ -25,7 +28,7 @@ const variantConfig = (colors: ThemeColors): Record<ToastVariant, { color: strin
  * icon carry the variant, title/description sit beside it, and an optional
  * dismiss control appears when `onDismiss` is passed. Non-critical toasts
  * auto-dismiss after 4s unless `persist` is set. */
-export function Toast({ variant, title, description, icon, persist, onDismiss }: ToastProps) {
+export function Toast({ variant, title, description, icon, persist, onDismiss, testID }: ToastProps) {
   const colors = useThemeColors();
   const styles = useStyles(makeStyles);
   const config = variantConfig(colors)[variant];
@@ -38,7 +41,7 @@ export function Toast({ variant, title, description, icon, persist, onDismiss }:
   }, [persist, onDismiss]);
 
   return (
-    <View style={[styles.base, { borderLeftColor: config.color }]}>
+    <View testID={testID} style={[styles.base, { borderLeftColor: config.color }]}>
       <Icon size={20} strokeWidth={2} color={config.color} />
       <View style={styles.text}>
         <Text style={[typography.labelLg, { color: config.color }]}>{title}</Text>
@@ -48,6 +51,7 @@ export function Toast({ variant, title, description, icon, persist, onDismiss }:
       </View>
       {onDismiss && (
         <Pressable
+          testID={subTestID(testID, 'dismiss')}
           onPress={onDismiss}
           hitSlop={14}
           accessibilityRole="button"

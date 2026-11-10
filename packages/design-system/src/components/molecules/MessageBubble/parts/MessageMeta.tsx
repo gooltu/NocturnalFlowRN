@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { subTestID } from '../../../../utils';
 import { spacing, typography, useThemeColors, useStyles, ThemeColors } from '../../../../theme';
 import { DeliveryState, DeliveryStatus } from '../../../atoms/DeliveryStatus';
 import { bubbleSkin } from '../bubbleTheme';
@@ -12,6 +13,11 @@ export interface MessageMetaProps {
   /** Sticker bubbles have no fill to sit the meta inside, so it aligns to the
    * message's own side instead of the bubble's right edge. */
   align?: 'left' | 'right';
+  /** E2E ID for the meta row; timestamp/ticks derive `.timestamp` / `.status`
+   * from the bubble ID (the meta row's parent), not from this one. */
+  testID?: string;
+  /** Bubble-level ID the timestamp/status IDs derive from. */
+  bubbleTestID?: string;
 }
 
 /** Timestamp plus, on outgoing messages, the delivery glyph.
@@ -21,18 +27,18 @@ export interface MessageMetaProps {
  * `on-surface-variant` for delivered has too little contrast on
  * `primary-container`. Seen keeps the `read-receipt` tint. State is never
  * carried by colour alone. */
-export function MessageMeta({ direction, timestamp, status, align = 'right' }: MessageMetaProps) {
+export function MessageMeta({ direction, timestamp, status, align = 'right', testID, bubbleTestID }: MessageMetaProps) {
   const colors = useThemeColors();
   const styles = useStyles(makeStyles);
   const skin = bubbleSkin(colors, direction);
   const showTicks = direction === 'outgoing' && status != null;
 
   return (
-    <View style={[styles.row, styles.justifyRight]}>
-      <Text style={[typography.labelSm, { color: skin.meta }]}>{timestamp}</Text>
+    <View testID={testID} style={[styles.row, styles.justifyRight]}>
+      <Text testID={subTestID(bubbleTestID, 'timestamp')} style={[typography.labelSm, { color: skin.meta }]}>{timestamp}</Text>
       {showTicks && (
         <View style={status === 'seen' ? undefined : styles.muted}>
-          <DeliveryStatus status={status!} tone="onAccent" />
+          <DeliveryStatus status={status!} tone="onAccent" testID={subTestID(bubbleTestID, 'status')} />
         </View>
       )}
     </View>

@@ -11,6 +11,8 @@ export interface FloatingButtonProps {
   size?: number;
   disabled?: boolean;
   style?: StyleProp<ViewStyle>;
+  /** Stable ID for E2E tools (Maestro/Detox); forwarded to the root element. */
+  testID?: string;
 }
 
 /** Circular floating action button: `primary` fill with the same inner-glow
@@ -25,6 +27,7 @@ export function FloatingButton({
   size = 56,
   disabled = false,
   style,
+  testID,
 }: FloatingButtonProps) {
   const colors = useThemeColors();
   const styles = useStyles(makeStyles);
@@ -32,6 +35,7 @@ export function FloatingButton({
 
   return (
     <Pressable
+      testID={testID}
       onPress={onPress}
       disabled={disabled}
       hitSlop={8}

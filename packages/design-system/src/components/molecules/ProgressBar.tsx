@@ -7,17 +7,19 @@ export interface ProgressBarProps {
   progress: number;
   label?: string;
   value?: string;
+  /** Stable ID for E2E tools (Maestro/Detox); forwarded to the root element. */
+  testID?: string;
 }
 
 /** Track + indicator, with an optional label/value row above it (e.g. an
  * upload's name and percentage). Also embedded bare (no label/value) inside
  * the Header's gamebar. */
-export function ProgressBar({ progress, label, value }: ProgressBarProps) {
+export function ProgressBar({ progress, label, value, testID }: ProgressBarProps) {
   const styles = useStyles(makeStyles);
   const clamped = Math.max(0, Math.min(1, progress));
 
   return (
-    <View style={styles.base}>
+    <View testID={testID} style={styles.base}>
       {(label || value) && (
         <View style={styles.meta}>
           {label && (

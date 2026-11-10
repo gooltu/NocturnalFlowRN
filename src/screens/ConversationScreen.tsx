@@ -135,10 +135,11 @@ export function ConversationScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.base} edges={[]}>
+    <SafeAreaView testID="conversation.screen" style={styles.base} edges={[]}>
       {messages.length === 0 ? (
         <View style={styles.emptyWrap}>
           <EmptyState
+            testID="conversation.empty"
             title="No messages yet"
             description="Start the conversation — your first message will appear right here."
             actionLabel="Say hello"
@@ -147,10 +148,11 @@ export function ConversationScreen() {
         </View>
       ) : (
         <FlatList
+          testID="conversation.list"
           data={messages}
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.listContent}
-          ListFooterComponent={chat.isTyping ? <TypingIndicator /> : null}
+          ListFooterComponent={chat.isTyping ? <TypingIndicator testID="conversation.typing" /> : null}
           renderItem={({ item }) => (
             <MessageRow
               item={item}
@@ -164,6 +166,7 @@ export function ConversationScreen() {
       )}
 
       <ChatInputBar
+        testID="conversation.input"
         onSend={handleSend}
         onAttach={() => setSheetVisible(true)}
         replyTo={replyingTo ?? undefined}
@@ -180,7 +183,7 @@ export function ConversationScreen() {
           ? { previewPlaying: previewPlayer.playing, onTogglePreviewPlayback: previewPlayer.toggle }
           : {})}
       />
-      <AttachmentSheet visible={sheetVisible} onClose={() => setSheetVisible(false)} />
+      <AttachmentSheet testID="conversation.attachments" visible={sheetVisible} onClose={() => setSheetVisible(false)} />
     </SafeAreaView>
   );
 }
@@ -254,7 +257,7 @@ function MessageRow({ item, messages, contactName, context, onSwipeReply }: Mess
 
   if (item.type === 'divider') {
     return (
-      <View style={styles.divider}>
+      <View testID={`conversation.divider.${item.id}`} style={styles.divider}>
         <Text style={[typography.labelSm, styles.dividerLabel]}>{item.label}</Text>
       </View>
     );
@@ -274,6 +277,7 @@ function MessageRow({ item, messages, contactName, context, onSwipeReply }: Mess
     return (
       <View style={[styles.messageWrap, { alignItems: align }]}>
         <MessageBubble
+          testID={`conversation.message.${item.id}`}
           direction={item.sender === 'me' ? 'outgoing' : 'incoming'}
           context={context}
           senderName={senderName}
@@ -291,6 +295,7 @@ function MessageRow({ item, messages, contactName, context, onSwipeReply }: Mess
     return (
       <View style={[styles.messageWrap, { alignItems: align }]}>
         <MessageBubble
+          testID={`conversation.message.${item.id}`}
           direction={item.sender === 'me' ? 'outgoing' : 'incoming'}
           context={context}
           senderName={senderName}
@@ -306,8 +311,13 @@ function MessageRow({ item, messages, contactName, context, onSwipeReply }: Mess
         />
         {item.reactions && (
           <View style={styles.reactionsRow}>
-            {item.reactions.map((r) => (
-              <ReactionPill key={r.emoji} emoji={r.emoji} count={r.count} />
+            {item.reactions.map((r, i) => (
+              <ReactionPill
+                key={r.emoji}
+                testID={`conversation.message.${item.id}.reaction.${i}`}
+                emoji={r.emoji}
+                count={r.count}
+              />
             ))}
           </View>
         )}
@@ -319,6 +329,7 @@ function MessageRow({ item, messages, contactName, context, onSwipeReply }: Mess
     return (
       <View style={[styles.messageWrap, { alignItems: align }]}>
         <MessageBubble
+          testID={`conversation.message.${item.id}`}
           direction={item.sender === 'me' ? 'outgoing' : 'incoming'}
           context={context}
           senderName={senderName}
@@ -336,6 +347,7 @@ function MessageRow({ item, messages, contactName, context, onSwipeReply }: Mess
     return (
       <View style={[styles.messageWrap, { alignItems: align }]}>
         <MessageBubble
+          testID={`conversation.message.${item.id}`}
           direction={item.sender === 'me' ? 'outgoing' : 'incoming'}
           context={context}
           senderName={senderName}
@@ -353,6 +365,7 @@ function MessageRow({ item, messages, contactName, context, onSwipeReply }: Mess
     return (
       <View style={[styles.messageWrap, { alignItems: align }]}>
         <MessageBubble
+          testID={`conversation.message.${item.id}`}
           direction={item.sender === 'me' ? 'outgoing' : 'incoming'}
           context={context}
           senderName={senderName}
@@ -370,6 +383,7 @@ function MessageRow({ item, messages, contactName, context, onSwipeReply }: Mess
     return (
       <View style={[styles.messageWrap, { alignItems: align }]}>
         <MessageBubble
+          testID={`conversation.message.${item.id}`}
           direction={item.sender === 'me' ? 'outgoing' : 'incoming'}
           context={context}
           senderName={senderName}
@@ -392,6 +406,7 @@ function MessageRow({ item, messages, contactName, context, onSwipeReply }: Mess
     return (
       <View style={[styles.messageWrap, { alignItems: align }]}>
         <MessageBubble
+          testID={`conversation.message.${item.id}`}
           direction={item.sender === 'me' ? 'outgoing' : 'incoming'}
           context={context}
           senderName={senderName}
@@ -414,6 +429,7 @@ function MessageRow({ item, messages, contactName, context, onSwipeReply }: Mess
     return (
       <View style={[styles.messageWrap, { alignItems: align }]}>
         <MessageBubble
+          testID={`conversation.message.${item.id}`}
           direction={item.sender === 'me' ? 'outgoing' : 'incoming'}
           context={context}
           senderName={senderName}
@@ -437,6 +453,7 @@ function MessageRow({ item, messages, contactName, context, onSwipeReply }: Mess
     return (
       <View style={[styles.messageWrap, { alignItems: align }]}>
         <MessageBubble
+          testID={`conversation.message.${item.id}`}
           direction={item.sender === 'me' ? 'outgoing' : 'incoming'}
           context={context}
           senderName={senderName}
@@ -460,6 +477,7 @@ function MessageRow({ item, messages, contactName, context, onSwipeReply }: Mess
   return (
     <View style={[styles.messageWrap, { alignItems: align }]}>
       <MessageBubble
+        testID={`conversation.message.${item.id}`}
         direction={item.sender === 'me' ? 'outgoing' : 'incoming'}
         context={context}
         senderName={senderName}

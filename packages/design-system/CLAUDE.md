@@ -273,6 +273,36 @@ what was recorded. Provide both together; the internal mock toggle is fully bypa
 set, so a consumer can't accidentally end up with the icon controlled but the audio not (or vice
 versa).
 
+## Testing / `testID` (Maestro, Detox, RNTL)
+
+Every exported component accepts an optional `testID?: string`, set on its root native element.
+Composite components also give their own children IDs, built from that root ID with dot-separated
+suffixes. Child IDs only exist when you pass a root `testID`; the package never sets IDs on its
+own. Use `subTestID(base, ...parts)` (returns `undefined` when `base` is) to build IDs the same way,
+and `testIDSegment(text)` to turn a route name or label into one kebab-case segment
+(`'SelectContacts'` → `'select-contacts'`).
+
+| Component | Root | Derived child IDs |
+|---|---|---|
+| `Header` | `testID` | `.back`, `.identity`, `.title`, `.subtitle`, `.action.<key>`, `.gamebar` |
+| `NavigationBar` | `testID` | `.tab.<key>` (also `accessibilityState.selected`) |
+| `ChatInputBar` | `testID` | `.input`, `.send` / `.mic` (same button: `.send` when there's text, `.mic` when empty), `.emoji`, `.attach`, `.reply`, `.cancel-reply`; panel: `.panel`, `.panel.tab.<emoji\|sticker\|gif>`, `.panel.search`, `.panel.grid`, `.panel.item.<index>`; recorder: `.recorder`, `.recorder.discard`, `.recorder.preview-play`, `.recorder.stop`, `.recorder.send` |
+| `MessageBubble` | the bubble itself | `.text`, `.sender`, `.quote`, `.meta`, `.timestamp`, `.status`, `.media`, `.tile.<i>` (imageGroup), `.voice`, `.voice.play`, `.document`, `.contact`, `.sticker`, `.caption`, `.retry` |
+| `AttachmentSheet` | the sheet | `.backdrop`, `.option.<photos\|camera\|file\|audio>` |
+| `EmptyState` | `testID` | `.title`, `.action` |
+| `Toast` | `testID` | `.dismiss` |
+| `VoiceNote` | `testID` | `.play` |
+| `InputField` | the `TextInput` (so `inputText` works on it) | `.container` |
+| everything else | `testID` | — |
+
+Keyed collections use the key you already supply (`HeaderAction.key`, `NavTabItem.key`), so IDs
+don't change when items are reordered. Pass a record id when you render lists (for example
+`testID={`chat.message.${msg.id}`}`).
+
+iOS caveat: a pressable bubble (`onPress`/`onLongPress` set) is one accessibility element, so
+XCUITest-based tools may not see IDs inside it (`.voice.play`, `.tile.<i>`). Check with
+`maestro hierarchy`. If an inner ID is missing, target the bubble's own ID.
+
 ## Common gotchas
 
 - Forgetting `GestureHandlerRootView`/`ThemeProvider`/`SafeAreaProvider`/`useAppFonts()` at the

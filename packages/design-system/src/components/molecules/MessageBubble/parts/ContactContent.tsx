@@ -8,6 +8,8 @@ import { ContactMessageContent, MessageDirection } from '../types';
 export interface ContactContentProps {
   direction: MessageDirection;
   content: ContactMessageContent;
+  /** E2E ID, derived by the parent bubble. */
+  testID?: string;
 }
 
 const AVATAR_SIZE = 44;
@@ -15,7 +17,7 @@ const AVATAR_SIZE = 44;
 /** Contact-card row: avatar (photo, initials, or a generic person glyph —
  * whichever the consumer supplied, in that order) plus name and subtitle.
  * While `status` is set the avatar swaps for a spinner or failure glyph. */
-export function ContactContent({ direction, content }: ContactContentProps) {
+export function ContactContent({ direction, content, testID }: ContactContentProps) {
   const colors = useThemeColors();
   const skin = bubbleSkin(colors, direction);
   const styles = useStyles(makeStyles);
@@ -24,7 +26,7 @@ export function ContactContent({ direction, content }: ContactContentProps) {
   const secondary = status === 'downloading' ? 'Loading contact…' : status === 'failed' ? 'Couldn’t load contact · Tap to retry' : subtitle;
 
   const row = (
-    <View style={styles.row}>
+    <View testID={onPress ? undefined : testID} style={styles.row}>
       <View style={[styles.avatar, { backgroundColor: skin.quoteTileFill }]}>
         {status === 'downloading' ? (
           <ActivityIndicator color={skin.text} />
@@ -58,6 +60,7 @@ export function ContactContent({ direction, content }: ContactContentProps) {
 
   return (
     <Pressable
+      testID={testID}
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={secondary ? `${name}, ${secondary}` : name}

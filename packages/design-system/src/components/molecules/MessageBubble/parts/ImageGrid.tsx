@@ -1,5 +1,6 @@
 import React from 'react';
 import { Image, ImageSourcePropType, Pressable, StyleSheet, Text, View } from 'react-native';
+import { subTestID } from '../../../../utils';
 import { states, typography, useStyles, ThemeColors } from '../../../../theme';
 import { GRID_GUTTER } from '../bubbleTheme';
 import { MediaScrim } from './MediaChrome';
@@ -15,6 +16,8 @@ const absoluteFill = {
 export interface ImageGridProps {
   sources: ImageSourcePropType[];
   onPressItem?: (index: number) => void;
+  /** E2E base ID; each tile gets `<testID>.tile.<index>`. */
+  testID?: string;
 }
 
 const MAX_TILES = 4;
@@ -22,7 +25,7 @@ const MAX_TILES = 4;
 /** Photo grid inside a media bubble. Four or more photos render as a 2×2 with
  * a `+N` badge on the last tile; three render as a row plus a full-width tile;
  * two as a single row. Outer corners come from the bubble's own clipping. */
-export function ImageGrid({ sources, onPressItem }: ImageGridProps) {
+export function ImageGrid({ sources, onPressItem, testID }: ImageGridProps) {
   const styles = useStyles(makeStyles);
   const visible = sources.slice(0, MAX_TILES);
   const overflow = sources.length - visible.length;
@@ -44,6 +47,7 @@ export function ImageGrid({ sources, onPressItem }: ImageGridProps) {
             return (
               <Pressable
                 key={tileIndex}
+                testID={subTestID(testID, 'tile', tileIndex)}
                 style={({ pressed }) => [styles.tile, pressed && styles.pressed]}
                 onPress={onPressItem ? () => onPressItem(tileIndex) : undefined}
                 disabled={!onPressItem}

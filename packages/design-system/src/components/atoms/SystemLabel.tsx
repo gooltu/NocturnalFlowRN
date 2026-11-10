@@ -4,13 +4,15 @@ import { radius, spacing, typography, useStyles, ThemeColors } from '../../theme
 
 export interface SystemLabelProps {
   text: string;
+  /** Stable ID for E2E tools (Maestro/Detox); forwarded to the root element. */
+  testID?: string;
 }
 
 /** Centered muted label for inline system events and date dividers in a message list. */
-export function SystemLabel({ text }: SystemLabelProps) {
+export function SystemLabel({ text, testID }: SystemLabelProps) {
   const styles = useStyles(makeStyles);
   return (
-    <View style={styles.base}>
+    <View testID={testID} style={styles.base}>
       <Text style={[typography.labelSm, styles.text]}>{text}</Text>
     </View>
   );

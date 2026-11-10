@@ -9,8 +9,13 @@ import Animated, {
 } from 'react-native-reanimated';
 import { duration, easing, radius, spacing, useStyles, ThemeColors } from '../../theme';
 
+export interface SkeletonRowProps {
+  /** Stable ID for E2E tools (Maestro/Detox); forwarded to the root element. */
+  testID?: string;
+}
+
 /** Shimmer placeholder for a chat-list row or message bubble while content loads. */
-export function SkeletonRow() {
+export function SkeletonRow({ testID }: SkeletonRowProps = {}) {
   const styles = useStyles(makeStyles);
   const pulse = useSharedValue(0);
 
@@ -29,7 +34,7 @@ export function SkeletonRow() {
   }));
 
   return (
-    <Animated.View style={[styles.row, style]}>
+    <Animated.View testID={testID} style={[styles.row, style]}>
       <View style={styles.avatar} />
       <View style={styles.lines}>
         <View style={[styles.line, { width: '55%' }]} />

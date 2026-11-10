@@ -12,13 +12,15 @@ export interface AttachmentScrimProps {
   /** Only wired up for `'failed'` — a downloading transfer has nothing to
    * retry yet. */
   onRetry?: () => void;
+  /** E2E ID, derived by the parent bubble. */
+  testID?: string;
 }
 
 /** Full-bleed status treatment over media-style attachments (location map,
  * link preview image): a scrim plus a centered spinner or failure glyph and
  * label. The parent only renders this while `status` is set — there's no
  * "ready" case here, that's just the plain media underneath. */
-export function AttachmentScrim({ status, downloadingLabel, failedLabel, onRetry }: AttachmentScrimProps) {
+export function AttachmentScrim({ status, downloadingLabel, failedLabel, onRetry, testID }: AttachmentScrimProps) {
   const colors = useThemeColors();
   const styles = useStyles(makeStyles);
   const canRetry = status === 'failed' && !!onRetry;
@@ -45,6 +47,7 @@ export function AttachmentScrim({ status, downloadingLabel, failedLabel, onRetry
   if (canRetry) {
     return (
       <Pressable
+        testID={testID}
         onPress={onRetry}
         accessibilityRole="button"
         accessibilityLabel={`${failedLabel}. Tap to retry.`}
@@ -56,7 +59,7 @@ export function AttachmentScrim({ status, downloadingLabel, failedLabel, onRetry
   }
 
   return (
-    <View style={styles.wrap} pointerEvents="none">
+    <View testID={testID} style={styles.wrap} pointerEvents="none">
       {body}
     </View>
   );

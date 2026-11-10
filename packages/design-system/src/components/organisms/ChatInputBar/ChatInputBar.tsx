@@ -3,6 +3,7 @@ import { Mic, Plus, Send, Smile, X } from 'lucide-react-native';
 import { Keyboard, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { subTestID } from '../../../utils';
 import { iconTokens, radius, spacing, states, typography, useThemeColors, useStyles, ThemeColors } from '../../../theme';
 import { IconButton } from '../../atoms/IconButton';
 import { describeQuotedContent } from '../../molecules/MessageBubble/parts/QuoteBlock';
@@ -45,6 +46,7 @@ export function ChatInputBar({
   onDiscardRecording,
   previewPlaying,
   onTogglePreviewPlayback,
+  testID,
 }: ChatInputBarProps) {
   const colors = useThemeColors();
   const styles = useStyles(makeStyles);
@@ -158,9 +160,9 @@ export function ChatInputBar({
   };
 
   return (
-    <Animated.View style={keyboardAvoidingStyle}>
+    <Animated.View testID={testID} style={keyboardAvoidingStyle}>
       {replyTo && (
-        <View style={styles.replyBar}>
+        <View testID={subTestID(testID, 'reply')} style={styles.replyBar}>
           <View style={styles.replyAccent} />
           <View style={styles.replyText}>
             <Text style={[typography.labelLg, styles.replySender]} numberOfLines={1}>
@@ -168,7 +170,13 @@ export function ChatInputBar({
             </Text>
             <ReplySnippet content={replyTo.content} />
           </View>
-          <Pressable onPress={onCancelReply} hitSlop={12} accessibilityLabel="Cancel reply">
+          <Pressable
+            testID={subTestID(testID, 'cancel-reply')}
+            onPress={onCancelReply}
+            hitSlop={12}
+            accessibilityRole="button"
+            accessibilityLabel="Cancel reply"
+          >
             {({ pressed }) => (
               <X
                 size={iconTokens.sizeMd}
@@ -190,17 +198,26 @@ export function ChatInputBar({
           onTogglePreview={handleTogglePreview}
           onDiscard={handleDiscardRecording}
           onSend={handleSendVoiceNote}
+          testID={subTestID(testID, 'recorder')}
         />
       ) : (
         <View style={[styles.base, { paddingBottom: Math.max(insets.bottom, spacing.sm) }]}>
           <View style={styles.attachSlot}>
-            <IconButton icon={Smile} onPress={handleToggleEmoji} size="lg" active={panelOpen} />
+            <IconButton
+              icon={Smile}
+              onPress={handleToggleEmoji}
+              size="lg"
+              active={panelOpen}
+              label={panelOpen ? 'Show keyboard' : 'Emoji, stickers and GIFs'}
+              testID={subTestID(testID, 'emoji')}
+            />
           </View>
           <View style={styles.attachSlot}>
-            <IconButton icon={Plus} onPress={onAttach} size="lg" />
+            <IconButton icon={Plus} onPress={onAttach} size="lg" label="Attach" testID={subTestID(testID, 'attach')} />
           </View>
           <TextInput
             ref={inputRef}
+            testID={subTestID(testID, 'input')}
             value={text}
             onChangeText={setText}
             onFocus={handleInputFocus}
@@ -211,6 +228,9 @@ export function ChatInputBar({
           />
           <Pressable
             onPress={hasText ? handleSend : handleMicPress}
+            testID={subTestID(testID, hasText ? 'send' : 'mic')}
+            accessibilityRole="button"
+            accessibilityLabel={hasText ? 'Send message' : 'Record voice message'}
             hitSlop={8}
             style={({ pressed }) => [styles.sendButton, pressed && { opacity: states.pressedOpacity }]}
           >
@@ -230,6 +250,7 @@ export function ChatInputBar({
           gifs={gifs}
           onSelectSticker={handleSelectSticker}
           onSelectGif={handleSelectGif}
+          testID={subTestID(testID, 'panel')}
         />
       )}
     </Animated.View>

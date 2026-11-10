@@ -71,4 +71,11 @@ export interface ChatInputBarProps {
    * entirely, both props are required together. */
   previewPlaying?: boolean;
   onTogglePreviewPlayback?: () => void;
+  /** Stable ID for E2E tools, set on the bar root. Children derive from it:
+   * `.input`, `.send` (also the mic when the field is empty — see `.mic`),
+   * `.mic`, `.emoji`, `.attach`, `.reply`, `.cancel-reply`, `.panel` (emoji/
+   * sticker/GIF panel: `.panel.tab.<emoji|sticker|gif>`, `.panel.search`,
+   * `.panel.item.<index>`) and `.recorder` (`.recorder.discard`,
+   * `.recorder.preview-play`, `.recorder.stop`, `.recorder.send`). */
+  testID?: string;
 }

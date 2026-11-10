@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Pause, Play } from 'lucide-react-native';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { subTestID } from '../../utils';
 import { radius, spacing, states, typography, useThemeColors, useStyles, ThemeColors } from '../../theme';
 import { SVGIconName, SVGImageIcon } from '../atoms/SVGImageIcon';
 
@@ -10,6 +11,8 @@ export interface VoiceNoteProps {
   /** Relative bar heights (0-1) forming the waveform; a default pattern is used if omitted. */
   waveform?: number[];
   icon?: SVGIconName;
+  /** Stable ID for E2E tools; the play control gets `<testID>.play`. */
+  testID?: string;
 }
 
 const DEFAULT_WAVEFORM = [
@@ -19,7 +22,7 @@ const DEFAULT_WAVEFORM = [
 /** Voice message: play/pause control + waveform + duration label. When
  * incoming, a vector `SVGImageIcon` sits outside the bubble to its left,
  * vertically centered, standing in for the sender's avatar. */
-export function VoiceNote({ duration, variant = 'outgoing', waveform = DEFAULT_WAVEFORM, icon = 'logo' }: VoiceNoteProps) {
+export function VoiceNote({ duration, variant = 'outgoing', waveform = DEFAULT_WAVEFORM, icon = 'logo', testID }: VoiceNoteProps) {
   const colors = useThemeColors();
   const styles = useStyles(makeStyles);
   const [playing, setPlaying] = useState(false);
@@ -29,12 +32,16 @@ export function VoiceNote({ duration, variant = 'outgoing', waveform = DEFAULT_W
 
   const bubble = (
     <View
+      testID={isOutgoing ? testID : undefined}
       style={[
         styles.base,
         { backgroundColor: isOutgoing ? colors.primaryContainer : colors.surfaceContainer },
       ]}
     >
       <Pressable
+        testID={subTestID(testID, 'play')}
+        accessibilityRole="button"
+        accessibilityLabel={playing ? 'Pause voice message' : 'Play voice message'}
         onPress={() => setPlaying((p) => !p)}
         hitSlop={8}
         style={({ pressed }) => [
@@ -66,7 +73,7 @@ export function VoiceNote({ duration, variant = 'outgoing', waveform = DEFAULT_W
   if (isOutgoing) return bubble;
 
   return (
-    <View style={styles.row}>
+    <View testID={testID} style={styles.row}>
       <SVGImageIcon icon={icon} size={28} />
       {bubble}
     </View>

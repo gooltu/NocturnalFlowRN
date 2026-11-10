@@ -26,6 +26,7 @@ export function renderTabBar({ state, navigation }: BottomTabBarProps) {
       tabs={TABS}
       active={active}
       onChange={(tab) => navigation.navigate(tab)}
+      testID="tabbar"
     />
   );
 }

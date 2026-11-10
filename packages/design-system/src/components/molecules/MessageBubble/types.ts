@@ -204,4 +204,9 @@ export interface MessageBubbleProps {
    * always springs back to place, whether or not the threshold was met. */
   onSwipeReply?: () => void;
   style?: StyleProp<ViewStyle>;
+  /** Stable ID for E2E tools (Maestro/Detox), set on the bubble itself. Child
+   * elements derive from it: `.text`, `.sender`, `.quote`, `.meta`,
+   * `.timestamp`, `.status`, `.media`, `.tile.<i>`, `.voice.play`,
+   * `.document`, `.contact`, `.sticker`, `.caption`, `.retry`. */
+  testID?: string;
 }

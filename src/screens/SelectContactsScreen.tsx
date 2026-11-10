@@ -14,6 +14,7 @@ import {
   ThemeColors,
   PresenceState,
   Avatar,
+  testIDSegment,
 } from '@nocturnalflow/design-system';
 import { chats } from '../data/mockData';
 
@@ -27,8 +28,9 @@ export function SelectContactsScreen() {
   const navigation = useNavigation();
 
   return (
-    <SafeAreaView style={styles.base} edges={[]}>
+    <SafeAreaView testID="select-contacts.screen" style={styles.base} edges={[]}>
       <FlatList
+        testID="select-contacts.list"
         data={chats}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContent}
@@ -40,6 +42,7 @@ export function SelectContactsScreen() {
         }
         renderItem={({ item }) => (
           <ContactRow
+            testID={`select-contacts.contact.${item.id}`}
             name={item.contact.name}
             initials={item.contact.initials}
             presence={item.contact.presence}
@@ -58,10 +61,13 @@ interface ActionRowProps {
 }
 
 function ActionRow({ icon: Icon, label, onPress }: ActionRowProps) {
+  const testID = `select-contacts.action.${testIDSegment(label)}`;
   const colors = useThemeColors();
   const styles = useStyles(makeStyles);
   return (
     <Pressable
+      testID={testID}
+      accessibilityRole="button"
       onPress={onPress}
       style={({ pressed }) => [styles.row, pressed && { opacity: states.pressedOpacity }]}
     >
@@ -78,12 +84,15 @@ interface ContactRowProps {
   initials: string;
   presence: PresenceState;
   onPress: () => void;
+  testID?: string;
 }
 
-function ContactRow({ name, initials, presence, onPress }: ContactRowProps) {
+function ContactRow({ name, initials, presence, onPress, testID }: ContactRowProps) {
   const styles = useStyles(makeStyles);
   return (
     <Pressable
+      testID={testID}
+      accessibilityRole="button"
       onPress={onPress}
       style={({ pressed }) => [styles.row, pressed && { opacity: states.pressedOpacity }]}
     >

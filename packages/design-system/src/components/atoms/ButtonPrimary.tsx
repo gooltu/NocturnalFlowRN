@@ -6,14 +6,17 @@ export interface ButtonPrimaryProps {
   label: string;
   onPress?: () => void;
   disabled?: boolean;
+  /** Stable ID for E2E tools (Maestro/Detox); forwarded to the root element. */
+  testID?: string;
 }
 
 /** Primary CTA: `primary` fill, `on-primary` text, subtle inner glow for a tactile
  * raised look. Pressed/disabled states apply opacity per the states tokens. */
-export function ButtonPrimary({ label, onPress, disabled }: ButtonPrimaryProps) {
+export function ButtonPrimary({ label, onPress, disabled, testID }: ButtonPrimaryProps) {
   const styles = useStyles(makeStyles);
   return (
     <Pressable
+      testID={testID}
       onPress={onPress}
       disabled={disabled}
       hitSlop={8}

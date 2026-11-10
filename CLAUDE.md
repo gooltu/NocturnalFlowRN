@@ -87,6 +87,13 @@ across the whole library:
   `:hover` or color-alone.
 - Theme tokens (`spacing`, `radius`, `typography`, `states`, `iconTokens`) are imported directly
   from `'../../theme'`.
+- Every component takes an optional `testID` prop, set on its root element. Composite
+  components build their children's IDs from it with `subTestID(testID, 'part', key)` (from
+  `'../../utils'`), and only when the caller passed one. Screens use `<screen>.<element>[.<id>]`
+  (for example `chats.row.<chatId>` or `conversation.input.send`), and `HeaderAdapter` sets
+  `<route-name>.header` automatically. The full suffix table is in
+  `packages/design-system/CLAUDE.md`. A sample Maestro flow is in `.maestro/smoke.yaml`. Keep
+  these IDs stable, because E2E flows depend on them.
 
 ### Design system source of truth
 

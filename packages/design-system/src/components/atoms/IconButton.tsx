@@ -13,6 +13,10 @@ export interface IconButtonProps {
   size?: IconButtonSize;
   active?: boolean;
   disabled?: boolean;
+  /** Screen-reader label for the icon-only control. */
+  label?: string;
+  /** Stable ID for E2E tools (Maestro/Detox); forwarded to the root element. */
+  testID?: string;
 }
 
 const sizeMap = {
@@ -30,6 +34,8 @@ export function IconButton({
   size = 'md',
   active = false,
   disabled = false,
+  label,
+  testID,
 }: IconButtonProps) {
   const colors = useThemeColors();
   const styles = useStyles(makeStyles);
@@ -38,6 +44,9 @@ export function IconButton({
 
   return (
     <Pressable
+      testID={testID}
+      accessibilityRole="button"
+      accessibilityLabel={label}
       onPress={onPress}
       disabled={disabled}
       hitSlop={hitSlopValue}

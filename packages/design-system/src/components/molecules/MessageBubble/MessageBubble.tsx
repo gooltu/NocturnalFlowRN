@@ -1,5 +1,6 @@
 import React from 'react';
 import { Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { subTestID } from '../../../utils';
 import { states, useThemeColors, useStyles, ThemeColors } from '../../../theme';
 import { bubbleSkin, MEDIA_BUBBLE_WIDTH_FRACTION } from './bubbleTheme';
 import { MessageContent } from './parts/MessageContent';
@@ -46,6 +47,7 @@ export function MessageBubble({
   onLongPress,
   onSwipeReply,
   style,
+  testID,
 }: MessageBubbleProps) {
   const colors = useThemeColors();
   const styles = useStyles(makeStyles);
@@ -76,9 +78,10 @@ export function MessageBubble({
       direction={direction}
       content={content}
       meta={meta}
-      header={showHeader ? <SenderName name={senderName!} /> : undefined}
-      quote={replyTo ? <QuoteBlock direction={direction} quote={replyTo} /> : undefined}
+      header={showHeader ? <SenderName name={senderName!} testID={subTestID(testID, 'sender')} /> : undefined}
+      quote={replyTo ? <QuoteBlock direction={direction} quote={replyTo} testID={subTestID(testID, 'quote')} /> : undefined}
       senderName={senderName}
+      testID={testID}
     />
   );
 
@@ -98,9 +101,10 @@ export function MessageBubble({
 
   const bubbleElement =
     !onPress && !onLongPress ? (
-      <View style={bubbleStyle}>{inner}</View>
+      <View testID={testID} style={bubbleStyle}>{inner}</View>
     ) : (
       <Pressable
+        testID={testID}
         onPress={onPress}
         onLongPress={onLongPress}
         style={({ pressed }) => [...bubbleStyle, pressed && { opacity: states.pressedOpacity }]}

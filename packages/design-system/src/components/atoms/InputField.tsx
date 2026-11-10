@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { LucideIcon } from 'lucide-react-native';
 import { StyleSheet, TextInput, TextInputProps, View } from 'react-native';
+import { subTestID } from '../../utils';
 import { iconTokens, radius, spacing, typography, useThemeColors, useStyles, ThemeColors } from '../../theme';
 
 export interface InputFieldProps extends TextInputProps {
@@ -9,13 +10,13 @@ export interface InputFieldProps extends TextInputProps {
 
 /** Search / chat text input: `surface-container` fill, `outline-variant` border
  * on focus, 16px internal padding. */
-export function InputField({ icon: Icon, style, ...rest }: InputFieldProps) {
+export function InputField({ icon: Icon, style, testID, ...rest }: InputFieldProps) {
   const colors = useThemeColors();
   const styles = useStyles(makeStyles);
   const [focused, setFocused] = useState(false);
 
   return (
-    <View style={[styles.base, focused && styles.focused]}>
+    <View testID={subTestID(testID, 'container')} style={[styles.base, focused && styles.focused]}>
       {Icon && (
         <Icon
           size={iconTokens.sizeMd}
@@ -25,6 +26,7 @@ export function InputField({ icon: Icon, style, ...rest }: InputFieldProps) {
         />
       )}
       <TextInput
+        testID={testID}
         placeholderTextColor={colors.onSurfaceVariant}
         style={[typography.bodyLg, styles.input, style]}
         onFocus={(e) => {

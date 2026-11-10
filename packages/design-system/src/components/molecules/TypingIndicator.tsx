@@ -34,11 +34,16 @@ function Dot({ delay }: { delay: number }) {
   return <Animated.View style={[styles.dot, style]} />;
 }
 
+export interface TypingIndicatorProps {
+  /** Stable ID for E2E tools (Maestro/Detox); forwarded to the root element. */
+  testID?: string;
+}
+
 /** Three-dot pulse loop signalling the other party is typing. */
-export function TypingIndicator() {
+export function TypingIndicator({ testID }: TypingIndicatorProps = {}) {
   const styles = useStyles(makeStyles);
   return (
-    <View style={styles.bubble}>
+    <View testID={testID} style={styles.bubble}>
       {Array.from({ length: DOT_COUNT }).map((_, i) => (
         <Dot key={i} delay={i * 150} />
       ))}

@@ -9,6 +9,8 @@ export interface MediaBubbleProps {
   timestamp: string;
   variant?: 'incoming' | 'outgoing';
   icon?: SVGIconName;
+  /** Stable ID for E2E tools (Maestro/Detox); forwarded to the root element. */
+  testID?: string;
 }
 
 /** Image fills the bubble shape; an optional caption and the timestamp sit
@@ -16,12 +18,12 @@ export interface MediaBubbleProps {
  * parent bubble's rounding.
  * When incoming, a vector `SVGImageIcon` sits outside the bubble to its
  * left, vertically centered, standing in for the sender's avatar. */
-export function MediaBubble({ source, caption, timestamp, variant = 'incoming', icon = 'logo' }: MediaBubbleProps) {
+export function MediaBubble({ source, caption, timestamp, variant = 'incoming', icon = 'logo', testID }: MediaBubbleProps) {
   const styles = useStyles(makeStyles);
   const isOutgoing = variant === 'outgoing';
 
   const content = (
-    <View style={[styles.wrap, isOutgoing && styles.wrapOutgoing]}>
+    <View testID={isOutgoing ? testID : undefined} style={[styles.wrap, isOutgoing && styles.wrapOutgoing]}>
       <View
         style={[
           styles.bubble,
@@ -40,7 +42,7 @@ export function MediaBubble({ source, caption, timestamp, variant = 'incoming', 
   if (isOutgoing) return content;
 
   return (
-    <View style={styles.row}>
+    <View testID={testID} style={styles.row}>
       <SVGImageIcon icon={icon} size={28} />
       {content}
     </View>

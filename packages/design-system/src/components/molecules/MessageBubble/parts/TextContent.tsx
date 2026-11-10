@@ -7,12 +7,14 @@ import { MessageDirection, TextMessageContent } from '../types';
 export interface TextContentProps {
   direction: MessageDirection;
   content: TextMessageContent;
+  /** E2E ID, derived by the parent bubble. */
+  testID?: string;
 }
 
 /** Plain message body text. */
-export function TextContent({ direction, content }: TextContentProps) {
+export function TextContent({ direction, content, testID }: TextContentProps) {
   const colors = useThemeColors();
   const skin = bubbleSkin(colors, direction);
 
-  return <Text style={[typography.bodyLg, { color: skin.text }]}>{content.text}</Text>;
+  return <Text testID={testID} style={[typography.bodyLg, { color: skin.text }]}>{content.text}</Text>;
 }

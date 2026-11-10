@@ -9,16 +9,18 @@ export interface AvatarProps {
   initials?: string;
   size?: number;
   presence?: PresenceState;
+  /** Stable ID for E2E tools (Maestro/Detox); forwarded to the root element. */
+  testID?: string;
 }
 
 /** Circular avatar with an optional presence dot, bottom-right, per design spec:
  * 8px dot with a 1.5px surface border so it reads against any avatar image. */
-export function Avatar({ source, initials, size = 48, presence = 'none' }: AvatarProps) {
+export function Avatar({ source, initials, size = 48, presence = 'none', testID }: AvatarProps) {
   const colors = useThemeColors();
   const styles = useStyles(makeStyles);
   const dotSize = Math.round(size / 6);
   return (
-    <View style={{ width: size, height: size }}>
+    <View testID={testID} style={{ width: size, height: size }}>
       {source ? (
         <Image
           source={source}

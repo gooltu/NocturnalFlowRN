@@ -1,0 +1,43 @@
+# Smoke flow: open a chat from the list, send a text message, go back.
+# Selectors use the app's testIDs (see "Testing / testID" in
+# packages/design-system/CLAUDE.md for the naming scheme).
+#
+# Runs against Expo Go by default (no native ios/android dirs yet). Start the
+# dev server first (`npm start`), then:
+#   maestro test .maestro/smoke.yaml
+# For a dev/prod build, override the app id:
+#   maestro test -e APP_ID=com.your.bundle .maestro/smoke.yaml
+appId: ${APP_ID}
+env:
+  APP_ID: host.exp.Exponent
+  DEV_SERVER_URL: exp://127.0.0.1:8081
+---
+- openLink: ${DEV_SERVER_URL}
+- extendedWaitUntil:
+    visible:
+      id: "chats.list"
+    timeout: 30000
+
+- tapOn:
+    id: "chats.row.text-bubble"
+- assertVisible:
+    id: "conversation.header.title"
+- assertVisible:
+    id: "conversation.list"
+
+- tapOn:
+    id: "conversation.input.input"
+- inputText: "Hello from Maestro"
+- tapOn:
+    id: "conversation.input.send"
+- assertVisible: "Hello from Maestro"
+
+- tapOn:
+    id: "conversation.header.back"
+- assertVisible:
+    id: "chats.list"
+
+- tapOn:
+    id: "tabbar.tab.calls"
+- assertVisible:
+    id: "calls.header.title"

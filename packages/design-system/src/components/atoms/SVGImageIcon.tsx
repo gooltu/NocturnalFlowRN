@@ -54,6 +54,8 @@ export interface SVGImageIconProps {
   /** Required when pressable, so the control is reachable by screen readers. */
   label?: string;
   disabled?: boolean;
+  /** Stable ID for E2E tools (Maestro/Detox); forwarded to the root element. */
+  testID?: string;
 }
 
 /** Vector counterpart to `ImageIcon`, for full-colour game and reward art
@@ -67,12 +69,13 @@ export function SVGImageIcon({
   onPress,
   label,
   disabled = false,
+  testID,
 }: SVGImageIconProps) {
   const styles = useStyles(makeStyles);
   const Icon = svgIcons[icon];
   const box = tile ? { width: size, height: size, padding: size * 0.16 } : { width: size, height: size };
   const content = (
-    <View style={[styles.base, box, tile && styles.tile, disabled && { opacity: states.disabledOpacity }]}>
+    <View testID={onPress ? undefined : testID} style={[styles.base, box, tile && styles.tile, disabled && { opacity: states.disabledOpacity }]}>
       <Icon width="100%" height="100%" />
     </View>
   );
@@ -83,6 +86,7 @@ export function SVGImageIcon({
 
   return (
     <Pressable
+      testID={testID}
       onPress={onPress}
       disabled={disabled}
       hitSlop={hitSlopValue}

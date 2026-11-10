@@ -8,6 +8,8 @@ import { DocumentMessageContent, MessageDirection } from '../types';
 export interface DocumentContentProps {
   direction: MessageDirection;
   content: DocumentMessageContent;
+  /** E2E ID, derived by the parent bubble. */
+  testID?: string;
 }
 
 const TILE_SIZE = 44;
@@ -15,7 +17,7 @@ const TILE_SIZE = 44;
 /** File-share row: a type tile (glyph, or a spinner/failure glyph while
  * `status` is set) plus filename and a secondary line — the file size when
  * ready, otherwise a status message. */
-export function DocumentContent({ direction, content }: DocumentContentProps) {
+export function DocumentContent({ direction, content, testID }: DocumentContentProps) {
   const colors = useThemeColors();
   const skin = bubbleSkin(colors, direction);
   const styles = useStyles(makeStyles);
@@ -29,7 +31,7 @@ export function DocumentContent({ direction, content }: DocumentContentProps) {
         : `${fileType.toUpperCase()} · ${fileSize}`;
 
   const row = (
-    <View style={styles.row}>
+    <View testID={onPress ? undefined : testID} style={styles.row}>
       <View style={[styles.tile, { backgroundColor: skin.quoteTileFill }]}>
         {status === 'downloading' ? (
           <ActivityIndicator color={skin.text} />
@@ -57,6 +59,7 @@ export function DocumentContent({ direction, content }: DocumentContentProps) {
 
   return (
     <Pressable
+      testID={testID}
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={`${fileName}, ${secondary}`}

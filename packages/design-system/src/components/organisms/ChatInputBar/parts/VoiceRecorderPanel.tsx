@@ -20,6 +20,7 @@ import {
   useStyles,
   ThemeColors,
 } from '../../../../theme';
+import { subTestID } from '../../../../utils';
 
 export type RecorderPhase = 'recording' | 'reviewing';
 
@@ -38,6 +39,8 @@ export interface VoiceRecorderPanelProps {
   onDiscard: () => void;
   /** Reviewing only — commits. */
   onSend: () => void;
+  /** E2E base ID, derived by `ChatInputBar`. */
+  testID?: string;
 }
 
 export function formatDuration(totalSeconds: number): string {
@@ -60,14 +63,16 @@ export function VoiceRecorderPanel({
   onTogglePreview,
   onDiscard,
   onSend,
+  testID,
 }: VoiceRecorderPanelProps) {
   const colors = useThemeColors();
   const styles = useStyles(makeStyles);
   const isRecording = phase === 'recording';
 
   return (
-    <View style={styles.base}>
+    <View testID={testID} style={styles.base}>
       <Pressable
+        testID={subTestID(testID, 'discard')}
         onPress={onDiscard}
         hitSlop={4}
         accessibilityRole="button"
@@ -87,6 +92,7 @@ export function VoiceRecorderPanel({
         ) : (
           <>
             <Pressable
+              testID={subTestID(testID, 'preview-play')}
               onPress={onTogglePreview}
               hitSlop={12}
               accessibilityRole="button"
@@ -105,6 +111,7 @@ export function VoiceRecorderPanel({
       </View>
 
       <Pressable
+        testID={subTestID(testID, isRecording ? 'stop' : 'send')}
         onPress={isRecording ? onStop : onSend}
         accessibilityRole="button"
         accessibilityLabel={isRecording ? 'Stop recording' : 'Send voice note'}
